@@ -125,7 +125,7 @@ def menu_gestion_emp():
                     except ValueError as Error:
                         print(Error)
 
-                #numerico #15 digitos #autoincrementable
+                #numerico #15 digitos #autoincrementable #pico
                 id_departamento = input("Ingrese el ID numerico del departamento asignado a este empleado: ") 
 
             case 2:
