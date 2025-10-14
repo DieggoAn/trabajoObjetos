@@ -26,6 +26,59 @@ class Administrador(Persona, GestionEmpInterfaz, GestionInformeInterfaz, Gestion
             f"Estado de sesión: {'Activa' if self.estadoSesion else 'Cerrada'}"
         )
 
+    @property
+    def nombre(self):
+        return self.__nombre
+    
+    @nombre.setter
+    def nombre(self, nombre):
+        self.nombre = nombre
+
+    @nombre.deleter
+    def nombre(self):
+        del self.__nombre
+    
+    @property
+    def rut(self):
+        return self.rut_administrador
+    @rut.setter
+    def rut(self, rut):
+        self.__rut_administrador = rut
+    @rut.deleter
+    def rut(self):
+        del self.__rut_administrador
+ 
+    @property
+    def direccion(self):
+        return self.__direccion
+    @direccion.setter
+    def direccion(self, rut):
+        self.__direccion = rut
+    @direccion.deleter
+    def direccion(self):
+        del self.__direccion
+
+    @property
+    def salario(self):
+        return self.__salario
+    @salario.setter
+    def salario(self, salario):
+        self.__salario = salario
+
+    @salario.deleter
+    def salario(self):
+        del self.__salario
+
+    @property
+    def telefono(self):
+        return self.__telefono
+    @telefono.setter
+    def telefono(self, telefono):
+        self.__telefono = telefono
+    @telefono.deleter
+    def telefono(self):
+        del self.__telefono
+
     def guardar_en_db(self):
         from config import conectar_db
         try:
