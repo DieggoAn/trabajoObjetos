@@ -48,6 +48,26 @@ class Empleado(Persona, RegistroTiempoInterfaz, GestionInformeInterfaz):
         del self.__nombres
     
     @property
+    def apellido_paterno(self):
+        return self.__apellido_paterno
+    @apellido_paterno.setter
+    def apellido_paterno(self, apellido_paterno):
+        self.__apellido_paterno = apellido_paterno
+    @apellido_paterno.deleter
+    def apellido_paterno(self):
+        del self.__apellido_paterno
+
+    @property
+    def apellido_materno(self):
+        return self.__apellido_materno
+    @apellido_materno.setter
+    def apellido_materno(self, apellido_materno):
+        self.__apellido_materno = apellido_materno
+    @apellido_materno.deleter
+    def apellido_materno(self):
+        del self.__apellido_materno
+
+    @property
     def rut_empleado(self):
         return self.__rut_empleado
     @rut_empleado.setter
@@ -86,6 +106,7 @@ class Empleado(Persona, RegistroTiempoInterfaz, GestionInformeInterfaz):
     @telefono.deleter
     def telefono(self):
         del self.__telefono
+
 
     def mostrar_rol(self):
         return f"ROL: Empleado\nID Departamento: {self.id_departamento}"

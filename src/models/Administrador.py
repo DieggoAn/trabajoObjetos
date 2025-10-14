@@ -29,11 +29,9 @@ class Administrador(Persona, GestionEmpInterfaz, GestionInformeInterfaz, Gestion
     @property
     def nombre(self):
         return self.__nombre
-    
     @nombre.setter
     def nombre(self, nombre):
         self.nombre = nombre
-
     @nombre.deleter
     def nombre(self):
         del self.__nombre

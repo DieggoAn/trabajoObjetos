@@ -479,7 +479,7 @@ def menu_gestion_depto():
                     except ValueError as Error:
                         print(Error)
 
-                from config import conectar_db
+                ##from config import conectar_db
                 try:
                     conexion = conectar_db()
                     cursor = conexion.cursor()
