@@ -307,12 +307,17 @@ def modificar_empleado():
             elif campo == "id_departamento":
                 if not nuevo_valor.isdigit() or len(nuevo_valor) > 15:
                     raise ValueError("ID Departamento debe ser numérico y de hasta 15 dígitos.")
-            
-            confirmacion = input(f"¿Confirmas modificar '{campo}' a '{nuevo_valor}'? (S/N): ").strip().lower()
-            if confirmacion != "s":
-                print("Modificación cancelada.")
-                return
-            
+
+            while True:
+                confirmacion = input(f"¿Confirmas modificar '{campo}' a '{nuevo_valor}'? (S/N): ").strip().lower()
+                if confirmacion == "s":
+                    break
+                elif confirmacion == "n":
+                    print("Modificación cancelada.")
+                    return
+                else:
+                    print("Entrada inválida. Debes ingresar 'S' o 'N'.")
+
             query = f"UPDATE Usuario SET {campo} = %s WHERE rut_usuario = %s"
             cursor.execute(query, (nuevo_valor, rut))
             conexion.commit()
