@@ -3,20 +3,43 @@ from models.interfaces.GestionEmpInterfaz import GestionEmpInterfaz
 from models.interfaces.GestionProyectoInterfaz import GestionProyectoInterfaz
 
 class Gerente(Persona, GestionEmpInterfaz, GestionProyectoInterfaz):
-    def __init__ (self, nombres, apellidoPaterno, apellidoMaterno,
-                 direccion, fechaNacimiento, fechaInicioContrato,
-                 salario, numeroTelefonico, rutGerente, idDepartamento):
+    def __init__ (self, nombres, apellido_paterno, apellido_materno,
+                 direccion, fecha_nacimiento, fecha_inicio_contrato,
+                 salario, telefono, rut_gerente, id_departamento):
         
-        super().__init__(nombres, apellidoPaterno, apellidoMaterno,
-                 direccion, fechaNacimiento, fechaInicioContrato,
-                 salario, numeroTelefonico)
+        super().__init__(nombres, apellido_paterno, apellido_materno,
+                 direccion, fecha_nacimiento, fecha_inicio_contrato,
+                 salario, telefono)
         
-        self.rutGerente = rutGerente
-        self.idDepartamento = idDepartamento
+        self.rut_gerente = rut_gerente
+        self.id_departamento = id_departamento
 
     """Metodo de la clase Persona"""
+    def guardar_en_db(self):
+        from config import conectar_db
+        conexion = conectar_db()
+        cursor = conexion.cursor()
+        query = """
+            INSERT INTO usuario (
+                rut_usuario, nombres, apellido_paterno, apellido_materno,
+                direccion, fecha_nacimiento, fecha_inicio_contrato,
+                salario, numero_telefonico, rol, id_departamento
+            ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+        """ 
+        valores = (
+            self.rut_gerente, self.nombres, self.apellido_paterno, self.apellido_materno,
+            self.direccion, self.fecha_nacimiento, self.fecha_inicio_contrato,
+            self.salario, self.telefono, "Gerente", self.id_departamento
+        )
+        cursor.execute(query, valores)
+        conexion.commit()
+        cursor.close()
+        conexion.close()
+        print(f"Gerente guardado correctamente en la base de datos.")
+
+
     def mostrar_rol(self):
-        return f"ROL: Gerente\nID Departamento: {self.idDepartamento}"
+        return f"ROL: Gerente\nID Departamento: {self.id_departamento}"
     
     def supervisarDepartamento(self):
         print("Supervisión registrada")

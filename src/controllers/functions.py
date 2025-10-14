@@ -1,7 +1,14 @@
 from config import conectar_db
 from itertools import cycle
 from datetime import datetime, date
+from models import (Persona,
+                    Empleado,
+                    Gerente,
+                    Administrador)
+import re
 
+
+# Nota: Esta funcion crea cualquier tipo de empleado, incluyendo Gerente y Administrador, o cualquiera que se quiera implementar a futuro.
 def crear_empleado():
     while True:
         try:
@@ -105,28 +112,36 @@ def crear_empleado():
 
     while True:
         try:
-            nro_telefono = input("Ingrese el nro de telefono del empleado (este debe incluir el numero 9 al comienzo): ")
-            if not(nro_telefono.isdigit() and len(nro_telefono) == 9 and nro_telefono[0] == "9"):
-                raise ValueError("Ingrese un numero telefonico valido")
+            nro_telefono = input("Ingrese el número de teléfono del empleado (formato: +56 9 XXXX XXXX): ").strip()
+            patron = r"^\+56 9 \d{4} \d{4}$"
+            if not re.match(patron, nro_telefono):
+                raise ValueError("Formato inválido. Use: +56 9 XXXX XXXX")
             break
         except ValueError as Error:
             print(Error)
 
     while True:
         try:
-            id_departamento = input("Ingrese ID del departamento asignado al empleado: ")
-            if not (id_departamento.isdigit() and len(id_departamento) <= 15):
+            id_departamento = int(input("Ingrese ID del departamento asignado al empleado: "))
+            if len(str(id_departamento)) < 15:
                 raise ValueError("Debe ser un número de hasta 15 dígitos.")
             break
-        except ValueError as Error:
-                print(Error)
+        except ValueError:
+                print("Debe ingresar carácteres numéricos.")
 
-    datos_empleado = (
-        rut_empleado.upper(), nombre, apellido_paterno, apellido_materno, direccion, fecha_nacimiento, fecha_inicio_contrato,
-        salario, nro_telefono, rol_usuario, id_departamento
+    clases_usuario = {
+        "Empleado":Empleado,
+        "Gerente":Gerente,
+        "Administrador":Administrador
+    }
+
+    nuevo_usuario: Persona = clases_usuario[rol_usuario](
+        rut_empleado.upper(), nombre, apellido_paterno, apellido_materno,
+        direccion, fecha_nacimiento, fecha_inicio_contrato,
+        salario, nro_telefono, id_departamento
     )
 
-    insertar_empleado(datos_empleado)
+    nuevo_usuario.guardar_en_db()
 
 def buscar_empleado():
     while True:
@@ -216,29 +231,37 @@ def modificar_empleado():
         except ValueError as Error:
             print(Error)
 
-        conexion = conectar_db()
-        cursor = conexion.cursor()
+        try:
+            conexion = conectar_db()
+            cursor = conexion.cursor()
 
-        cursor.execute("SELECT * FROM Usuario WHERE rut_usuario = %s", (rut,))
-        empleado = cursor.fetchone()
+            cursor.execute("SELECT * FROM Usuario WHERE rut_usuario = %s", (rut,))
+            empleado = cursor.fetchone()
 
-        if not empleado:
-            print("No se encontró ningún empleado con ese RUT.")
-            cursor.close()
-            conexion.close()
-            return
+            if not empleado:
+                print("No se encontró ningún empleado con ese RUT.")
+                cursor.close()
+                conexion.close()
+                return
         
-        print("\nEmpleado encontrado. ¿Qué campo desea modificar?")
-        print("1. Nombre")
-        print("2. Apellido Paterno")
-        print("3. Apellido Materno")
-        print("4. Dirección")
-        print("5. Fecha de Nacimiento")
-        print("6. Fecha de Inicio de Contrato")
-        print("7. Salario")
-        print("8. Teléfono")
-        print("9. Rol")
-        print("10. ID Departamento")
+            print("\nEmpleado encontrado. ¿Qué campo desea modificar?")
+            print("1. Nombre")
+            print("2. Apellido Paterno")
+            print("3. Apellido Materno")
+            print("4. Dirección")
+            print("5. Fecha de Nacimiento")
+            print("6. Fecha de Inicio de Contrato")
+            print("7. Salario")
+            print("8. Teléfono")
+            print("9. Rol")
+            print("10. ID Departamento")
+        except Exception as e:
+            print(f"Error al guardar el empleado: {e}")
+        finally:
+            if cursor:
+                cursor.close()
+            if conexion:
+                conexion.close()
 
         try:
             opcion = int(input("Seleccione una opción (1-10): "))
@@ -298,8 +321,10 @@ def modificar_empleado():
         except ValueError as Error:
             print(f"Error: {Error}")
         finally:
-            cursor.close()
-            conexion.close()
+            if cursor:
+                cursor.close() 
+            if conexion:
+                conexion.close()
 
 def eliminar_empleado():
     while True:
@@ -350,23 +375,33 @@ def eliminar_empleado():
     except Exception as e:
         print(f"Error inesperado al eliminar: {e}")
     finally:
-        cursor.close()
-        conexion.close()
+        if cursor:
+            cursor.close()
+        if conexion:
+            conexion.close()
 
 def insertar_empleado(datos):
-    conexion = conectar_db()
-    cursor = conexion.cursor()
-    query = """
-        INSERT INTO Usuario (
-            rut_usuario, nombres, apellido_paterno, apellido materno,
-            direccion, fecha_nacimiento, fecha_inicio_contrato,
-            salario, numero_telefonico, rol, id_departamento
-        ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-"""
-    cursor.execute(query, datos)
-    conexion.commit()
-    cursor.close()
-    print("Empleado creado con éxito.\n")
+    try:
+        conexion = conectar_db()
+        cursor = conexion.cursor()
+        query = """
+            INSERT INTO Usuario (
+                rut_usuario, nombres, apellido_paterno, apellido_materno,
+                direccion, fecha_nacimiento, fecha_inicio_contrato,
+                salario, numero_telefonico, rol, id_departamento
+            ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+        """
+        cursor.execute(query, datos)
+        conexion.commit()
+        cursor.close()
+        print("Empleado creado con éxito.\n")
+    except Exception as e:
+        print(f"Error al insertar ejemplo: {e}")
+    finally:
+        if cursor:
+            cursor.close()
+        if conexion:
+            conexion.close()
 
 def menu_gestion_emp():
     print("MENÚ DE GESTION DE EMPLEADOS\n")
@@ -381,7 +416,7 @@ def menu_gestion_emp():
         except ValueError:
             print("Debe ingresar una opción válida para continuar.\n")
             continue
-        
+
         if opcion_user not in (1,2,3,4,5):
             print("Debe ingresar una de las opciones disponibles (1 - 5) para continuar.\n")
             continue
@@ -426,39 +461,39 @@ def menu_gestion_depto():
             case 1:
                 while True:
                     try: 
-                        nombre = input("Ingrese el nombre del departamento: ")
-                        if not nombre and all(c.isalpha() for c in nombre):
-                         raise ValueError("Ingrese un nombre valido")
+                        nombre = input("Ingrese el nombre del departamento: ").strip()
+                        if not nombre or not all(c.isalpha() or c.isspace() for c in nombre):
+                            raise ValueError("Ingrese un nombre válido (solo letras y espacios).")
                         break
                     except ValueError as Error:
                         print(Error)
 
                 while True:
                     try:
-                        rut_gerente_asociado = input("Ingrese el RUT del empleado (ej: 12345678-K o 9876543-1): ").strip().lower()
-
-                        if rut_gerente_asociado.count('-') != 1:
-                            raise ValueError("El RUT debe contener un solo guion ('-').")
-
+                        rut_gerente_asociado = input("Ingrese el RUT del gerente (ej: 12345678-K): ").strip().lower()
                         parte_num, dv = rut_gerente_asociado.split('-')
-
-                        if len(rut_gerente_asociado) < 9 or len(rut_gerente_asociado) > 10:
-                            raise ValueError("El RUT debe tener entre 9 y 10 caracteres en total.")
-
-                        if not parte_num.isdigit():
-                            raise ValueError("Los caracteres antes del guion deben ser solo números.")
-
-                        if len(parte_num) not in [7, 8]:
-                            raise ValueError("La parte numérica del RUT debe tener 7 u 8 dígitos.")
-
-                        if dv not in ['0','1','2','3','4','5','6','7','8','9','k']:
-                            raise ValueError("El dígito verificador debe ser un número o la letra 'k'.")
-
+                        if rut_gerente_asociado.count('-') != 1 or not parte_num.isdigit() or dv not in '0123456789k':
+                            raise ValueError("RUT inválido.")
                         print(f"RUT ingresado correctamente: {rut_gerente_asociado.upper()}")
                         break
                     except ValueError as Error:
                         print(Error)
-          
+
+                from config import conectar_db
+                try:
+                    conexion = conectar_db()
+                    cursor = conexion.cursor()
+                    query = "INSERT INTO departamento (nombre, rut_gerente_asociado) VALUES (%s, %s)"
+                    valores = (nombre, rut_gerente_asociado.upper())
+                    cursor.execute(query, valores)
+                    conexion.commit()
+                    id_generado = cursor.lastrowid
+                    print(f"Departamento creado con ID: {id_generado}")
+                except Exception as e:
+                    print(f"Error al crear el departamento: {e}")
+                finally:
+                    cursor.close()
+                    conexion.close()
 
             case 2:
                 pass

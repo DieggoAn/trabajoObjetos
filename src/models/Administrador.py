@@ -4,20 +4,56 @@ from models.interfaces.GestionInformeInterfaz import GestionInformeInterfaz
 from models.interfaces.GestionDeptoInterfaz import GestionDeptoInterfaz
 
 class Administrador(Persona, GestionEmpInterfaz, GestionInformeInterfaz, GestionDeptoInterfaz):
-    def __init__(self, nombres, apellidoPaterno, apellidoMaterno,
-                 direccion, fechaNacimiento, fechaInicioContrato,
-                 salario, numeroTelefonico, rutAdmin, estadoSesion):
+    def __init__(self, nombres, apellido_paterno, apellido_materno,
+                 direccion, fecha_nacimiento, fecha_inicio_contrato,
+                 salario, telefono, rut_administrador, estadoSesion, id_departamento):
         
-        super().__init__(nombres, apellidoPaterno, apellidoMaterno,
-                 direccion, fechaNacimiento, fechaInicioContrato,
-                 salario, numeroTelefonico)
+        super().__init__(nombres, apellido_paterno, apellido_materno,
+                 direccion, fecha_nacimiento, fecha_inicio_contrato,
+                 salario, telefono)
         
-        self.rutAdmin = rutAdmin
+        self.rut_administrador = rut_administrador
         self.estadoSesion = estadoSesion
+        self.id_departamento = id_departamento
 
     def __str__(self):
-        return f"Datos del administrador:\nRUT: {self.rutAdmin}\nNombre(s): {self.nombres}\nApellidos: {self.apellidoPaterno} {self.apellidoMaterno}\nEstado de sesión: {self.estadoSesion}"
-    
+        return (
+            f"Datos del Administrador\n"
+            f"RUT: {self.rut_administrador}\n"
+            f"Nombre(s): {self.nombres}\n"
+            f"Apellidos: {self.apellido_paterno} {self.apellido_materno}\n"
+            f"Departamento: {self.id_departamento}\n"
+            f"Estado de sesión: {'Activa' if self.estadoSesion else 'Cerrada'}"
+        )
+
+    def guardar_en_db(self):
+        from config import conectar_db
+        try:
+            conexion = conectar_db()
+            cursor = conexion.cursor()
+            query = """
+                INSERT INTO usuario (
+                    rut_usuario, nombres, apellido_paterno, apellido_materno,
+                    direccion, fecha_nacimiento, fecha_inicio_contrato,
+                    salario, numero_telefonico, rol, id_departamento
+                ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+            """
+            valores = (
+                self.rut_administrador, self.nombres, self.apellido_paterno, self.apellido_materno,
+                self.direccion, self.fecha_nacimiento, self.fecha_inicio_contrato,
+                self.salario, self.telefono, "Administrador", self.id_departamento
+            )
+            cursor.execute(query, valores)
+            conexion.commit()
+            cursor.close()
+            conexion.close()
+            print("Administrador guardado correctamente en la base de datos.")
+        except Exception as e:
+            print(f"Error al guardar al administrador: {e}")
+        finally:
+            cursor.close()
+            conexion.close()
+
     def iniciarSesion(self):
         self.estadoSesion = True
 
