@@ -7,6 +7,27 @@ from models import (Persona,
                     Administrador)
 import re
 
+def validar_rut(rut):
+    rut = rut.strip().lower()
+    if rut.count('-') != 1:
+            raise ValueError("El RUT debe contener un solo guion ('-').")
+
+    parte_num, dv = rut.split('-')
+
+    if len(rut) < 9 or len(rut) > 10:
+        raise ValueError("El RUT debe tener entre 9 y 10 caracteres en total.")
+
+    if not parte_num.isdigit():
+        raise ValueError("Los caracteres antes del guion deben ser solo números.")
+
+    if len(parte_num) not in [7, 8]:
+        raise ValueError("La parte numérica del RUT debe tener 7 u 8 dígitos.")
+
+    if dv not in ['0','1','2','3','4','5','6','7','8','9','k']:
+        raise ValueError("El dígito verificador debe ser un número o la letra 'k'.")
+
+    print(f"RUT ingresado correctamente: {rut.upper()}")
+    return rut.upper()
 
 # Nota: Esta funcion crea cualquier tipo de empleado, incluyendo Gerente y Administrador, o cualquiera que se quiera implementar a futuro.
 def crear_empleado():
@@ -14,25 +35,8 @@ def crear_empleado():
         try:
             rut_empleado = input("Ingrese el RUT del empleado (ej: 12345678-K o 9876543-1): ").strip().lower()
 
-            if rut_empleado.count('-') != 1:
-                raise ValueError("El RUT debe contener un solo guion ('-').")
-
-            parte_num, dv = rut_empleado.split('-')
-
-            if len(rut_empleado) < 9 or len(rut_empleado) > 10:
-                raise ValueError("El RUT debe tener entre 9 y 10 caracteres en total.")
-
-            if not parte_num.isdigit():
-                raise ValueError("Los caracteres antes del guion deben ser solo números.")
-
-            if len(parte_num) not in [7, 8]:
-                raise ValueError("La parte numérica del RUT debe tener 7 u 8 dígitos.")
-
-            if dv not in ['0','1','2','3','4','5','6','7','8','9','k']:
-                raise ValueError("El dígito verificador debe ser un número o la letra 'k'.")
-
-            print(f"RUT ingresado correctamente: {rut_empleado.upper()}")
-            break
+            if validar_rut():
+                break
 
         except ValueError as Error:
             print(Error)
@@ -443,7 +447,6 @@ def menu_gestion_emp():
                 print("Será devuelto al menú principal...")
                 input("PRESIONE ENTER PARA CONTINUAR ")
                 break
-
 
 def menu_gestion_depto():
     print("MENÚ DE GESTION DE DEPARTAMENTOS\n")
