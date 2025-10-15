@@ -33,11 +33,9 @@ def validar_rut(rut):
 def crear_empleado():
     while True:
         try:
-            rut_empleado = input("Ingrese el RUT del empleado (ej: 12345678-K o 9876543-1): ").strip().lower()
-
-            if validar_rut():
-                break
-
+            rut = input("Ingrese el RUT del empleado (ej: 12345678-K o 9876543-1): ").strip().lower()
+            validar_rut(rut)
+            break
         except ValueError as Error:
             print(Error)
                 
@@ -140,7 +138,7 @@ def crear_empleado():
     }
 
     nuevo_usuario: Persona = clases_usuario[rol_usuario](
-        rut_empleado.upper(), nombre, apellido_paterno, apellido_materno,
+        rut.upper(), nombre, apellido_paterno, apellido_materno,
         direccion, fecha_nacimiento, fecha_inicio_contrato,
         salario, nro_telefono, id_departamento
     )
@@ -150,25 +148,8 @@ def crear_empleado():
 def buscar_empleado():
     while True:
         try:
-            rut = input("Ingrese el RUT del empleado a buscar (ej: 12345678-K): ").strip().upper()
-            if rut.count('-') != 1:
-                raise ValueError("El RUT debe contener un solo guion ('-').")
-
-            parte_num, dv = rut.split('-')
-
-            if len(rut) < 9 or len(rut) > 10:
-                raise ValueError("El RUT debe tener entre 9 y 10 caracteres en total.")
-
-            if not parte_num.isdigit():
-                raise ValueError("Los caracteres antes del guion deben ser solo números.")
-
-            if len(parte_num) not in [7, 8]:
-                raise ValueError("La parte numérica del RUT debe tener 7 u 8 dígitos.")
-
-            if dv not in ['0','1','2','3','4','5','6','7','8','9','k']:
-                raise ValueError("El dígito verificador debe ser un número o la letra 'k'.")
-
-            print(f"RUT ingresado correctamente: {rut.upper()}")
+            rut = input("Ingrese el RUT del empleado (ej: 12345678-K o 9876543-1): ").strip().lower()
+            validar_rut(rut)
             break
         except ValueError as Error:
             print(Error)
@@ -183,7 +164,7 @@ def buscar_empleado():
     FROM usuario
     WHERE rut_usuario = %s
 """
-    cursor.execute(query, (rut,))
+    cursor.execute(query, (rut))
     resultado = cursor.fetchone()
 
     cursor.close()
@@ -567,36 +548,70 @@ def menu_gestion_proyecto():
 
         match opcion_user:
             case 1:
-                while True:
-                    try: 
-                        nombre = input("Ingrese el nombre del departamento: ")
-                        if not nombre and all(c.isalpha() for c in nombre):
-                         raise ValueError("Ingrese un nombre valido")
-                        break
-                    except ValueError as Error:
-                        print(Error)
-                
-                while True:
-                    try:
-                        descripcion_proyecto = input("Ingrese una descripcion al proyecto: ")
-                        if not descripcion_proyecto:
-                            raise ValueError("Ingrese una descripcion valida")
-                        break
-                    except ValueError as Error:
-                        print(Error)
+                def crear_proyecto():
+                    while True:
+                        try: 
+                            nombre = input("Ingrese el nombre del departamento: ")
+                            if not nombre and all(c.isalpha() for c in nombre):
+                                raise ValueError("Ingrese un nombre valido")
+                            break
+                        except ValueError as Error:
+                            print(Error)
+                    
+                    while True:
+                        try:
+                            descripcion_proyecto = input("Ingrese una descripcion al proyecto: ")
+                            if not descripcion_proyecto:
+                                raise ValueError("Ingrese una descripcion valida")
+                            break
+                        except ValueError as Error:
+                            print(Error)
 
-                while True:
-                    try:
-                        fecha_inicio_proyecto = input("Ingrese la fecha de inicio del proyecto (formato DD/MM/AAAA): ")
-                        fecha = datetime.strptime(fecha_inicio_proyecto, '%d/%m/%Y').date()
-                        print(f"Fecha ingresada correctamente: {fecha}")
-                        break
-                    except ValueError:
-                        print("Formato inválido. Use el formato DD/MM/AAAA.")
-                
-
+                    while True:
+                        try:
+                            fecha_inicio_proyecto = input("Ingrese la fecha de inicio del proyecto (formato DD/MM/AAAA): ")
+                            fecha = datetime.strptime(fecha_inicio_proyecto, '%d/%m/%Y').date()
+                            print(f"Fecha ingresada correctamente: {fecha}")
+                            break
+                        except ValueError:
+                            print("Formato inválido. Use el formato DD/MM/AAAA.")
             case 2:
-                pass
+                def buscar_proyecto():
+                    while True:
+                        try:
+                            id_proyecto = input("Ingrese el la ID del proyecto: ")
+                            break
+                        except ValueError as Error:
+                            print(Error)
+
+                    conexion = conectar_db()
+                    cursor = conexion.cursor()
+
+                    query = """
+                    SELECT id_proyecto, nombre, descripcion, fecha_inicio, 
+                           id_departamento   
+                    FROM usuario
+                    WHERE id_proyecto = %s
+                """
+                    cursor.execute(query, (id_proyecto))
+                    resultado = cursor.fetchone()
+
+                    cursor.close()
+                    conexion.close()
+
+                    if resultado:
+                        print("\nDatos del proyecto encontrado:")
+                        campos = ["ID Proyecto",
+                                  "Nombre",
+                                  "Descripcion",
+                                  "Fecha de inicio",
+                                  "ID Departamento"]
+                        
+                        for campo, valor in zip(campos, resultado):
+                            print(f"{campo}: {valor}")
+                        print()
+                    else:
+                        print("No se encontró a ningún proyecto con esta ID.\n")
 
             case 3:
                 pass
