@@ -1,8 +1,9 @@
 from abc import ABC, abstractmethod
+from config import conectar_db
 
 class Persona(ABC):
     def __init__(self, rut, nombres, apellido_paterno, apellido_materno, direccion,
-                 fecha_nacimiento, fecha_inicio_contrato, salario, telefono, rol, id_departamento):
+                 fecha_nacimiento, fecha_inicio_contrato, salario, telefono, rol, contraseña, id_departamento):
         self.rut = rut
         self.nombres = nombres
         self.apellido_paterno = apellido_paterno
@@ -12,6 +13,7 @@ class Persona(ABC):
         self.fecha_inicio_contrato = fecha_inicio_contrato
         self.salario = salario
         self.telefono = telefono
+        self.contraseña = contraseña
         self.rol = rol
         self.id_departamento = id_departamento
 
@@ -28,13 +30,19 @@ class Persona(ABC):
                 f"Número telefónico: {self.telefono}"
                 f"ID Departamento: {self.id_departamento}")
     
-    def guardar_en_db(self, rol):
-        from config import conectar_db
+    def guardar_en_db(self):
+        conexion = None #para evitar posibles fallos antes de que inicie la conexión
+        cursor = None
         try:
             conexion = conectar_db()
             cursor = conexion.cursor()
+            cursor.execute("SELECT rut_usuario FROM Usuario_detalle WHERE rut_usuario = %s", (self.rut,))
+            if cursor.fetchone():
+                print(f"El usuario con RUT {self.rut} ya existe en el sistema.")
+                return
+            
             query = """
-                INSERT INTO usuario (
+                INSERT INTO Usuario_detalle (
                     rut_usuario, nombres, apellido_paterno, apellido_materno,
                     direccion, fecha_nacimiento, fecha_inicio_contrato,
                     salario, numero_telefonico, rol, id_departamento
@@ -43,15 +51,15 @@ class Persona(ABC):
             valores = (
                 self.rut, self.nombres, self.apellido_paterno, self.apellido_materno,
                 self.direccion, self.fecha_nacimiento, self.fecha_inicio_contrato,
-                self.salario, self.telefono, rol, self.id_departamento
+                self.salario, self.telefono, self.rol, self.id_departamento
             )
             cursor.execute(query, valores)
             conexion.commit()
             cursor.close()
             conexion.close()
-            print(f"{rol} guardado correctamente en la base de datos.")
+            print(f"{self.rol} guardado correctamente en la base de datos.")
         except Exception as e:
-            print(f"Error al guardar {rol}: {e}")
+            print(f"Error al guardar {self.rol}: {e}")
         finally:
             if cursor:
                 cursor.close()
@@ -59,12 +67,11 @@ class Persona(ABC):
                 conexion.close()
     
     def actualizar_en_db(self):
-        from config import conectar_db
         try:
             conexion = conectar_db()
             cursor = conexion.cursor()
             query = """
-                UPDATE usuario SET
+                UPDATE Usuario_detalle SET
                     nombres = %s,
                     apellido_paterno = %s,
                     apellido_materno = %s,

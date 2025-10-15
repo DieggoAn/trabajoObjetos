@@ -1,42 +1,62 @@
 from Persona import Persona
 from models.interfaces.GestionEmpInterfaz import GestionEmpInterfaz
 from models.interfaces.GestionProyectoInterfaz import GestionProyectoInterfaz
+from config import conectar_db
 
 class Gerente(Persona, GestionEmpInterfaz, GestionProyectoInterfaz):
     def __init__ (self, nombres, apellido_paterno, apellido_materno,
                  direccion, fecha_nacimiento, fecha_inicio_contrato,
                  salario, telefono, rut_gerente, id_departamento):
         
-        super().__init__(nombres, apellido_paterno, apellido_materno,
-                 direccion, fecha_nacimiento, fecha_inicio_contrato,
-                 salario, telefono)
-        
+        super().__init__(
+            rut=rut_gerente,
+            nombres=nombres,
+            apellido_paterno=apellido_paterno,
+            apellido_materno=apellido_materno,
+            direccion=direccion,
+            fecha_nacimiento=fecha_nacimiento,
+            fecha_inicio_contrato=fecha_inicio_contrato,
+            salario=salario,
+            telefono=telefono,
+            contraseña=None,
+            rol="Gerente",
+            id_departamento=id_departamento
+)
+
         self.rut_gerente = rut_gerente
         self.id_departamento = id_departamento
 
     """Metodo de la clase Persona"""
     def guardar_en_db(self):
-        from config import conectar_db
-        conexion = conectar_db()
-        cursor = conexion.cursor()
-        query = """
-            INSERT INTO usuario (
-                rut_usuario, nombres, apellido_paterno, apellido_materno,
-                direccion, fecha_nacimiento, fecha_inicio_contrato,
-                salario, numero_telefonico, rol, id_departamento
-            ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-        """ 
-        valores = (
-            self.rut_gerente, self.nombres, self.apellido_paterno, self.apellido_materno,
-            self.direccion, self.fecha_nacimiento, self.fecha_inicio_contrato,
-            self.salario, self.telefono, "Gerente", self.id_departamento
-        )
-        cursor.execute(query, valores)
-        conexion.commit()
-        cursor.close()
-        conexion.close()
-        print(f"Gerente guardado correctamente en la base de datos.")
+        try:
+            conexion = conectar_db()
+            cursor = conexion.cursor()
 
+            cursor.execute("SELECT rut_usuario FROM Usuario_detalle WHERE rut_usuario = %s", (self.rut,))
+            if cursor.fetchone():
+                print(f"El usuario con RUT {self.rut} ya existe en Usuario_detalle.")
+                return
+
+            query = """
+                INSERT INTO Usuario_detalle (
+                    rut_usuario, direccion, fecha_nacimiento, fecha_inicio_contrato,
+                    salario, numero_telefonico, rol, id_departamento
+                ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+            """
+            valores = (
+                self.rut, self.direccion, self.fecha_nacimiento, self.fecha_inicio_contrato,
+                self.salario, self.telefono, self.rol, self.id_departamento
+            )
+            cursor.execute(query, valores)
+            conexion.commit()
+            print(f"{self.rol} guardado correctamente en la base de datos.")
+        except Exception as Error:
+            print(f"Error al guardar {self.rol}: {Error}")
+        finally:
+            if cursor:
+                cursor.close()
+            if conexion:
+                conexion.close()
 
     def mostrar_rol(self):
         return f"ROL: Gerente\nID Departamento: {self.id_departamento}"

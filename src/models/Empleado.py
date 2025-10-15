@@ -2,34 +2,48 @@ from Persona import Persona
 from models.interfaces.RegistroTiempoInterfaz import RegistroTiempoInterfaz
 from RegistroTiempo import RegistroTiempo
 from models.interfaces.GestionInformeInterfaz import GestionInformeInterfaz 
+from config import conectar_db
 
 class Empleado(Persona, RegistroTiempoInterfaz, GestionInformeInterfaz):
     def __init__ (self, rut_empleado, nombre, apellido_paterno, apellido_materno, direccion,
                  fecha_nacimiento, fecha_inicio_contrato, salario, telefono, id_departamento):
         
-        super().__init__(nombre, apellido_paterno, apellido_materno,
-                 direccion, fecha_nacimiento, fecha_inicio_contrato,
-                 salario, telefono)
+        super().__init__(
+        rut=rut_empleado,
+        nombres=nombre,
+        apellido_paterno=apellido_paterno,
+        apellido_materno=apellido_materno,
+        direccion=direccion,
+        fecha_nacimiento=fecha_nacimiento,
+        fecha_inicio_contrato=fecha_inicio_contrato,
+        salario=salario,
+        telefono=telefono,
+        contraseña=None,
+        rol="Empleado",
+        id_departamento=id_departamento)
         
-        self.rut_empleado = rut_empleado
-        self.id_departamento = id_departamento
         self.registro = RegistroTiempo()
     
     def guardar_en_db(self):
-        from config import conectar_db
+
         conexion = conectar_db()
         cursor = conexion.cursor()
+        cursor.execute("SELECT rut_usuario FROM Usuario_detalle WHERE rut_usuario = %s", (self.rut,))
+        if cursor.fetchone():
+            print(f"El usuario con RUT {self.rut} ya existe en el sistema.")
+            return
+        
         query = """
-            INSERT INTO usuario (
+            INSERT INTO Usuario_detalle (
                 rut_usuario, nombres, apellido_paterno, apellido_materno,
                 direccion, fecha_nacimiento, fecha_inicio_contrato,
                 salario, numero_telefonico, rol, id_departamento
             ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
         """
         valores = (
-            self.rut_empleado, self.nombres, self.apellido_paterno, self.apellido_materno,
+            self.rut, self.nombres, self.apellido_paterno, self.apellido_materno,
             self.direccion, self.fecha_nacimiento, self.fecha_inicio_contrato,
-            self.salario, self.telefono, "Empleado", self.id_departamento
+            self.salario, self.telefono, self.rol, self.id_departamento
         )
         cursor.execute(query, valores)
         conexion.commit()

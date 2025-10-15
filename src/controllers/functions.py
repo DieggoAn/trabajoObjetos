@@ -80,7 +80,7 @@ def crear_empleado():
         try:
             direccion = input("Ingrese la direccion del empleado (ej: Av Arturo Prat 967): ")
             if not direccion:
-                raise ValueError("Ingrese una direccion valida")
+                raise ValueError("Ingrese una dirección válida")
             break
         except ValueError as Error:
             print(Error)
@@ -143,14 +143,48 @@ def crear_empleado():
         salario, nro_telefono, id_departamento
     )
 
-    nuevo_usuario.guardar_en_db()
+    nuevo_usuario.insertar_empleado()
 
-def buscar_empleado():
+def buscar_empleado(rut):
+    try:
+        rut = validar_rut(rut)  # Si es válido, retorna el RUT limpio
+        print(f"RUT ingresado correctamente: {rut}")
+    except ValueError as Error:
+        print(Error)
+        return  # Salir si el RUT no es válido
+
+    try:
+        conexion = conectar_db()
+        cursor = conexion.cursor()
+
+        query = """
+        SELECT rut_usuario
+        FROM usuario
+        WHERE rut_usuario = %s
+        """
+        cursor.execute(query, (rut,))
+        resultado = cursor.fetchone()
+
+        if resultado:
+            print("¡ERROR!. El usuario se encuentra registrado en el sistema.\n")
+        else:
+            print("El usuario no está registrado.")
+    except Exception as e:
+        print(f"Error inesperado al buscar el empleado: {e}")
+    finally:
+        if cursor:
+            cursor.close()
+        if conexion:
+            conexion.close()
+
+
+# Función exclusiva de Administrador y Gerente (o cualquier clase que vaya a poseer esos privilegios)
+def super_buscar_empleado():
     while True:
         try:
             rut = input("Ingrese el RUT del empleado (ej: 12345678-K o 9876543-1): ").strip().lower()
-            validar_rut(rut)
-            break
+            if validar_rut(rut):
+                break
         except ValueError as Error:
             print(Error)
 
@@ -164,7 +198,7 @@ def buscar_empleado():
     FROM usuario
     WHERE rut_usuario = %s
 """
-    cursor.execute(query, (rut))
+    cursor.execute(query, (rut,))
     resultado = cursor.fetchone()
 
     cursor.close()
@@ -194,25 +228,9 @@ def modificar_empleado():
     while True:
         try:
             rut = input("Ingrese el RUT del empleado a modificar: ").strip().upper()
-            if rut.count('-') != 1:
-                raise ValueError("El RUT debe contener un solo guion ('-').")
-
-            parte_num, dv = rut.split('-')
-
-            if len(rut) < 9 or len(rut) > 10:
-                raise ValueError("El RUT debe tener entre 9 y 10 caracteres en total.")
-
-            if not parte_num.isdigit():
-                raise ValueError("Los caracteres antes del guion deben ser solo números.")
-
-            if len(parte_num) not in [7, 8]:
-                raise ValueError("La parte numérica del RUT debe tener 7 u 8 dígitos.")
-
-            if dv not in ['0','1','2','3','4','5','6','7','8','9','k']:
-                raise ValueError("El dígito verificador debe ser un número o la letra 'k'.")
-
-            print(f"RUT ingresado correctamente: {rut.upper()}")
-            break
+            if validar_rut():
+                print(f"RUT ingresado correctamente: {rut.upper()}")
+                break
         except ValueError as Error:
             print(Error)
 
@@ -320,19 +338,9 @@ def eliminar_empleado():
     while True:
         try:
             rut = input("Ingrese el RUT del empleado a eliminar (ej: 12345678-K): ").strip().lower()
-            if rut.count('-') != 1:
-                raise ValueError("El RUT debe contener un solo guion ('-').")
-            parte_num, dv = rut.split('-')
-            if len(rut) < 9 or len(rut) > 10:
-                raise ValueError("El RUT debe tener entre 9 y 10 caracteres.")
-            if not parte_num.isdigit():
-                raise ValueError("La parte numérica debe ser solo números.")
-            if len(parte_num) not in [7, 8]:
-                raise ValueError("Debe tener 7 u 8 dígitos antes del guion.")
-            if dv not in ['0','1','2','3','4','5','6','7','8','9','k']:
-                raise ValueError("El dígito verificador debe ser un número o la letra 'k'.")
-            rut = rut.upper()
-            break
+            if validar_rut(rut):
+                rut = rut.upper()
+                break
         except ValueError as Error:
             print(Error)
 

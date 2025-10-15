@@ -2,30 +2,38 @@ from Persona import Persona
 from models.interfaces.GestionEmpInterfaz import GestionEmpInterfaz
 from models.interfaces.GestionInformeInterfaz import GestionInformeInterfaz
 from models.interfaces.GestionDeptoInterfaz import GestionDeptoInterfaz
+from config import conectar_db
 
 class Administrador(Persona, GestionEmpInterfaz, GestionInformeInterfaz, GestionDeptoInterfaz):
     def __init__(self, nombres, apellido_paterno, apellido_materno,
                  direccion, fecha_nacimiento, fecha_inicio_contrato,
                  salario, telefono, rut_administrador, estadoSesion, id_departamento):
         
-        super().__init__(nombres, apellido_paterno, apellido_materno,
-                 direccion, fecha_nacimiento, fecha_inicio_contrato,
-                 salario, telefono)
-        
-        self.rut_administrador = rut_administrador
-        self.estadoSesion = estadoSesion
-        self.id_departamento = id_departamento
+        super().__init__(
+            rut=rut_administrador,
+            nombres=nombres,
+            apellido_paterno=apellido_paterno,
+            apellido_materno=apellido_materno,
+            direccion=direccion,
+            fecha_nacimiento=fecha_nacimiento,
+            fecha_inicio_contrato=fecha_inicio_contrato,
+            salario=salario,
+            telefono=telefono,
+            contraseña=None,
+            rol="Administrador",
+            id_departamento=id_departamento)
 
     def __str__(self):
         return (
             f"Datos del Administrador\n"
-            f"RUT: {self.rut_administrador}\n"
+            f"RUT: {self.rut}\n"
             f"Nombre(s): {self.nombres}\n"
             f"Apellidos: {self.apellido_paterno} {self.apellido_materno}\n"
             f"Departamento: {self.id_departamento}\n"
             f"Estado de sesión: {'Activa' if self.estadoSesion else 'Cerrada'}"
         )
 
+    
     @property
     def nombre(self):
         return self.__nombre
