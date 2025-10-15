@@ -5,6 +5,7 @@ from models import (Persona,
                     Empleado,
                     Gerente,
                     Administrador)
+import mysql.connector
 import re
 
 def validar_rut(rut):
@@ -29,121 +30,7 @@ def validar_rut(rut):
     print(f"RUT ingresado correctamente: {rut.upper()}")
     return rut.upper()
 
-# Nota: Esta funcion crea cualquier tipo de empleado, incluyendo Gerente y Administrador, o cualquiera que se quiera implementar a futuro.
-def crear_empleado():
-    while True:
-        try:
-            rut = input("Ingrese el RUT del empleado (ej: 12345678-K o 9876543-1): ").strip().lower()
-            validar_rut(rut)
-            break
-        except ValueError as Error:
-            print(Error)
-                
-    roles_validos = {"empleado", "gerente", "administrador"}
-    while True:
-        try:
-            rol_usuario = input("Ingrese el rol del usuario: ").strip().lower()
-            if rol_usuario not in roles_validos:
-                raise ValueError("Rol inválido. Debe ser: Empleado, Gerente o Administrador.")
-            rol_usuario = rol_usuario.capitalize()
 
-            break
-        except ValueError as Error:
-            print(Error)
-        
-    while True:
-        try: 
-            nombre = input("Ingrese el primer nombre del empleado: ")
-            if not nombre or not all(c.isalpha() or c.isspace() for c in nombre):
-                raise ValueError("Ingrese un nombre válido (solo letras y espacios).")
-            break
-        except ValueError as Error:
-            print(Error)   
-    while True:
-        try: 
-            apellido_paterno = input("Ingrese el apellido paterno del empleado: ")
-            if not apellido_paterno or not all(c.isalpha() or c.isspace() for c in apellido_paterno):
-                raise ValueError("Ingrese un apellido paterno válido (solo letras y espacios).")
-            break
-        except ValueError as Error:
-                print(Error)
-    while True:
-        try: 
-            apellido_materno = input("Ingrese el apellido materno del empleado: ")
-            if not apellido_materno or not all(c.isalpha() or c.isspace() for c in apellido_materno):
-                raise ValueError("Ingrese un apellido materno válido (solo letras y espacios).")
-            break
-        except ValueError as Error:
-            print(Error)      
-
-    while True:
-        try:
-            direccion = input("Ingrese la direccion del empleado (ej: Av Arturo Prat 967): ")
-            if not direccion:
-                raise ValueError("Ingrese una dirección válida")
-            break
-        except ValueError as Error:
-            print(Error)
-
-    while True:
-        try:
-            fecha_nacimiento = input("Ingrese la fecha de nacimiento del empleado (formato DD/MM/AAAA): ")
-            fecha = datetime.strptime(fecha_nacimiento, '%d/%m/%Y').date()
-            print(f"Fecha ingresada correctamente: {fecha}")
-            break
-        except ValueError:
-                print("Formato inválido. Use el formato DD/MM/AAAA.")
-
-    while True:
-        try:
-            fecha_inicio_contrato = input("Ingrese la fecha de inicio del contrato del empleado (formato DD/MM/AAAA): ")
-            fecha = datetime.strptime(fecha_inicio_contrato, '%d/%m/%Y').date()
-            print(f"Fecha ingresada correctamente: {fecha}")
-            break
-        except ValueError:
-            print("Formato inválido. Use el formato DD/MM/AAAA.")
-
-    while True:
-        try:
-            salario = int(input("Ingrese el salario asignado al empleado: "))
-            if salario <= 0:
-                raise ValueError("El salario debe ser un número positivo")
-            break
-        except ValueError:
-            print("Ingrese un sueldo valido") 
-
-    while True:
-        try:
-            nro_telefono = input("Ingrese el número de teléfono del empleado (formato: +56 9 XXXX XXXX): ").strip()
-            patron = r"^\+56 9 \d{4} \d{4}$"
-            if not re.match(patron, nro_telefono):
-                raise ValueError("Formato inválido. Use: +56 9 XXXX XXXX")
-            break
-        except ValueError as Error:
-            print(Error)
-
-    while True:
-        try:
-            id_departamento = int(input("Ingrese ID del departamento asignado al empleado: "))
-            if len(str(id_departamento)) < 15:
-                raise ValueError("Debe ser un número de hasta 15 dígitos.")
-            break
-        except ValueError:
-                print("Debe ingresar carácteres numéricos.")
-
-    clases_usuario = {
-        "Empleado":Empleado,
-        "Gerente":Gerente,
-        "Administrador":Administrador
-    }
-
-    nuevo_usuario: Persona = clases_usuario[rol_usuario](
-        rut.upper(), nombre, apellido_paterno, apellido_materno,
-        direccion, fecha_nacimiento, fecha_inicio_contrato,
-        salario, nro_telefono, id_departamento
-    )
-
-    nuevo_usuario.insertar_empleado()
 
 def buscar_empleado(rut):
     try:
@@ -192,12 +79,13 @@ def super_buscar_empleado():
     cursor = conexion.cursor()
 
     query = """
-    SELECT rut_usuario, nombres, apellido_paterno, apellido_materno,
-            direccion, fecha_nacimiento, fecha_inicio_contrato,
-            salario, numero_telefonico, rol, id_departamento
-    FROM usuario
-    WHERE rut_usuario = %s
-"""
+    SELECT ub.rut_usuario, ub.nombres, ub.apellido_paterno, ub.apellido_materno,
+           ud.direccion, ub.fecha_nacimiento, ud.fecha_inicio_contrato,
+           ud.salario, ub.numero_telefonico, ub.rol, ud.id_departamento
+    FROM usuario_basico ub
+    JOIN usuario_detalle ud ON ub.rut_usuario = ud.rut_usuario
+    WHERE ub.rut_usuario = %s
+    """
     cursor.execute(query, (rut,))
     resultado = cursor.fetchone()
 
@@ -219,8 +107,7 @@ def super_buscar_empleado():
                   "ID Departamento"]
         
         for campo, valor in zip(campos, resultado):
-            print(f"{campo}: {valor}")
-        print()
+            print(f"{campo}: {valor}\n")
     else:
         print("No se encontró a ningún empleado con ese RUT.\n")
 
@@ -378,30 +265,36 @@ def eliminar_empleado():
         if conexion:
             conexion.close()
 
-def insertar_empleado(datos):
+def insertar_empleado(datos_basico, datos_detalle):
     try:
         conexion = conectar_db()
         cursor = conexion.cursor()
-        query = """
-            INSERT INTO Usuario (
+        query_basico = """
+            INSERT INTO usuario_basico (
                 rut_usuario, nombres, apellido_paterno, apellido_materno,
-                direccion, fecha_nacimiento, fecha_inicio_contrato,
-                salario, numero_telefonico, rol, id_departamento
-            ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                fecha_nacimiento, numero_telefonico, contraseña, rol
+            ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
         """
-        cursor.execute(query, datos)
+        query_detalle = """
+            INSERT INTO usuario_detalle (
+                rut_usuario, direccion, fecha_inicio_contrato,
+                salario, rol, id_departamento
+            )   VALUES (%s, %s, %s, %s, %s, %s)
+        """
+        cursor.execute(query_basico, datos_basico)
+        cursor.execute(query_detalle, datos_detalle)
         conexion.commit()
-        cursor.close()
         print("Empleado creado con éxito.\n")
-    except Exception as e:
-        print(f"Error al insertar ejemplo: {e}")
+
+    except mysql.connector.Error as Error:
+        print(f"Error al insertar ejemplo: {Error}")
     finally:
         if cursor:
             cursor.close()
         if conexion:
             conexion.close()
 
-def menu_gestion_emp():
+def menu_gestion_emp(admin: Administrador):
     print("MENÚ DE GESTION DE EMPLEADOS\n")
     while True:
         print("OPCIÓN 1. CREAR EMPLEADO")
@@ -421,16 +314,16 @@ def menu_gestion_emp():
 
         match opcion_user:
             case 1:
-                crear_empleado() 
+                admin.crear_empleado() 
 
             case 2:
-                buscar_empleado()
+                admin.buscar_empleado()
 
             case 3:
-                modificar_empleado()
+                admin.modificar_empleado()
 
             case 4:
-                eliminar_empleado()
+                admin.eliminar_empleado()
 
             case 5:
                 print("Será devuelto al menú principal...")
@@ -583,6 +476,9 @@ def menu_gestion_proyecto():
                             break
                         except ValueError:
                             print("Formato inválido. Use el formato DD/MM/AAAA.")
+                    
+                    #falta instanciar la clase de proyecto y guardarla en la DB
+
             case 2:
                 def buscar_proyecto():
                     while True:

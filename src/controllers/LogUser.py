@@ -6,7 +6,9 @@ from config import conectar_db
 import bcrypt
 import re
 from datetime import datetime
-from models import Empleado
+from models import (Empleado,
+                    Gerente,
+                    Administrador)
 
 def presentacion_login():
     while True:
@@ -44,12 +46,21 @@ def registrar_usuario():
         try:
             rut = input("Ingrese su RUT: (ej: 12345678-K o 9876543-1): ").strip().lower()
             validar_rut(rut)
-            if not buscar_empleado(rut):
-                print("El usuario ya está registrado. No se puede continuar.")
+            conexion = conectar_db()
+            cursor = conexion.cursor()
+            cursor.execute("SELECT rut_usuario FROM usuario_basico WHERE rut_usuario = %s", (rut,))
+            if cursor.fetchone():
+                print("El usuario ya se encuentra registrado en el sistema. No se puede continuar.")
+                cursor.close()
+                conexion.close()
                 return
+            cursor.close()
+            conexion.close()
             break
-        except ValueError as Error:
-            print(f"Error inesperado al ingresar el RUT: {Error}")
+        except mysql.connector.Error as Error:
+            print(f"Error inesperado al verificar la existencia del usuario: {Error}")
+            return
+                
     while True:
         try: 
             nombre = input("Ingrese el primer nombre del empleado: ")
@@ -140,32 +151,126 @@ def registrar_usuario():
         id_departamento=None         
     )
 
-    try:    
-        conexion = conectar_db()
-        cursor = conexion.cursor()
+    while True:
+        try:    
+            conexion = conectar_db()
+            cursor = conexion.cursor()
 
-        query = """
-        INSERT INTO usuario_basico (
-            rut_usuario, nombres, apellido_paterno, apellido_materno,
-            fecha_nacimiento, numero_telefonico, contraseña
-        ) VALUES (%s, %s, %s, %s, %s, %s, %s)
-        """
+            query = """
+            INSERT INTO usuario_basico (
+                rut_usuario, nombres, apellido_paterno, apellido_materno,
+                fecha_nacimiento, numero_telefonico, contraseña
+            ) VALUES (%s, %s, %s, %s, %s, %s, %s)
+            """
 
-        valores = (
-            rut, nombre, apellido_paterno, apellido_materno, fecha_nacimiento, nro_telefono, contraseña_user
-        )
+            valores = (
+                rut, nombre, apellido_paterno, apellido_materno, fecha_nacimiento, nro_telefono, contraseña_user
+            )
     
-        cursor.execute(query, valores)
-        conexion.commit()
-        print("\nRegistro exitoso. Tu cuenta ha sido creada con el rol de 'Empleado'.")
-    except mysql.connector.Error as error:
-        print(f"Error inesperado al registrar el usuario: {error}")
-    finally:
-        cursor.close()
-        conexion.close()
+            cursor.execute(query, valores)
+            conexion.commit()
+            print("\nRegistro exitoso. Tu cuenta ha sido creada con el rol de 'Empleado'.")
+        except mysql.connector.Error as error:
+            print(f"Error inesperado al registrar el usuario: {error}")
+        finally:
+            cursor.close()
+            conexion.close()
+            break
 
+    return usuario
+
+
+# Lógica del inicio de sesión del sistema
 def iniciar_sesion():
-    pass
+    try:
+        rut = input("Ingrese su RUT: ").strip().lower()
+        validar_rut(rut)
+
+        contraseña_ingresada = input("Ingrese su contraseña: ").strip()
+
+        conexion = conectar_db()
+        cursor = conexion.cursor(dictionary=True)
+
+        query = """SELECT
+            ub.rut_usuario, ub.nombres, ub.apellido_paterno, ub.apellido_materno,
+            ub.fecha_nacimiento, ub.numero_telefonico, ub.contraseña, ub.rol,
+            ub.direccion, ud.fecha_inicio_contrato, ud.salario, ud.id_departamento
+        FROM usuario_basico ub
+        JOIN usuario_detalle ud ON ub.rut_usuario = ud.rut_usuario
+        WHERE ub.rut_usuario = %s"""
+
+        cursor.execute(query, (rut,))
+        datos = cursor.fetchone()
+
+        if not datos:
+            print("Usuario no encontrado. Verifique el RUT.")
+            return None
+        
+        if bcrypt.checkpw(contraseña_ingresada.encode('utf-8'), datos['contraseña'].encode('utf-8')):
+            print(f"Inicio de sesión exitoso. Bienvenido al sistema de EcoTech. Rol: {datos['rol']}")
+            
+            match datos['rol']:
+                case "Empleado":
+                    usuario = Empleado(
+                        rut=datos['rut_usuario'],
+                        nombres=datos['nombres'],
+                        apellido_paterno=datos['apellido_paterno'],
+                        apellido_materno=datos['apellido_materno'],
+                        direccion=datos['direccion'],
+                        fecha_nacimiento=datos['fecha_nacimiento'],
+                        fecha_inicio_contrato=datos['fecha_inicio_contrato'],
+                        salario=datos['salario'],
+                        telefono=datos['numero_telefonico'],
+                        contraseña=datos['contraseña'],
+                        rol=datos['rol'],
+                        id_departamento=datos['id_departamento']
+                    )
+                case "Administrador":
+                    usuario = Administrador(
+                        rut=datos['rut_usuario'],
+                        nombres=datos['nombres'],
+                        apellido_paterno=datos['apellido_paterno'],
+                        apellido_materno=datos['apellido_materno'],
+                        direccion=datos['direccion'],
+                        fecha_nacimiento=datos['fecha_nacimiento'],
+                        fecha_inicio_contrato=datos['fecha_inicio_contrato'],
+                        salario=datos['salario'],
+                        telefono=datos['numero_telefonico'],
+                        contraseña=datos['contraseña'],
+                        rol=datos['rol'],
+                        id_departamento=datos['id_departamento']
+                    )
+                case "Gerente":
+                    usuario = Gerente(
+                        rut=datos['rut_usuario'],
+                        nombres=datos['nombres'],
+                        apellido_paterno=datos['apellido_paterno'],
+                        apellido_materno=datos['apellido_materno'],
+                        direccion=datos['direccion'],
+                        fecha_nacimiento=datos['fecha_nacimiento'],
+                        fecha_inicio_contrato=datos['fecha_inicio_contrato'],
+                        salario=datos['salario'],
+                        telefono=datos['numero_telefonico'],
+                        contraseña=datos['contraseña'],
+                        rol=datos['rol'],
+                        id_departamento=datos['id_departamento']
+                    )
+
+            return usuario
+        else:
+            print("Contraseña incorrecta.")
+            return None
+    except mysql.connector.Error as Error:
+        print(f"Error inesperado al intentar iniciar sesión: {Error}")
+        return None
+    finally:
+        try:
+            if cursor:
+                cursor.close()
+            if conexion:
+                conexion.close()
+        except:
+            pass
 
 def validar_contraseña_segura(contraseña):
     if len(contraseña) < 8:

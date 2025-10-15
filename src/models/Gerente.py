@@ -2,6 +2,7 @@ from Persona import Persona
 from models.interfaces.GestionEmpInterfaz import GestionEmpInterfaz
 from models.interfaces.GestionProyectoInterfaz import GestionProyectoInterfaz
 from config import conectar_db
+from controllers.functions import validar_rut
 
 class Gerente(Persona, GestionEmpInterfaz, GestionProyectoInterfaz):
     def __init__ (self, nombres, apellido_paterno, apellido_materno,
@@ -71,8 +72,37 @@ class Gerente(Persona, GestionEmpInterfaz, GestionProyectoInterfaz):
     def crearEmpleado(self):
         print("Empleado creado")
 
-    def buscarEmpleado(self):
-        print("Empleado buscado")
+    def buscarEmpleado(self, rut):
+        try:
+            rut = validar_rut(rut)  # Si es válido, retorna el RUT limpio
+            print(f"RUT ingresado correctamente: {rut}")
+        except ValueError as Error:
+            print(Error)
+            return  # Salir si el RUT no es válido
+
+        try:
+            conexion = conectar_db()
+            cursor = conexion.cursor()
+
+            query = """
+            SELECT ub.rut_usuario
+            FROM usuario_basico ub
+            WHERE ub.rut_usuario = %s
+            """
+            cursor.execute(query, (rut,))
+            resultado = cursor.fetchone()
+
+            if resultado:
+                print("¡ERROR!. El usuario se encuentra registrado en el sistema.\n")
+            else:
+                print("El usuario no está registrado.")
+        except Exception as e:
+            print(f"Error inesperado al buscar el empleado: {e}")
+        finally:
+            if cursor:
+                cursor.close()
+            if conexion:
+                conexion.close()
 
     def modificarEmpleado(self):
         print("Empleado modificado")
