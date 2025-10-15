@@ -1,4 +1,4 @@
--- SCRIPT DEL ESQUEMA DE LA BASE DE DATOS, VERSION 1.2
+-- SCRIPT DEL ESQUEMA DE LA BASE DE DATOS, VERSION 1.3
 
 -- MySQL Workbench Forward Engineering
 
@@ -57,19 +57,6 @@ ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `backend_proyecto`.`departamento`
--- -----------------------------------------------------
-DROP TABLE IF EXISTS `backend_proyecto`.`departamento` ;
-
-CREATE TABLE IF NOT EXISTS `backend_proyecto`.`departamento` (
-  `id_departamento` INT NOT NULL AUTO_INCREMENT,
-  `nombre` VARCHAR(45) NOT NULL,
-  `descripcion` VARCHAR(150) NULL,
-  PRIMARY KEY (`id_departamento`))
-ENGINE = InnoDB;
-
-
--- -----------------------------------------------------
 -- Table `backend_proyecto`.`proyecto`
 -- -----------------------------------------------------
 DROP TABLE IF EXISTS `backend_proyecto`.`proyecto` ;
@@ -79,14 +66,20 @@ CREATE TABLE IF NOT EXISTS `backend_proyecto`.`proyecto` (
   `nombre` VARCHAR(45) NOT NULL,
   `descripcion` TEXT NOT NULL,
   `fecha_inicio` DATE NOT NULL,
-  `id_departamento` INT NOT NULL,
-  PRIMARY KEY (`id_proyecto`),
-  INDEX `fk_Proyecto_Departamento1_idx` (`id_departamento` ASC),
-  CONSTRAINT `fk_Proyecto_Departamento1`
-    FOREIGN KEY (`id_departamento`)
-    REFERENCES `backend_proyecto`.`departamento` (`id_departamento`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
+  PRIMARY KEY (`id_proyecto`))
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `backend_proyecto`.`departamento`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `backend_proyecto`.`departamento` ;
+
+CREATE TABLE IF NOT EXISTS `backend_proyecto`.`departamento` (
+  `id_departamento` INT NOT NULL AUTO_INCREMENT,
+  `nombre` VARCHAR(45) NOT NULL,
+  `descripcion` VARCHAR(150) NULL,
+  PRIMARY KEY (`id_departamento`))
 ENGINE = InnoDB;
 
 
@@ -140,6 +133,30 @@ CREATE TABLE IF NOT EXISTS `backend_proyecto`.`usuario_detalle` (
   CONSTRAINT `fk_Usuario_Detalle_Departamento1`
     FOREIGN KEY (`id_departamento`)
     REFERENCES `backend_proyecto`.`departamento` (`id_departamento`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `backend_proyecto`.`proyecto_has_usuario_detalle`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `backend_proyecto`.`proyecto_has_usuario_detalle` ;
+
+CREATE TABLE IF NOT EXISTS `backend_proyecto`.`proyecto_has_usuario_detalle` (
+  `id_proyecto` INT NOT NULL,
+  `rut_usuario` VARCHAR(12) NOT NULL,
+  PRIMARY KEY (`id_proyecto`, `rut_usuario`),
+  INDEX `fk_proyecto_has_usuario_detalle_usuario_detalle1_idx` (`rut_usuario` ASC),
+  INDEX `fk_proyecto_has_usuario_detalle_proyecto1_idx` (`id_proyecto` ASC),
+  CONSTRAINT `fk_proyecto_has_usuario_detalle_proyecto1`
+    FOREIGN KEY (`id_proyecto`)
+    REFERENCES `backend_proyecto`.`proyecto` (`id_proyecto`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_proyecto_has_usuario_detalle_usuario_detalle1`
+    FOREIGN KEY (`rut_usuario`)
+    REFERENCES `backend_proyecto`.`usuario_detalle` (`rut_usuario`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
