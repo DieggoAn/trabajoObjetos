@@ -386,10 +386,114 @@ def menu_gestion_depto():
                     conexion.close()
 
             case 2:
-                pass
+                while True:
+                    try:
+                        id_departamento = input("Ingrese el ID del departamento: ")
+                        break
+                    except ValueError as Error:
+                            print(Error)
+
+                    conexion = conectar_db()
+                    cursor = conexion.cursor()
+
+                    query = """
+                    SELECT id_departamento, nombre, rut_gerente_asociado    
+                    FROM departamento
+                    WHERE id_departamento = %s
+                """
+                    cursor.execute(query, (id_departamento,))
+                    resultado = cursor.fetchone()
+
+                    cursor.close()
+                    conexion.close()
+
+                    if resultado:
+                        print("\nDatos del departamento encontrado:")
+                        campos = ["ID Departamento",
+                                  "Nombre",
+                                  "Rut del gerente asociado"]
+                        
+                        for campo, valor in zip(campos, resultado):
+                            print(f"{campo}: {valor}")
+                        print()
+                    else:
+                        print("No se encontró a ningún departamento con esta ID.\n")
 
             case 3:
-                pass
+                def modificar_departamento():
+                    while True:
+                        try:
+                            id_departamento = int(input("Ingrese el ID del departamento a modificar: "))
+                            break
+                        except ValueError as Error:
+                            print(Error)
+
+                        try:
+                            conexion = conectar_db()
+                            cursor = conexion.cursor()
+
+                            cursor.execute("SELECT * FROM departamento WHERE id_departamento = %s", (id_departamento,))
+                            departamento = cursor.fetchone()
+
+                            if not departamento:
+                                print("No se encontró ningún departamento con esa ID.")
+                                cursor.close()
+                                conexion.close()
+                                return
+                        
+                            print("\nDepartamento encontrado. ¿Qué campo desea modificar?")
+                            print("1. Nombre")
+                            print("2. Descripción")
+                        except Exception as e:
+                            print(f"Error al guardar el departamento: {e}")
+                        finally:
+                            if cursor:
+                                cursor.close()
+                            if conexion:
+                                conexion.close()
+
+                        try:
+                            opcion = int(input("Seleccione una opción (1-2): "))
+                            campos = {
+                                1: "nombre",
+                                2: "descripcion",
+                            }
+                            if opcion not in campos:
+                                print("Opción inválida.")
+                                return
+                            
+                            campo = campos[opcion]
+                            nuevo_valor = input(f"Ingrese el nuevo valor para '{campo}'").strip()
+
+                            if campo == "nombre":
+                                if not nuevo_valor or not all(c.isalpha() or c.isspace() for c in nuevo_valor):
+                                    raise ValueError("Solo se permiten letras y espacios.")
+                            elif campo == "descripcion":
+                                if not nuevo_valor:
+                                    raise ValueError("La descripción no puede estar vacía.")
+
+                            while True:
+                                confirmacion = input(f"¿Confirmas modificar '{campo}' a '{nuevo_valor}'? (S/N): ").strip().lower()
+                                if confirmacion == "s":
+                                    break
+                                elif confirmacion == "n":
+                                    print("Modificación cancelada.")
+                                    return
+                                else:
+                                    print("Entrada inválida. Debes ingresar 'S' o 'N'.")
+
+                            query = f"UPDATE departamento SET {campo} = %s WHERE id_departamento = %s"
+                            cursor.execute(query, (nuevo_valor, id_departamento))
+                            conexion.commit()
+                            print("Modificación realizada con éxito.")
+
+                        except ValueError as Error:
+                            print(f"Error: {Error}")
+                        finally:
+                            if cursor:
+                                cursor.close() 
+                            if conexion:
+                                conexion.close()
 
             case 4:
                 pass
@@ -483,7 +587,7 @@ def menu_gestion_proyecto():
                 def buscar_proyecto():
                     while True:
                         try:
-                            id_proyecto = input("Ingrese el la ID del proyecto: ")
+                            id_proyecto = int(input("Ingrese el la ID del proyecto que desea buscar: "))
                             break
                         except ValueError as Error:
                             print(Error)
@@ -497,7 +601,7 @@ def menu_gestion_proyecto():
                     FROM usuario
                     WHERE id_proyecto = %s
                 """
-                    cursor.execute(query, (id_proyecto))
+                    cursor.execute(query, (id_proyecto,))
                     resultado = cursor.fetchone()
 
                     cursor.close()
@@ -518,7 +622,84 @@ def menu_gestion_proyecto():
                         print("No se encontró a ningún proyecto con esta ID.\n")
 
             case 3:
-                pass
+                def modificar_proyecto():
+                    while True:
+                        try:
+                            id_proyecto = int(input("Ingrese el ID del proyecto a modificar: "))
+                            break
+                        except ValueError as Error:
+                            print(Error)
+
+                        try:
+                            conexion = conectar_db()
+                            cursor = conexion.cursor()
+
+                            cursor.execute("SELECT * FROM proyecto WHERE id_proyecto = %s", (id_proyecto,))
+                            proyecto = cursor.fetchone()
+
+                            if not proyecto:
+                                print("No se encontró ningun proyecto con esa ID.")
+                                cursor.close()
+                                conexion.close()
+                                return
+                        
+                            print("\nProyecto encontrado. ¿Qué campo desea modificar?")
+                            print("1. Nombre")
+                            print("2. Descripción")
+                            print("3. Fecha de inicio")
+                        except Exception as e:
+                            print(f"Error al guardar el proyecto: {e}")
+                        finally:
+                            if cursor:
+                                cursor.close()
+                            if conexion:
+                                conexion.close()
+
+                        try:
+                            opcion = int(input("Seleccione una opción (1-3): "))
+                            campos = {
+                                1: "nombre",
+                                2: "descripcion",
+                                3: "fecha_inicio",
+                            }
+                            if opcion not in campos:
+                                print("Opción inválida.")
+                                return
+                            
+                            campo = campos[opcion]
+                            nuevo_valor = input(f"Ingrese el nuevo valor para '{campo}'").strip()
+
+                            if campo == "nombre":
+                                if not nuevo_valor or not all(c.isalpha() or c.isspace() for c in nuevo_valor):
+                                    raise ValueError("Solo se permiten letras y espacios.")
+                            elif campo == "descripcion":
+                                if not nuevo_valor:
+                                    raise ValueError("La descripción no puede estar vacía.")
+                            elif campo == "fecha_inicio":
+                                nuevo_valor = datetime.strptime(nuevo_valor, "%d/%m/%Y").date()
+                            
+                            while True:
+                                confirmacion = input(f"¿Confirmas modificar '{campo}' a '{nuevo_valor}'? (S/N): ").strip().lower()
+                                if confirmacion == "s":
+                                    break
+                                elif confirmacion == "n":
+                                    print("Modificación cancelada.")
+                                    return
+                                else:
+                                    print("Entrada inválida. Debes ingresar 'S' o 'N'.")
+
+                            query = f"UPDATE proyecto SET {campo} = %s WHERE id_proyecto = %s"
+                            cursor.execute(query, (nuevo_valor, id_proyecto))
+                            conexion.commit()
+                            print("Modificación realizada con éxito.")
+
+                        except ValueError as Error:
+                            print(f"Error: {Error}")
+                        finally:
+                            if cursor:
+                                cursor.close() 
+                            if conexion:
+                                conexion.close()
 
             case 4:
                 pass
