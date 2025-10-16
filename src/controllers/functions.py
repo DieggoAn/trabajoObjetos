@@ -1,5 +1,4 @@
 from config import conectar_db
-from itertools import cycle
 from datetime import datetime, date
 from models import (Persona,
                     Empleado,
@@ -629,8 +628,8 @@ def menu_gestion_proyecto():
                     
                     while True:
                         try:
-                            descripcion_proyecto = input("Ingrese una descripcion al proyecto: ")
-                            if not descripcion_proyecto:
+                            descripcion = input("Ingrese una descripcion al proyecto: ")
+                            if not descripcion:
                                 raise ValueError("Ingrese una descripcion valida")
                             break
                         except ValueError as Error:
@@ -638,14 +637,27 @@ def menu_gestion_proyecto():
 
                     while True:
                         try:
-                            fecha_inicio_proyecto = input("Ingrese la fecha de inicio del proyecto (formato DD/MM/AAAA): ")
-                            fecha = datetime.strptime(fecha_inicio_proyecto, '%d/%m/%Y').date()
+                            fecha_inicio = input("Ingrese la fecha de inicio del proyecto (formato DD/MM/AAAA): ")
+                            fecha = datetime.strptime(fecha_inicio, '%d/%m/%Y').date()
                             print(f"Fecha ingresada correctamente: {fecha}")
                             break
                         except ValueError:
                             print("Formato inválido. Use el formato DD/MM/AAAA.")
                     
-                    #falta instanciar la clase de proyecto y guardarla en la DB
+                    try:
+                        conexion = conectar_db()
+                        cursor = conexion.cursor()
+                        query = "INSERT INTO proyecto (nombre, descripcion, fecha_inicio) VALUES (%s, %s, %s)"
+                        valores = (nombre, descripcion, fecha_inicio)
+                        cursor.execute(query, valores)
+                        conexion.commit()
+                        id_generado = cursor.lastrowid
+                        print(f"Proyecto creado con ID: {id_generado}")
+                    except Exception as e:
+                        print(f"Error al crear el proyecto: {e}")
+                    finally:
+                        cursor.close()
+                        conexion.close()
 
             case 2:
                 def buscar_proyecto():
