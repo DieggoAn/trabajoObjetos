@@ -326,9 +326,13 @@ def menu_gestion_emp(admin: Administrador):
                 admin.eliminar_empleado()
 
             case 5:
-                print("Será devuelto al menú principal...")
-                input("PRESIONE ENTER PARA CONTINUAR ")
-                break
+                while True:
+                    print("Será devuelto al menú principal...")
+                    opcion = input("PRESIONE ENTER PARA CONTINUAR ")
+                    if opcion == "":
+                        break  
+                    else:
+                        print("No escriba nada, solo presione ENTER para continuar.")
 
 def menu_gestion_depto():
     print("MENÚ DE GESTION DE DEPARTAMENTOS\n")
@@ -386,38 +390,39 @@ def menu_gestion_depto():
                     conexion.close()
 
             case 2:
-                while True:
-                    try:
-                        id_departamento = input("Ingrese el ID del departamento: ")
-                        break
-                    except ValueError as Error:
-                            print(Error)
+                def buscar_departamento():
+                    while True:
+                        try:
+                            id_departamento = int(input("Ingrese el ID del departamento: "))
+                            break
+                        except ValueError as Error:
+                                print(Error)
 
-                    conexion = conectar_db()
-                    cursor = conexion.cursor()
+                        conexion = conectar_db()
+                        cursor = conexion.cursor()
 
-                    query = """
-                    SELECT id_departamento, nombre, rut_gerente_asociado    
-                    FROM departamento
-                    WHERE id_departamento = %s
-                """
-                    cursor.execute(query, (id_departamento,))
-                    resultado = cursor.fetchone()
+                        query = """
+                        SELECT id_departamento, nombre, rut_gerente_asociado    
+                        FROM departamento
+                        WHERE id_departamento = %s
+                    """
+                        cursor.execute(query, (id_departamento,))
+                        resultado = cursor.fetchone()
 
-                    cursor.close()
-                    conexion.close()
+                        cursor.close()
+                        conexion.close()
 
-                    if resultado:
-                        print("\nDatos del departamento encontrado:")
-                        campos = ["ID Departamento",
-                                  "Nombre",
-                                  "Rut del gerente asociado"]
-                        
-                        for campo, valor in zip(campos, resultado):
-                            print(f"{campo}: {valor}")
-                        print()
-                    else:
-                        print("No se encontró a ningún departamento con esta ID.\n")
+                        if resultado:
+                            print("\nDatos del departamento encontrado:")
+                            campos = ["ID Departamento",
+                                    "Nombre",
+                                    "Rut del gerente asociado"]
+                            
+                            for campo, valor in zip(campos, resultado):
+                                print(f"{campo}: {valor}")
+                            print()
+                        else:
+                            print("No se encontró a ningún departamento con esta ID.\n")
 
             case 3:
                 def modificar_departamento():
@@ -496,10 +501,63 @@ def menu_gestion_depto():
                                 conexion.close()
 
             case 4:
-                pass
+                def eliminar_departamento():
+                    while True:
+                        try:
+                            id_departamento = int(input("Ingrese la ID del departamento que desea eliminar: "))
+                            break
+                        except ValueError as Error:
+                            print(Error)
+
+                    conexion = conectar_db()
+                    cursor = conexion.cursor(dictionary=True)
+                    cursor.execute("SELECT id_departamento, nombre, descripcion FROM departamento WHERE id_departamento = %s", (id_departamento,))
+                    departamento = cursor.fetchone()
+
+                    if not departamento:
+                        print("No se encontró ningún departamento con esta ID.")
+                        cursor.close()
+                        conexion.close()
+                        return
+                        
+                    print("\nDepartamento encontrado:")
+                    print(f"ID del departamento: {departamento['id_departamento']}") 
+                    print(f"Nombre del departamento: {departamento['nombre']}")
+                    print(f"Descripción: {departamento['descripcion']}")
+
+                    while True:
+                        confirmacion = input("¿Estás seguro que deseas eliminar este departamento? Esta acción no se podrá deshacer. (S/N): ").strip().lower()
+                        if confirmacion == "s":
+                            break
+                        elif confirmacion == "n":
+                            print("Operación cancelada.")
+                            cursor.close()
+                            conexion.close()
+                            return
+                        else:
+                            print("Entrada inválida. Debes ingresar 'S' o 'N'.")  
+                            
+                    try:
+                        cursor.execute("DELETE FROM departamento WHERE id_departamento = %s", (id_departamento,))
+                        conexion.commit()
+                        print(f"El departamento con la ID {id_departamento}, ha sido eliminado de forma permanente.\n")
+                    except Exception as e:
+                        print(f"Error inesperado al eliminar: {e}")
+                    finally:
+                        if cursor:
+                            cursor.close()
+                        if conexion:
+                            conexion.close()
+
 
             case 5:
-                pass
+                while True:
+                    print("Será devuelto al menú principal...")
+                    opcion = input("PRESIONE ENTER PARA CONTINUAR ")
+                    if opcion == "":
+                        break  
+                    else:
+                        print("No escriba nada, solo presione ENTER para continuar.")
 
 def menu_gestion_informe():
     print("MENÚ DE GESTION DE INFORMES\n")
@@ -532,7 +590,13 @@ def menu_gestion_informe():
                 pass
 
             case 5:
-                pass
+                while True:
+                    print("Será devuelto al menú principal...")
+                    opcion = input("PRESIONE ENTER PARA CONTINUAR ")
+                    if opcion == "":
+                        break  
+                    else:
+                        print("No escriba nada, solo presione ENTER para continuar.")
 
 def menu_gestion_proyecto():
     print("MENÚ DE GESTION DE PROYECTOS\n")
@@ -702,7 +766,59 @@ def menu_gestion_proyecto():
                                 conexion.close()
 
             case 4:
-                pass
+                def eliminar_proyecto():
+                    while True:
+                        try:
+                            id_proyecto = int(input("Ingrese la ID del proyecto que desea eliminar: "))
+                            break
+                        except ValueError as Error:
+                            print(Error)
+
+                    conexion = conectar_db()
+                    cursor = conexion.cursor(dictionary=True)
+                    cursor.execute("SELECT id_proyecto, nombre, descripcion FROM proyecto WHERE id_proyecto = %s", (id_proyecto,))
+                    proyecto = cursor.fetchone()
+
+                    if not proyecto:
+                        print("No se encontró ningún proyecto con esta ID.")
+                        cursor.close()
+                        conexion.close()
+                        return
+                        
+                    print("\nProyecto encontrado:")
+                    print(f"ID del proyecto: {proyecto['id_proyecto']}") 
+                    print(f"Nombre del proyecto: {proyecto['nombre']}")
+                    print(f"Descripción: {proyecto['descripcion']}")
+
+                    while True:
+                        confirmacion = input("¿Estás seguro que deseas eliminar este proyecto? Esta acción no se podrá deshacer. (S/N): ").strip().lower()
+                        if confirmacion == "s":
+                            break
+                        elif confirmacion == "n":
+                            print("Operación cancelada.")
+                            cursor.close()
+                            conexion.close()
+                            return
+                        else:
+                            print("Entrada inválida. Debes ingresar 'S' o 'N'.")  
+                            
+                    try:
+                        cursor.execute("DELETE FROM proyecto WHERE id_proyecto = %s", (id_proyecto,))
+                        conexion.commit()
+                        print(f"El proyecto con la ID {id_proyecto}, ha sido eliminado de forma permanente.\n")
+                    except Exception as e:
+                        print(f"Error inesperado al eliminar: {e}")
+                    finally:
+                        if cursor:
+                            cursor.close()
+                        if conexion:
+                            conexion.close()
 
             case 5:
-                pass
+                while True:
+                    print("Será devuelto al menú principal...")
+                    opcion = input("PRESIONE ENTER PARA CONTINUAR ")
+                    if opcion == "":
+                        break  
+                    else:
+                        print("No escriba nada, solo presione ENTER para continuar.")
