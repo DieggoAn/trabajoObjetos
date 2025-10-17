@@ -8,7 +8,7 @@ from config import conectar_db
 import mysql.connector
 import bcrypt
 import re
-from controllers.functions import validar_rut, insertar_empleado
+from controllers.functions import validar_rut, insertar_empleado_detalle
 from datetime import datetime
 from controllers.LogUser import validar_contraseña_segura
 
@@ -292,7 +292,7 @@ class Administrador(Persona, GestionEmpInterfaz, GestionInformeInterfaz, Gestion
             nuevo_usuario.id_departamento
         )
         #para mayor persistencia y modularidad, se implementa la función insertar_empleado()
-        insertar_empleado(datos_basico, datos_detalle)
+        insertar_empleado_detalle(datos_basico, datos_detalle)
         print(f"Empleado {nombre} {apellido_paterno} creado exitosamente.")
         print(f"Rol: {rol_usuario} | RUT: {rut.upper()} | ID Departamento: {id_departamento}\n")
 

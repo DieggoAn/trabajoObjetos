@@ -1,5 +1,5 @@
 class Departamento:
-    def __init__ (self, idDepartamento, nombre, rutGerenteAsociado):
+    def __init__ (self, nombre, rutGerenteAsociado, idDepartamento=None):
 
         self.idDepartamento = idDepartamento
         self.nombre = nombre
