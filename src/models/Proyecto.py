@@ -32,5 +32,11 @@ class Proyecto:
     def __str__ (self):
         return f"Los datos del proyecto son los siguientes:\nID: {self.idProyecto}\nNombre: {self.nombre}\nDescripción: {self.descripcion}\nFecha de inicio: {self.fechaInicio}"
     
-    def asignarEmpleado(self):
-        pass
+    def asignarEmpleado(self, cursor, rut_usuario):
+        try:
+            query = "INSERT IGNORE INTO proyecto_has_usuario_detalle(id_proyecto, rut_usuario) VALUES (%s,%s)"
+            cursor.execute(query,(self.idProyecto, rut_usuario))
+
+            print(f"SQL: Asignando empleado {rut_usuario} a departamento {self.idDepartamento}")
+        except Exception as e:
+            print(f"Error en metodo asignarEmpleado: {e}")
