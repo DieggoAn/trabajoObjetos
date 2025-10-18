@@ -306,9 +306,6 @@ def eliminar_departamento():
         if conexion:
             conexion.close()
 
-<<<<<<< HEAD
-# EMPLEADO---------------------------------------------------------------------------------------------------------------------------------------------------------------------
-=======
 def menu_gestion_depto():
     print("MENÚ DE GESTION DE DEPARTAMENTOS\n")
     while True:
@@ -345,7 +342,6 @@ def menu_gestion_depto():
 
 
 # EMPLEADO
->>>>>>> 01272e4601b5d24979a50a4ce1381d07be1c1294
 
 def buscar_empleado(rut):
     try:
@@ -609,9 +605,6 @@ def insertar_empleado_completo(datos_basico, datos_detalle):
         if conexion:
             conexion.close()
 
-<<<<<<< HEAD
-# INFORME-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
-=======
 
 def menu_gestion_emp(admin: Administrador):
     print("MENÚ DE GESTION DE EMPLEADOS\n")
@@ -650,7 +643,6 @@ def menu_gestion_emp(admin: Administrador):
 
 
 # INFORME
->>>>>>> 01272e4601b5d24979a50a4ce1381d07be1c1294
 
 def crear_informe(admin: Administrador, emp: Empleado, gerente: Gerente):
     formatos_disp = {
