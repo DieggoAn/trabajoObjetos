@@ -6,9 +6,9 @@ from models import (Persona,
 from models.Administrador import Administrador
 from .functions import *
 from utils.validador import *
-from functions_proyecto import * 
-from functions_departamento import * 
-from functions_informe import *
+from .functions_proyecto import * 
+from .functions_departamento import * 
+from .functions_informe import *
 
 def menu_gestion_proyecto(admin: Administrador, gerente: Gerente):
     print("MENÚ DE GESTION DE PROYECTOS\n")
