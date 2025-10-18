@@ -7,8 +7,8 @@ import bcrypt
 import re
 from datetime import datetime
 from models.Empleado import Empleado
-from models.Gerente import Gerente
-from models.Administrador import Administrador
+from models import (Gerente,
+                    Administrador)
 from utils.validador import validar_contraseña_segura
 
 def presentacion_login():
@@ -138,7 +138,7 @@ def registrar_usuario():
             print(f"Error inesperado al ingresar la contraseña: {Error}")
         
     usuario = Empleado(
-        rut=rut,
+        rut_empleado=rut,
         nombres=nombre,
         apellido_paterno=apellido_paterno,
         apellido_materno=apellido_materno,
