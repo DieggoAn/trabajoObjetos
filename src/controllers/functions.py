@@ -306,7 +306,46 @@ def eliminar_departamento():
         if conexion:
             conexion.close()
 
+<<<<<<< HEAD
 # EMPLEADO---------------------------------------------------------------------------------------------------------------------------------------------------------------------
+=======
+def menu_gestion_depto():
+    print("MENÚ DE GESTION DE DEPARTAMENTOS\n")
+    while True:
+        print("OPCIÓN 1. CREAR DEPARTAMENTO")
+        print("OPCIÓN 2. BUSCAR DEPARTAMENTO")
+        print("OPCIÓN 3. MODIFICAR DEPARTAMENTO")
+        print("OPCIÓN 4. ELIMINAR DEPARTAMENTO")
+        print("OPCIÓN 5. VOLVER AL MENÚ PRINCIPAL\n")
+        try: 
+            opcion_user = int(input("Ingresar opción (1 - 5): "))
+        except ValueError:
+            print("Debe ingresar una opción válida para continuar.")
+            return
+        
+        if opcion_user not in (1,2,3,4,5):
+            print("Debe ingresar una de las opciones disponibles (1 - 5) para continuar.")
+            continue
+
+        match opcion_user:
+            case 1:
+                crear_departamento()
+            case 2:
+                buscar_departamento()
+            case 3:
+                modificar_departamento()     
+            case 4:
+                eliminar_departamento()
+            case 5:
+                print("Será devuelto al menú principal...")
+                input("PRESIONE ENTER PARA CONTINUAR ")
+                break
+
+
+
+
+# EMPLEADO
+>>>>>>> 01272e4601b5d24979a50a4ce1381d07be1c1294
 
 def buscar_empleado(rut):
     try:
@@ -570,7 +609,48 @@ def insertar_empleado_completo(datos_basico, datos_detalle):
         if conexion:
             conexion.close()
 
+<<<<<<< HEAD
 # INFORME-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+=======
+
+def menu_gestion_emp(admin: Administrador):
+    print("MENÚ DE GESTION DE EMPLEADOS\n")
+    while True:
+        print("OPCIÓN 1. CREAR EMPLEADO DESDE CERO")
+        print("OPCIÓN 2. INSERTAR DATOS CONTRACTUALES DE EMPLEADO")
+        print("OPCIÓN 3. BUSCAR EMPLEADO")
+        print("OPCIÓN 4. MODIFICAR EMPLEADO")
+        print("OPCIÓN 5. ELIMINAR EMPLEADO")
+        print("OPCIÓN 6. VOLVER AL MENÚ PRINCIPAL\n")
+        try: 
+            opcion_user = int(input("Ingresar opción (1 - 6): "))
+        except ValueError:
+            print("Debe ingresar una opción válida para continuar.\n")
+            continue
+
+        if opcion_user not in (1,2,3,4,5,6):
+            print("Debe ingresar una de las opciones disponibles (1 - 6) para continuar.\n")
+            continue
+
+        match opcion_user:
+            case 1:
+                admin.crear_empleado()
+            case 2:
+                admin.insertar_empleado_detalle()
+            case 3:
+                admin.super_buscar_empleado()
+            case 4:
+                admin.modificar_empleado()
+            case 5:
+                admin.eliminar_empleado()
+            case 6:
+                print("Será devuelto al menú principal...")
+                input("PRESIONE ENTER PARA CONTINUAR ")
+                break
+
+
+# INFORME
+>>>>>>> 01272e4601b5d24979a50a4ce1381d07be1c1294
 
 def crear_informe(admin: Administrador, emp: Empleado, gerente: Gerente):
     formatos_disp = {

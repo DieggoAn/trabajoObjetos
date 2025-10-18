@@ -9,7 +9,11 @@ import mysql.connector
 import bcrypt
 import re
 
+<<<<<<< HEAD
 from utils.validador import *
+=======
+from utils import *
+>>>>>>> 01272e4601b5d24979a50a4ce1381d07be1c1294
 from datetime import datetime
 from controllers.LogUser import validar_contraseña_segura
 
