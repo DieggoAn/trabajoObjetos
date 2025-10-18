@@ -1,4 +1,4 @@
-from .config import conectar_db
+from config import conectar_db
 from datetime import datetime
 from models import (Persona,
                     Empleado,
