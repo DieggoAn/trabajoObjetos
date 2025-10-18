@@ -5,12 +5,12 @@ from models.interfaces.GestionInformeInterfaz import GestionInformeInterfaz
 from config import conectar_db
 
 class Empleado(Persona, RegistroTiempoInterfaz, GestionInformeInterfaz):
-    def __init__ (self, rut_empleado, nombre, apellido_paterno, apellido_materno, direccion,
-                 fecha_nacimiento, fecha_inicio_contrato, salario, telefono, id_departamento):
+    def __init__ (self, rut_empleado, nombres, apellido_paterno, apellido_materno, direccion,
+                 fecha_nacimiento, fecha_inicio_contrato, salario, telefono, contraseña, rol, id_departamento):
         
         super().__init__(
         rut=rut_empleado,
-        nombres=nombre,
+        nombres=nombres,
         apellido_paterno=apellido_paterno,
         apellido_materno=apellido_materno,
         direccion=direccion,
@@ -18,11 +18,11 @@ class Empleado(Persona, RegistroTiempoInterfaz, GestionInformeInterfaz):
         fecha_inicio_contrato=fecha_inicio_contrato,
         salario=salario,
         telefono=telefono,
-        contraseña=None,
-        rol="Empleado",
+        contraseña=contraseña,
+        rol=rol,
         id_departamento=id_departamento)
         
-        self.registro = RegistroTiempo()
+        ##self.registro = RegistroTiempo(self.rut,self.fecha_inicio_contrato,self)
     
     def guardar_en_db(self):
 
