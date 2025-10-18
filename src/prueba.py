@@ -1,3 +1,5 @@
 from controllers.functions import *
+from controllers.menus import *
 
-modificar_departamento()
+#menu_gestion_informe()
+menu_gestion_proyecto
