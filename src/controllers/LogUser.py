@@ -6,9 +6,10 @@ from config import conectar_db
 import bcrypt
 import re
 from datetime import datetime
-from models import (Empleado,
-                    Gerente,
-                    Administrador)
+from models.Empleado import Empleado
+from models.Gerente import Gerente
+from models.Administrador import Administrador
+from utils.validador import validar_contraseña_segura
 
 def presentacion_login():
     while True:
@@ -194,7 +195,7 @@ def iniciar_sesion():
         query = """SELECT
             ub.rut_usuario, ub.nombres, ub.apellido_paterno, ub.apellido_materno,
             ub.fecha_nacimiento, ub.numero_telefonico, ub.contraseña, ub.rol,
-            ub.direccion, ud.fecha_inicio_contrato, ud.salario, ud.id_departamento
+            ud.direccion, ud.fecha_inicio_contrato, ud.salario, ud.id_departamento
         FROM usuario_basico ub
         JOIN usuario_detalle ud ON ub.rut_usuario = ud.rut_usuario
         WHERE ub.rut_usuario = %s"""
@@ -272,20 +273,3 @@ def iniciar_sesion():
         except:
             pass
 
-def validar_contraseña_segura(contraseña):
-    if len(contraseña) < 8:
-        raise ValueError("La contraseña debe tener al menos 8 caracteres.")
-    
-    if not re.search(r"[A-Z]", contraseña):
-        raise ValueError("La contraseña debe contener al menos una letra mayúscula.")
-    
-    if not re.search(r"[a-z]", contraseña):
-        raise ValueError("La contraseña debe contener al menos una letra minúscula.")
-    
-    if not re.search(r"\d", contraseña):
-        raise ValueError("La contraseña debe contener al menos un número.")
-    
-    if not re.search(r"[!@#$%^&*(),.?\":{}|<>]", contraseña):
-        raise ValueError("La contraseña debe contener al menos un carácter especial.")
-    
-    return True

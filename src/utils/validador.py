@@ -1,4 +1,5 @@
 from config import conectar_db
+import re
 def validar_rut(rut):
     rut = rut.strip().lower()
     if rut.count('-') != 1:
@@ -43,4 +44,21 @@ def insertar_empleado_detalle(datos_detalle):
         if conexion:
             conexion.close()
 
+def validar_contraseña_segura(contraseña):
+    if len(contraseña) < 8:
+        raise ValueError("La contraseña debe tener al menos 8 caracteres.")
+    
+    if not re.search(r"[A-Z]", contraseña):
+        raise ValueError("La contraseña debe contener al menos una letra mayúscula.")
+    
+    if not re.search(r"[a-z]", contraseña):
+        raise ValueError("La contraseña debe contener al menos una letra minúscula.")
+    
+    if not re.search(r"\d", contraseña):
+        raise ValueError("La contraseña debe contener al menos un número.")
+    
+    if not re.search(r"[!@#$%^&*(),.?\":{}|<>]", contraseña):
+        raise ValueError("La contraseña debe contener al menos un carácter especial.")
+    
+    return True
 

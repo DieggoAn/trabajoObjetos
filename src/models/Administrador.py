@@ -9,9 +9,9 @@ import mysql.connector
 import bcrypt
 import re
 
-from utils import *
+from utils.validador import *
 from datetime import datetime
-from controllers.LogUser import validar_contraseña_segura
+
 
 class Administrador(Persona, GestionEmpInterfaz, GestionInformeInterfaz, GestionDeptoInterfaz):
     def __init__(self, nombres, apellido_paterno, apellido_materno,
