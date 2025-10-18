@@ -14,7 +14,7 @@ from models import (InformeEmpleado,
 from utils.validador import validar_rut
 from models.Administrador import *
 
-# DEPARTAMENTO
+# DEPARTAMENTO------------------------------------------------------------------------------------------------------------------------------------------------------------------
 def crear_departamento():
     while True:
         try: 
@@ -306,6 +306,9 @@ def eliminar_departamento():
         if conexion:
             conexion.close()
 
+<<<<<<< HEAD
+# EMPLEADO---------------------------------------------------------------------------------------------------------------------------------------------------------------------
+=======
 def menu_gestion_depto():
     print("MENÚ DE GESTION DE DEPARTAMENTOS\n")
     while True:
@@ -342,6 +345,7 @@ def menu_gestion_depto():
 
 
 # EMPLEADO
+>>>>>>> 01272e4601b5d24979a50a4ce1381d07be1c1294
 
 def buscar_empleado(rut):
     try:
@@ -605,6 +609,9 @@ def insertar_empleado_completo(datos_basico, datos_detalle):
         if conexion:
             conexion.close()
 
+<<<<<<< HEAD
+# INFORME-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+=======
 
 def menu_gestion_emp(admin: Administrador):
     print("MENÚ DE GESTION DE EMPLEADOS\n")
@@ -643,6 +650,7 @@ def menu_gestion_emp(admin: Administrador):
 
 
 # INFORME
+>>>>>>> 01272e4601b5d24979a50a4ce1381d07be1c1294
 
 def crear_informe(admin: Administrador, emp: Empleado, gerente: Gerente):
     formatos_disp = {
@@ -980,67 +988,9 @@ def eliminar_informe(admin: Administrador, emp: Empleado, gerente: Gerente):
         if conexion:
             conexion.close()
 
-def menu_gestion_informe(admin: Administrador, emp: Empleado, gerente: Gerente):
-    print("MENÚ DE GESTION DE INFORMES\n")
-    while True:
-        print("OPCIÓN 1. CREAR INFORME")
-        print("OPCIÓN 2. BUSCAR INFORME")
-        print("OPCIÓN 3. MODIFICAR INFORME")
-        print("OPCIÓN 4. ELIMINAR INFORME")
-        print("OPCIÓN 5. VOLVER AL MENÚ PRINCIPAL\n")
-        try: 
-            opcion_user = int(input("Ingresar opción (1 - 5): "))
-        except ValueError:
-            print("Debe ingresar una opción válida para continuar.")
-            continue
 
-        if opcion_user not in (1,2,3,4,5):
-            print("Debe ingresar una de las opciones disponibles (1 - 5) para continuar.")
-            continue
+# PROYECTO----------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-        match opcion_user:
-            case 1:
-                if admin:
-                    admin.crear_informe()
-                elif gerente:
-                    gerente.crear_informe()
-                elif emp:
-                    emp.crear_informe()
-                else:
-                    print("No tienes los privilegios de acceso necesarios.")
-            case 2:
-                if admin:
-                    admin.buscar_informe()
-                elif gerente:
-                    gerente.buscar_informe()
-                elif emp:
-                    emp.buscar_informe()
-                else:
-                    print("No tienes los privilegios de acceso necesarios.")
-            case 3:
-                if admin:
-                    admin.modificar_informe()
-                elif gerente:
-                    gerente.modificar_informe()
-                elif emp:
-                    emp.modificar_informe()
-                else:
-                    print("No tienes los privilegios de acceso necesarios.")
-            case 4:
-                if admin:
-                    admin.eliminar_informe()
-                elif gerente:
-                    gerente.eliminar_informe()
-                elif emp:
-                    emp.eliminar_informe()
-                else:
-                    print("No tienes los privilegios de acceso necesarios para continuar")
-            case 5:
-                print("Será devuelto al menú principal...")
-                input("PRESIONE ENTER PARA CONTINUAR ")
-                break
-
-# PROYECTO
 def crear_proyecto():
     while True:
         try: 
@@ -1276,53 +1226,3 @@ def eliminar_proyecto():
         if conexion:
             conexion.close()
 
-def menu_gestion_proyecto(admin: Administrador, gerente: Gerente):
-    print("MENÚ DE GESTION DE PROYECTOS\n")
-    while True:
-        print("OPCIÓN 1. CREAR PROYECTO")
-        print("OPCIÓN 2. BUSCAR PROYECTO")
-        print("OPCIÓN 3. MODIFICAR PROYECTO")
-        print("OPCIÓN 4. ELIMINAR PROYECTO")
-        print("OPCIÓN 5. VOLVER AL MENÚ PRINCIPAL\n")
-        try: 
-            opcion_user = int(input("Ingresar opción (1 - 5): "))
-        except ValueError:
-            print("Debe ingresar una opción válida para continuar.")
-
-        if opcion_user not in (1,2,3,4,5):
-            print("Debe ingresar una de las opciones disponibles (1 - 5) para continuar.")
-            continue
-
-        match opcion_user:
-            case 1:
-                if admin:
-                    admin.crear_proyecto()
-                elif gerente:
-                    gerente.crear_proyecto()
-                else:
-                    print("No tienes los privilegios necesarios para acceder.")
-            case 2:
-                if admin:
-                    admin.buscar_proyecto()
-                elif gerente:
-                    gerente.buscar_proyecto()
-                else:
-                    print("No tienes los privilegios de acceso necesarios para continuar.")
-            case 3:
-                if admin:
-                    admin.modificar_proyecto()
-                elif gerente:
-                    gerente.modificar_proyecto()
-                else:
-                    print("No tienes los privilegios ncesarios para continuar.")
-            case 4:
-                if admin:
-                    admin.eliminar_proyecto()
-                elif gerente:
-                    gerente.eliminar_proyecto()
-                else:
-                    print("No tienes los privilegios necesarios para continuar.")
-            case 5:
-                print("Será devuelto al menú principal...")
-                input("PRESIONE ENTER PARA CONTINUAR ")
-                break

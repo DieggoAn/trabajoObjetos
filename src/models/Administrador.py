@@ -9,7 +9,15 @@ import mysql.connector
 import bcrypt
 import re
 
+<<<<<<< HEAD
 from utils.validador import *
+=======
+<<<<<<< HEAD
+from utils.validador import *
+=======
+from utils import *
+>>>>>>> 01272e4601b5d24979a50a4ce1381d07be1c1294
+>>>>>>> 447aea48076d1c359357ce65aba0c191c585bf6b
 from datetime import datetime
 
 
@@ -130,7 +138,7 @@ class Administrador(Persona, GestionEmpInterfaz, GestionInformeInterfaz, Gestion
 
 
     # Nota: Esta funcion crea cualquier tipo de empleado, incluyendo Gerente y Administrador, o cualquiera que se quiera implementar a futuro.
-    def crear_empleado(self):
+    def crearEmpleado(self):
         while True:
             try:
                 rut = input("Ingrese el RUT del empleado (ej: 12345678-K o 9876543-1): ").strip().lower()
@@ -296,6 +304,9 @@ class Administrador(Persona, GestionEmpInterfaz, GestionInformeInterfaz, Gestion
         insertar_empleado_detalle(datos_basico, datos_detalle)
         print(f"Empleado {nombre} {apellido_paterno} creado exitosamente.")
         print(f"Rol: {rol_usuario} | RUT: {rut.upper()} | ID Departamento: {id_departamento}\n")
+
+    def mostrar_rol(self):
+        print(f"Rol del usuario: Administrador")
 
     def buscarEmpleado(self):
         pass
