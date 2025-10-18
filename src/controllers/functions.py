@@ -11,10 +11,10 @@ import re
 from models import (InformeEmpleado,
                     InformeGerente,
                     InformeAdmin)
-
+from utils.validador import validar_rut
 from models.Administrador import *
 
-# DEPARTAMENTO
+# DEPARTAMENTO------------------------------------------------------------------------------------------------------------------------------------------------------------------
 def crear_departamento():
     while True:
         try: 
@@ -99,15 +99,21 @@ def modificar_departamento():
             print("No se encontró ningún departamento con esa ID.")
             return
         
+        depto_obj = Departamento.Departamento(id_departamento)
+
         print("\nDepartamento encontrado. ¿Qué campo desea modificar?")
         print("1. Nombre")
         print("2. Descripción")
+        print("3. Añadir empleado")
+        print("4 Cambiar gerente")
 
         try:
-            opcion = int(input("Seleccione una opción (1-2): "))
+            opcion = int(input("Seleccione una opción (1..4): "))
             campos = {
                 1: "nombre",
                 2: "descripcion",
+                3: "anadir empleado",
+                4: "cambiar gerente"
             }
         except ValueError:
             print("Debe ingresar un carácter numérico para continuar.")
@@ -118,37 +124,92 @@ def modificar_departamento():
             return
                             
         campo = campos[opcion]
-        nuevo_valor = input(f"Ingrese el nuevo valor para '{campo}'").strip()
+        if campo == "anadir empleado":
+            while True:
+                try:
+                    rut_empleado = input("Ingrese el RUT del empleado (ej: 12345678-K): ").strip().lower()
+                    validar_rut(rut_empleado)
 
-        # Validaciones
-        if campo == "nombre":
-            if not nuevo_valor or not all(c.isalpha() or c.isspace() for c in nuevo_valor):
-                print("Solo se permiten letras y espacios.")
-                return
-        elif campo == "descripcion":
-            if not nuevo_valor:
-                print("La descripción no puede estar vacía.")
-                return
-            
-        # Confirmación
-        while True:
-            confirmacion = input(f"¿Confirmas modificar '{campo}' a '{nuevo_valor}'? (S/N): ").strip().lower()
-            if confirmacion == "s":
-                break
-            elif confirmacion == "n":
-                print("Modificación cancelada.")
-                return
-            else:
-                print("Entrada inválida. Debes ingresar 'S' o 'N'.")  
+                        # Verificación de existencia del empleado en la base de datos
 
-        # Actualización
-        try:
-            query = f"UPDATE departamento SET {campo} = %s WHERE id_departamento = %s"
-            cursor.execute(query, (nuevo_valor, id_departamento))
-            conexion.commit()
-            print(f"El campo {campo} del departamento con ID {id_departamento} se ha actualizado correctamente a: {nuevo_valor}")
-        except mysql.connector.Error as Error:
-            print(f"Error inesperado al actualizar los datos del departamento con ID {id_departamento}\nDetalles del error: {Error}")
+                    conexion = conectar_db()
+                    cursor = conexion.cursor(dictionary=True)
+                    cursor.execute("SELECT rol FROM usuario_basico WHERE rut_usuario = %s", (rut_empleado.upper(),))
+                    resultado = cursor.fetchone()
+
+                    if not resultado:
+                        print("El RUT no está registrado en el sistema.")
+                        continue
+                    else:
+                        depto_obj.asignarEmpleado(cursor,rut_empleado)
+                        break
+                except ValueError as Error:
+                    print(f"Error inesperado: {Error}")
+                finally:
+                    if cursor:
+                        cursor.close()
+                    if conexion:
+                        conexion.close()
+                return True
+        elif campo == "cambiar gerente":
+            while True:
+                try:
+                    rut_gerente = input("Ingrese el RUT del gerente (ej: 12345678-K): ").strip().lower()
+                    validar_rut(rut_gerente)
+
+                        # Verificación de existencia del empleado en la base de datos
+
+                    conexion = conectar_db()
+                    cursor = conexion.cursor(dictionary=True)
+                    cursor.execute("SELECT rol FROM usuario_basico WHERE rut_usuario = %s", (rut_gerente.upper(),))
+                    resultado = cursor.fetchone()
+
+                    if not resultado:
+                        print("El RUT no está registrado en el sistema.")
+                        continue
+                    else:
+                        depto_obj.asignarGerente(cursor,rut_gerente)
+                        break
+                except ValueError as Error:
+                    print(f"Error inesperado: {Error}")
+                finally:
+                    if cursor:
+                        cursor.close()
+                    if conexion:
+                        conexion.close()
+                return True
+        else:
+            nuevo_valor = input(f"Ingrese el nuevo valor para '{campo}'").strip()
+
+            # Validaciones
+            if campo == "nombre":
+                if not nuevo_valor or not all(c.isalpha() or c.isspace() for c in nuevo_valor):
+                    print("Solo se permiten letras y espacios.")
+                    return
+            elif campo == "descripcion":
+                if not nuevo_valor:
+                    print("La descripción no puede estar vacía.")
+                    return
+
+            # Confirmación
+            while True:
+                confirmacion = input(f"¿Confirmas modificar '{campo}' a '{nuevo_valor}'? (S/N): ").strip().lower()
+                if confirmacion == "s":
+                    break
+                elif confirmacion == "n":
+                    print("Modificación cancelada.")
+                    return
+                else:
+                    print("Entrada inválida. Debes ingresar 'S' o 'N'.")  
+
+            # Actualización
+            try:
+                query = f"UPDATE departamento SET {campo} = %s WHERE id_departamento = %s"
+                cursor.execute(query, (nuevo_valor, id_departamento))
+                conexion.commit()
+                print(f"El campo {campo} del departamento con ID {id_departamento} se ha actualizado correctamente a: {nuevo_valor}")
+            except mysql.connector.Error as Error:
+                print(f"Error inesperado al actualizar los datos del departamento con ID {id_departamento}\nDetalles del error: {Error}")
     except Exception as Error:
         print(f"Error inesperado: {Error}")
     finally:
@@ -245,63 +306,7 @@ def eliminar_departamento():
         if conexion:
             conexion.close()
 
-def menu_gestion_depto():
-    print("MENÚ DE GESTION DE DEPARTAMENTOS\n")
-    while True:
-        print("OPCIÓN 1. CREAR DEPARTAMENTO")
-        print("OPCIÓN 2. BUSCAR DEPARTAMENTO")
-        print("OPCIÓN 3. MODIFICAR DEPARTAMENTO")
-        print("OPCIÓN 4. ELIMINAR DEPARTAMENTO")
-        print("OPCIÓN 5. VOLVER AL MENÚ PRINCIPAL\n")
-        try: 
-            opcion_user = int(input("Ingresar opción (1 - 5): "))
-        except ValueError:
-            print("Debe ingresar una opción válida para continuar.")
-            return
-        
-        if opcion_user not in (1,2,3,4,5):
-            print("Debe ingresar una de las opciones disponibles (1 - 5) para continuar.")
-            continue
-
-        match opcion_user:
-            case 1:
-                crear_departamento()
-            case 2:
-                buscar_departamento()
-            case 3:
-                modificar_departamento()     
-            case 4:
-                eliminar_departamento()
-            case 5:
-                print("Será devuelto al menú principal...")
-                input("PRESIONE ENTER PARA CONTINUAR ")
-                break
-
-
-
-
-# EMPLEADO
-def validar_rut(rut):
-    rut = rut.strip().lower()
-    if rut.count('-') != 1:
-        raise ValueError("El RUT debe contener un solo guion ('-').")
-
-    parte_num, dv = rut.split('-')
-
-    if len(rut) < 9 or len(rut) > 10:
-        raise ValueError("El RUT debe tener entre 9 y 10 caracteres en total.")
-
-    if not parte_num.isdigit():
-        raise ValueError("Los caracteres antes del guion deben ser solo números.")
-
-    if len(parte_num) not in [7, 8]:
-        raise ValueError("La parte numérica del RUT debe tener 7 u 8 dígitos.")
-
-    if dv not in ['0','1','2','3','4','5','6','7','8','9','k']:
-        raise ValueError("El dígito verificador debe ser un número o la letra 'k'.")
-
-    print(f"RUT ingresado correctamente: {rut.upper()}")
-    return rut.upper()
+# EMPLEADO---------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 def buscar_empleado(rut):
     try:
@@ -565,64 +570,7 @@ def insertar_empleado_completo(datos_basico, datos_detalle):
         if conexion:
             conexion.close()
 
-def insertar_empleado_detalle(datos_detalle):
-    try:
-        conexion = conectar_db()
-        cursor = conexion.cursor()
-        query_detalle = """
-            INSERT INTO usuario_detalle (
-                rut_usuario, direccion, fecha_inicio_contrato,
-                salario, rol, id_departamento
-            ) VALUES (%s, %s, %s, %s, %s, %s)
-        """
-        cursor.execute(query_detalle, datos_detalle)
-        conexion.commit()
-        print("Empleado creado con éxito.\n")
-    except mysql.connector.Error as Error:
-        print(f"Error inesperado: {Error}")
-    finally:
-        if cursor:
-            cursor.close()
-        if conexion:
-            conexion.close()
-
-def menu_gestion_emp(admin: Administrador):
-    print("MENÚ DE GESTION DE EMPLEADOS\n")
-    while True:
-        print("OPCIÓN 1. CREAR EMPLEADO DESDE CERO")
-        print("OPCIÓN 2. INSERTAR DATOS CONTRACTUALES DE EMPLEADO")
-        print("OPCIÓN 3. BUSCAR EMPLEADO")
-        print("OPCIÓN 4. MODIFICAR EMPLEADO")
-        print("OPCIÓN 5. ELIMINAR EMPLEADO")
-        print("OPCIÓN 6. VOLVER AL MENÚ PRINCIPAL\n")
-        try: 
-            opcion_user = int(input("Ingresar opción (1 - 6): "))
-        except ValueError:
-            print("Debe ingresar una opción válida para continuar.\n")
-            continue
-
-        if opcion_user not in (1,2,3,4,5,6):
-            print("Debe ingresar una de las opciones disponibles (1 - 6) para continuar.\n")
-            continue
-
-        match opcion_user:
-            case 1:
-                admin.crear_empleado()
-            case 2:
-                admin.insertar_empleado_detalle()
-            case 3:
-                admin.super_buscar_empleado()
-            case 4:
-                admin.modificar_empleado()
-            case 5:
-                admin.eliminar_empleado()
-            case 6:
-                print("Será devuelto al menú principal...")
-                input("PRESIONE ENTER PARA CONTINUAR ")
-                break
-
-
-# INFORME
+# INFORME-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 def crear_informe(admin: Administrador, emp: Empleado, gerente: Gerente):
     formatos_disp = {
@@ -960,67 +908,9 @@ def eliminar_informe(admin: Administrador, emp: Empleado, gerente: Gerente):
         if conexion:
             conexion.close()
 
-def menu_gestion_informe(admin: Administrador, emp: Empleado, gerente: Gerente):
-    print("MENÚ DE GESTION DE INFORMES\n")
-    while True:
-        print("OPCIÓN 1. CREAR INFORME")
-        print("OPCIÓN 2. BUSCAR INFORME")
-        print("OPCIÓN 3. MODIFICAR INFORME")
-        print("OPCIÓN 4. ELIMINAR INFORME")
-        print("OPCIÓN 5. VOLVER AL MENÚ PRINCIPAL\n")
-        try: 
-            opcion_user = int(input("Ingresar opción (1 - 5): "))
-        except ValueError:
-            print("Debe ingresar una opción válida para continuar.")
-            continue
 
-        if opcion_user not in (1,2,3,4,5):
-            print("Debe ingresar una de las opciones disponibles (1 - 5) para continuar.")
-            continue
+# PROYECTO----------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-        match opcion_user:
-            case 1:
-                if admin:
-                    admin.crear_informe()
-                elif gerente:
-                    gerente.crear_informe()
-                elif emp:
-                    emp.crear_informe()
-                else:
-                    print("No tienes los privilegios de acceso necesarios.")
-            case 2:
-                if admin:
-                    admin.buscar_informe()
-                elif gerente:
-                    gerente.buscar_informe()
-                elif emp:
-                    emp.buscar_informe()
-                else:
-                    print("No tienes los privilegios de acceso necesarios.")
-            case 3:
-                if admin:
-                    admin.modificar_informe()
-                elif gerente:
-                    gerente.modificar_informe()
-                elif emp:
-                    emp.modificar_informe()
-                else:
-                    print("No tienes los privilegios de acceso necesarios.")
-            case 4:
-                if admin:
-                    admin.eliminar_informe()
-                elif gerente:
-                    gerente.eliminar_informe()
-                elif emp:
-                    emp.eliminar_informe()
-                else:
-                    print("No tienes los privilegios de acceso necesarios para continuar")
-            case 5:
-                print("Será devuelto al menú principal...")
-                input("PRESIONE ENTER PARA CONTINUAR ")
-                break
-
-# PROYECTO
 def crear_proyecto():
     while True:
         try: 
@@ -1256,53 +1146,3 @@ def eliminar_proyecto():
         if conexion:
             conexion.close()
 
-def menu_gestion_proyecto(admin: Administrador, gerente: Gerente):
-    print("MENÚ DE GESTION DE PROYECTOS\n")
-    while True:
-        print("OPCIÓN 1. CREAR PROYECTO")
-        print("OPCIÓN 2. BUSCAR PROYECTO")
-        print("OPCIÓN 3. MODIFICAR PROYECTO")
-        print("OPCIÓN 4. ELIMINAR PROYECTO")
-        print("OPCIÓN 5. VOLVER AL MENÚ PRINCIPAL\n")
-        try: 
-            opcion_user = int(input("Ingresar opción (1 - 5): "))
-        except ValueError:
-            print("Debe ingresar una opción válida para continuar.")
-
-        if opcion_user not in (1,2,3,4,5):
-            print("Debe ingresar una de las opciones disponibles (1 - 5) para continuar.")
-            continue
-
-        match opcion_user:
-            case 1:
-                if admin:
-                    admin.crear_proyecto()
-                elif gerente:
-                    gerente.crear_proyecto()
-                else:
-                    print("No tienes los privilegios necesarios para acceder.")
-            case 2:
-                if admin:
-                    admin.buscar_proyecto()
-                elif gerente:
-                    gerente.buscar_proyecto()
-                else:
-                    print("No tienes los privilegios de acceso necesarios para continuar.")
-            case 3:
-                if admin:
-                    admin.modificar_proyecto()
-                elif gerente:
-                    gerente.modificar_proyecto()
-                else:
-                    print("No tienes los privilegios ncesarios para continuar.")
-            case 4:
-                if admin:
-                    admin.eliminar_proyecto()
-                elif gerente:
-                    gerente.eliminar_proyecto()
-                else:
-                    print("No tienes los privilegios necesarios para continuar.")
-            case 5:
-                print("Será devuelto al menú principal...")
-                input("PRESIONE ENTER PARA CONTINUAR ")
-                break

@@ -1,4 +1,4 @@
-from Informe import Informe
+from .Informe import Informe
 from models.interfaces.ExportarInformeInterfaz import ExportarInformeInterfaz
 from fpdf import FPDF
 from datetime import datetime
@@ -38,7 +38,7 @@ class InformeEmpleado(Informe, ExportarInformeInterfaz):
                 self.cell(w = 0, h = 10, text = f"Generado el {datetime.now().strftime('%d/%m/%y')}", ln = 0, align = "C")
 
 
-        pdf.output(name = f'Informe Empleado{datetime.now().strftime('%d/%m/%y')}', dest='"C:\Users\juann\Downloads"')
+        ##pdf.output(name = f'Informe Empleado{datetime.now().strftime('%d/%m/%y')}', dest='"C:\Users\juann\Downloads"')
 
     def formatearDatosParaExcel(self):
         pass

@@ -43,4 +43,4 @@ def menu_admin():
                 print("Sesión cerrada exitosamente.")
                 break
 
-        
+menu_admin()

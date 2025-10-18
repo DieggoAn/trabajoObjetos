@@ -1,14 +1,15 @@
-from Persona import Persona
+from .Persona import Persona
 from models.interfaces.GestionEmpInterfaz import GestionEmpInterfaz
 from models.interfaces.GestionInformeInterfaz import GestionInformeInterfaz
 from models.interfaces.GestionDeptoInterfaz import GestionDeptoInterfaz
-from Empleado import Empleado
-from Gerente import Gerente
+from .Empleado import Empleado
+from .Gerente import Gerente
 from config import conectar_db
 import mysql.connector
 import bcrypt
 import re
-from controllers.functions import validar_rut, insertar_empleado_detalle
+
+from utils.validador import *
 from datetime import datetime
 from controllers.LogUser import validar_contraseña_segura
 
@@ -129,7 +130,7 @@ class Administrador(Persona, GestionEmpInterfaz, GestionInformeInterfaz, Gestion
 
 
     # Nota: Esta funcion crea cualquier tipo de empleado, incluyendo Gerente y Administrador, o cualquiera que se quiera implementar a futuro.
-    def crear_empleado(self):
+    def crearEmpleado(self):
         while True:
             try:
                 rut = input("Ingrese el RUT del empleado (ej: 12345678-K o 9876543-1): ").strip().lower()
@@ -295,6 +296,9 @@ class Administrador(Persona, GestionEmpInterfaz, GestionInformeInterfaz, Gestion
         insertar_empleado_detalle(datos_basico, datos_detalle)
         print(f"Empleado {nombre} {apellido_paterno} creado exitosamente.")
         print(f"Rol: {rol_usuario} | RUT: {rut.upper()} | ID Departamento: {id_departamento}\n")
+
+    def mostrar_rol(self):
+        print(f"Rol del usuario: Administrador")
 
     def buscarEmpleado(self):
         pass

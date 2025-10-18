@@ -1,7 +1,7 @@
 # Lógica de LogIn del sistema, con opciones de iniciar sesión y registro. // posiblemente también recuperar contraseña
 
 import mysql.connector
-from functions import validar_rut, buscar_empleado
+from utils.validador import validar_rut
 from config import conectar_db
 import bcrypt
 import re

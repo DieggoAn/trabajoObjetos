@@ -1,6 +1,6 @@
-from Persona import Persona
+from .Persona import Persona
 from models.interfaces.RegistroTiempoInterfaz import RegistroTiempoInterfaz
-from RegistroTiempo import RegistroTiempo
+from .RegistroTiempo import RegistroTiempo
 from models.interfaces.GestionInformeInterfaz import GestionInformeInterfaz 
 from config import conectar_db
 
