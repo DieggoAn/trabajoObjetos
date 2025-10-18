@@ -1,14 +1,15 @@
-from Persona import Persona
+from .Persona import Persona
 from models.interfaces.GestionEmpInterfaz import GestionEmpInterfaz
 from models.interfaces.GestionInformeInterfaz import GestionInformeInterfaz
 from models.interfaces.GestionDeptoInterfaz import GestionDeptoInterfaz
-from Empleado import Empleado
-from Gerente import Gerente
+from .Empleado import Empleado
+from .Gerente import Gerente
 from config import conectar_db
 import mysql.connector
 import bcrypt
 import re
-from controllers.functions import validar_rut, insertar_empleado_detalle
+
+from utils import *
 from datetime import datetime
 from controllers.LogUser import validar_contraseña_segura
 

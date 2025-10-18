@@ -11,7 +11,7 @@ import re
 from models import (InformeEmpleado,
                     InformeGerente,
                     InformeAdmin)
-
+from utils.validador import validar_rut
 from models.Administrador import *
 
 # DEPARTAMENTO
@@ -99,15 +99,21 @@ def modificar_departamento():
             print("No se encontró ningún departamento con esa ID.")
             return
         
+        depto_obj = Departamento.Departamento(id_departamento)
+
         print("\nDepartamento encontrado. ¿Qué campo desea modificar?")
         print("1. Nombre")
         print("2. Descripción")
+        print("3. Añadir empleado")
+        print("4 Cambiar gerente")
 
         try:
-            opcion = int(input("Seleccione una opción (1-2): "))
+            opcion = int(input("Seleccione una opción (1..4): "))
             campos = {
                 1: "nombre",
                 2: "descripcion",
+                3: "anadir empleado",
+                4: "cambiar gerente"
             }
         except ValueError:
             print("Debe ingresar un carácter numérico para continuar.")
@@ -118,37 +124,92 @@ def modificar_departamento():
             return
                             
         campo = campos[opcion]
-        nuevo_valor = input(f"Ingrese el nuevo valor para '{campo}'").strip()
+        if campo == "anadir empleado":
+            while True:
+                try:
+                    rut_empleado = input("Ingrese el RUT del empleado (ej: 12345678-K): ").strip().lower()
+                    validar_rut(rut_empleado)
 
-        # Validaciones
-        if campo == "nombre":
-            if not nuevo_valor or not all(c.isalpha() or c.isspace() for c in nuevo_valor):
-                print("Solo se permiten letras y espacios.")
-                return
-        elif campo == "descripcion":
-            if not nuevo_valor:
-                print("La descripción no puede estar vacía.")
-                return
-            
-        # Confirmación
-        while True:
-            confirmacion = input(f"¿Confirmas modificar '{campo}' a '{nuevo_valor}'? (S/N): ").strip().lower()
-            if confirmacion == "s":
-                break
-            elif confirmacion == "n":
-                print("Modificación cancelada.")
-                return
-            else:
-                print("Entrada inválida. Debes ingresar 'S' o 'N'.")  
+                        # Verificación de existencia del empleado en la base de datos
 
-        # Actualización
-        try:
-            query = f"UPDATE departamento SET {campo} = %s WHERE id_departamento = %s"
-            cursor.execute(query, (nuevo_valor, id_departamento))
-            conexion.commit()
-            print(f"El campo {campo} del departamento con ID {id_departamento} se ha actualizado correctamente a: {nuevo_valor}")
-        except mysql.connector.Error as Error:
-            print(f"Error inesperado al actualizar los datos del departamento con ID {id_departamento}\nDetalles del error: {Error}")
+                    conexion = conectar_db()
+                    cursor = conexion.cursor(dictionary=True)
+                    cursor.execute("SELECT rol FROM usuario_basico WHERE rut_usuario = %s", (rut_empleado.upper(),))
+                    resultado = cursor.fetchone()
+
+                    if not resultado:
+                        print("El RUT no está registrado en el sistema.")
+                        continue
+                    else:
+                        depto_obj.asignarEmpleado(cursor,rut_empleado)
+                        break
+                except ValueError as Error:
+                    print(f"Error inesperado: {Error}")
+                finally:
+                    if cursor:
+                        cursor.close()
+                    if conexion:
+                        conexion.close()
+                return True
+        elif campo == "cambiar gerente":
+            while True:
+                try:
+                    rut_gerente = input("Ingrese el RUT del gerente (ej: 12345678-K): ").strip().lower()
+                    validar_rut(rut_gerente)
+
+                        # Verificación de existencia del empleado en la base de datos
+
+                    conexion = conectar_db()
+                    cursor = conexion.cursor(dictionary=True)
+                    cursor.execute("SELECT rol FROM usuario_basico WHERE rut_usuario = %s", (rut_gerente.upper(),))
+                    resultado = cursor.fetchone()
+
+                    if not resultado:
+                        print("El RUT no está registrado en el sistema.")
+                        continue
+                    else:
+                        depto_obj.asignarGerente(cursor,rut_gerente)
+                        break
+                except ValueError as Error:
+                    print(f"Error inesperado: {Error}")
+                finally:
+                    if cursor:
+                        cursor.close()
+                    if conexion:
+                        conexion.close()
+                return True
+        else:
+            nuevo_valor = input(f"Ingrese el nuevo valor para '{campo}'").strip()
+
+            # Validaciones
+            if campo == "nombre":
+                if not nuevo_valor or not all(c.isalpha() or c.isspace() for c in nuevo_valor):
+                    print("Solo se permiten letras y espacios.")
+                    return
+            elif campo == "descripcion":
+                if not nuevo_valor:
+                    print("La descripción no puede estar vacía.")
+                    return
+
+            # Confirmación
+            while True:
+                confirmacion = input(f"¿Confirmas modificar '{campo}' a '{nuevo_valor}'? (S/N): ").strip().lower()
+                if confirmacion == "s":
+                    break
+                elif confirmacion == "n":
+                    print("Modificación cancelada.")
+                    return
+                else:
+                    print("Entrada inválida. Debes ingresar 'S' o 'N'.")  
+
+            # Actualización
+            try:
+                query = f"UPDATE departamento SET {campo} = %s WHERE id_departamento = %s"
+                cursor.execute(query, (nuevo_valor, id_departamento))
+                conexion.commit()
+                print(f"El campo {campo} del departamento con ID {id_departamento} se ha actualizado correctamente a: {nuevo_valor}")
+            except mysql.connector.Error as Error:
+                print(f"Error inesperado al actualizar los datos del departamento con ID {id_departamento}\nDetalles del error: {Error}")
     except Exception as Error:
         print(f"Error inesperado: {Error}")
     finally:
@@ -281,27 +342,6 @@ def menu_gestion_depto():
 
 
 # EMPLEADO
-def validar_rut(rut):
-    rut = rut.strip().lower()
-    if rut.count('-') != 1:
-        raise ValueError("El RUT debe contener un solo guion ('-').")
-
-    parte_num, dv = rut.split('-')
-
-    if len(rut) < 9 or len(rut) > 10:
-        raise ValueError("El RUT debe tener entre 9 y 10 caracteres en total.")
-
-    if not parte_num.isdigit():
-        raise ValueError("Los caracteres antes del guion deben ser solo números.")
-
-    if len(parte_num) not in [7, 8]:
-        raise ValueError("La parte numérica del RUT debe tener 7 u 8 dígitos.")
-
-    if dv not in ['0','1','2','3','4','5','6','7','8','9','k']:
-        raise ValueError("El dígito verificador debe ser un número o la letra 'k'.")
-
-    print(f"RUT ingresado correctamente: {rut.upper()}")
-    return rut.upper()
 
 def buscar_empleado(rut):
     try:
@@ -565,26 +605,6 @@ def insertar_empleado_completo(datos_basico, datos_detalle):
         if conexion:
             conexion.close()
 
-def insertar_empleado_detalle(datos_detalle):
-    try:
-        conexion = conectar_db()
-        cursor = conexion.cursor()
-        query_detalle = """
-            INSERT INTO usuario_detalle (
-                rut_usuario, direccion, fecha_inicio_contrato,
-                salario, rol, id_departamento
-            ) VALUES (%s, %s, %s, %s, %s, %s)
-        """
-        cursor.execute(query_detalle, datos_detalle)
-        conexion.commit()
-        print("Empleado creado con éxito.\n")
-    except mysql.connector.Error as Error:
-        print(f"Error inesperado: {Error}")
-    finally:
-        if cursor:
-            cursor.close()
-        if conexion:
-            conexion.close()
 
 def menu_gestion_emp(admin: Administrador):
     print("MENÚ DE GESTION DE EMPLEADOS\n")

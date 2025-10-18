@@ -1,4 +1,4 @@
-from Informe import Informe
+from .Informe import Informe
 from models.interfaces.ExportarInformeInterfaz import ExportarInformeInterfaz
 
 class InformeAdmin(Informe, ExportarInformeInterfaz):
