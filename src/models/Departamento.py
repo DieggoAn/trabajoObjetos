@@ -1,5 +1,5 @@
 class Departamento:
-    def __init__ (self, nombre, rutGerenteAsociado, idDepartamento=None):
+    def __init__ (self, idDepartamento=None, nombre=None, rutGerenteAsociado=None):
 
         self.idDepartamento = idDepartamento
         self.nombre = nombre
@@ -28,8 +28,19 @@ class Departamento:
     def rutGerenteAsociado(self):
         del self.__rutGerenteAsociado
         
-    def asignarGerente():
+    def asignarGerente(self,cursor,rut_usuario):
+        try:
+            query = "UPDATE usuario_detalle SET id_departamento = %s, rol = %s WHERE rut_usuario = %s"
+            cursor.execute(query,(self.idDepartamento, "gerente", rut_usuario))
+        except Exception as e:
+            print(f"Error en metodo AsignarGerente: {e}")
         pass
 
-    def asignarEmpleado():
-        pass
+    def asignarEmpleado(self,cursor ,rut_usuario):
+        try:
+            query = "UPDATE usuario_detalle SET id_departamento = %s WHERE rut_usuario = %s"
+            cursor.execute(query,(self.idDepartamento, rut_usuario))
+
+            print(f"SQL: Asignando empleado {rut_usuario} a departamento {self.idDepartamento}")
+        except Exception as e:
+            print(f"Error en metodo asignarEmpleado: {e}")
