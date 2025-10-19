@@ -19,10 +19,10 @@ from datetime import datetime
 class Administrador(Persona, GestionEmpInterfaz, GestionInformeInterfaz, GestionDeptoInterfaz):
     def __init__(self, nombres, apellido_paterno, apellido_materno,
                  direccion, fecha_nacimiento, fecha_inicio_contrato,
-                 salario, telefono, rut_administrador, estadoSesion, id_departamento):
+                 salario, telefono,contraseña, rut,rol, id_departamento):
         
         super().__init__(
-            rut=rut_administrador,
+            rut=rut,
             nombres=nombres,
             apellido_paterno=apellido_paterno,
             apellido_materno=apellido_materno,
@@ -31,7 +31,7 @@ class Administrador(Persona, GestionEmpInterfaz, GestionInformeInterfaz, Gestion
             fecha_inicio_contrato=fecha_inicio_contrato,
             salario=salario,
             telefono=telefono,
-            contraseña=None,
+            contraseña=contraseña,
             rol="Administrador",
             id_departamento=id_departamento)
 
@@ -42,7 +42,6 @@ class Administrador(Persona, GestionEmpInterfaz, GestionInformeInterfaz, Gestion
             f"Nombre(s): {self.nombres}\n"
             f"Apellidos: {self.apellido_paterno} {self.apellido_materno}\n"
             f"Departamento: {self.id_departamento}\n"
-            f"Estado de sesión: {'Activa' if self.estadoSesion else 'Cerrada'}"
         )
 
     
@@ -58,13 +57,13 @@ class Administrador(Persona, GestionEmpInterfaz, GestionInformeInterfaz, Gestion
     
     @property
     def rut(self):
-        return self.rut_administrador
+        return self.__rut
     @rut.setter
-    def rut(self, rut):
-        self.__rut_administrador = rut
+    def rut(self, rut2):
+        self.__rut = rut2
     @rut.deleter
     def rut(self):
-        del self.__rut_administrador
+        del self.__rut
  
     @property
     def direccion(self):
@@ -126,7 +125,7 @@ class Administrador(Persona, GestionEmpInterfaz, GestionInformeInterfaz, Gestion
             conexion.close()
 
     def iniciarSesion(self):
-        self.estadoSesion = True
+        pass
 
     def cerrarSesion(self):
         self.estadoSesion = False
@@ -623,7 +622,13 @@ class Administrador(Persona, GestionEmpInterfaz, GestionInformeInterfaz, Gestion
             cursor = conexion.cursor(dictionary=True)
             
             # 3. El SELECT (que antes estaba desprotegido) ahora está dentro
-            cursor.execute("SELECT nombres, apellido_paterno, rol FROM Usuario WHERE rut_usuario = %s", (rut,))
+            cursor.execute(
+                        "SELECT T1.nombres, T1.apellido_paterno, T2.rol "
+                        "FROM usuario_basico AS T1 "
+                        "JOIN usuario_detalle AS T2 ON T1.rut_usuario = T2.rut_usuario "
+                        "WHERE T1.rut_usuario = %s", 
+                        (rut,)
+            )
             empleado = cursor.fetchone()
 
             if not empleado:
@@ -640,9 +645,12 @@ class Administrador(Persona, GestionEmpInterfaz, GestionInformeInterfaz, Gestion
                 print("Operación cancelada.")
                 # 5. Se quitan los .close() de aquí. El 'finally' lo hará.
                 return
-            
+            cursor.execute("UPDATE informe SET rut_usuario = NULL WHERE rut_usuario = %s", (rut,))
             # 6. Se ejecuta el DELETE (ya no necesita su propio 'try...finally')
-            cursor.execute("DELETE FROM Usuario WHERE rut_usuario = %s", (rut,))
+            cursor.execute("DELETE FROM usuario_detalle WHERE rut_usuario = %s", (rut,))
+
+            # 3. Borramos el registro "padre" de 'usuario_basico' (AL FINAL)
+            cursor.execute("DELETE FROM usuario_basico WHERE rut_usuario = %s", (rut,))     
             conexion.commit()
             print(f"El empleado con RUT {rut} ha sido eliminado de forma permanente.\n")
 
