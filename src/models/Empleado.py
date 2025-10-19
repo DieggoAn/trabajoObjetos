@@ -5,8 +5,8 @@ from models.interfaces.GestionInformeInterfaz import GestionInformeInterfaz
 from config import conectar_db
 
 class Empleado(Persona, RegistroTiempoInterfaz, GestionInformeInterfaz):
-    def __init__ (self, rut, nombres, apellido_paterno, apellido_materno, direccion,
-                 fecha_nacimiento, fecha_inicio_contrato, salario, telefono, contraseña, rol, id_departamento):
+    def __init__ (self, rut,direccion, fecha_inicio_contrato,salario,rol,id_departamento, nombres=None, apellido_paterno=None, apellido_materno=None, 
+                 fecha_nacimiento=None,  telefono=None, contraseña=None):
         
         super().__init__(
         rut=rut,

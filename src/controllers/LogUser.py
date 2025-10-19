@@ -138,7 +138,7 @@ def registrar_usuario():
             print(f"Error inesperado al ingresar la contraseña: {Error}")
         
     usuario = Empleado(
-        rut_empleado=rut,
+        rut=rut,
         nombres=nombre,
         apellido_paterno=apellido_paterno,
         apellido_materno=apellido_materno,
