@@ -20,8 +20,6 @@ class InformeGerente(Informe, ExportarInformeInterfaz):
                 f"Fecha: {self.fecha}\n"
                 f"RUT Gerente: {self.rutGerente}")
     
-    def formatearDatosParaPDF(self):
-        pass
 
     def formatearDatosParaExcel(self):
         pass
@@ -33,5 +31,3 @@ class InformeGerente(Informe, ExportarInformeInterfaz):
     def generarExcel(self):
         pass
 
-    def exportarInforme(self):
-        pass

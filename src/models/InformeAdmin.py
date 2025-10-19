@@ -16,13 +16,8 @@ class InformeAdmin(Informe, ExportarInformeInterfaz):
         return f"Datos del informe de ADMIN:\nID: {self.idInforme}\nFormato: {self.formato}\nFecha: {self.fecha}"
     
     """Métodos de la interfaz exportar informe"""
-    def formatearDatosParaPDF(self):
-        pass
 
     def formatearDatosParaExcel(self):
-        pass
-
-    def exportarInforme(self):
         pass
 
     """Métodos propios de InformeAdmin"""

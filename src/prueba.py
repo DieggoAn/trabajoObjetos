@@ -2,7 +2,7 @@ from controllers.functions import *
 from controllers.menus import menu_gestion_emp
 from models.Administrador import *
 from models.Gerente import *
-#from controllers.menu_admin import * 
+from controllers.menu_admin import * 
 
 nombres_ejemplo = "Ana María"
 apellido_paterno_ejemplo = "Tapia"

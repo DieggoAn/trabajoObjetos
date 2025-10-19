@@ -1,20 +1,21 @@
 from abc import ABC, abstractmethod
+from controllers.functions_departamento import * 
 
 class GestionDeptoInterfaz(ABC):
     @abstractmethod
     def crearDepartamento(self):
-        pass
+        crear_departamento()
 
     @abstractmethod
     def buscarDepartamento(self):
-        pass
+        buscar_departamento()
 
     @abstractmethod
     def modificarDepartamento(self):
-        pass
+        modificar_departamento()
 
     @abstractmethod
     def eliminarDepartamento(self):
-        pass
+        eliminar_departamento()
 
     
