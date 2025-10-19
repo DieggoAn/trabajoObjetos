@@ -2,7 +2,7 @@ from .Persona import Persona
 from models.interfaces.GestionEmpInterfaz import GestionEmpInterfaz
 from models.interfaces.GestionProyectoInterfaz import GestionProyectoInterfaz
 from config import conectar_db
-from utils import *
+from utils.validador import *
 
 class Gerente(Persona, GestionEmpInterfaz, GestionProyectoInterfaz):
     def __init__ (self, nombres, apellido_paterno, apellido_materno,

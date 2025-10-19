@@ -30,7 +30,7 @@ def menu_gestion_proyecto(admin: Administrador, gerente: Gerente):
         match opcion_user:
             case 1:
                 if admin:
-                    admin.crear_proyecto()
+                    admin.crearProyecto()
                 elif gerente:
                     gerente.crear_proyecto()
                 else:

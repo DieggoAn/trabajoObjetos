@@ -18,13 +18,13 @@ class GestionEmpInterfaz(ABC):
     def eliminarEmpleado(self):
         pass
 
-    @abstractmethod
-    def asignarEmpleadoDeDep(self):
-        pass
+    #@abstractmethod
+    #def asignarEmpleadoDeDep(self):
+        #pass
 
-    @abstractmethod
-    def reasignarEmpleadoDeDep(self):
-        pass
+    #@abstractmethod
+    #def reasignarEmpleadoDeDep(self):
+        #pass
 
     @abstractmethod
     def eliminarEmpleadoDeDep(self):

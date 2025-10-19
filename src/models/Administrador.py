@@ -9,16 +9,11 @@ import mysql.connector
 import bcrypt
 import re
 
-<<<<<<< HEAD
 
 from utils.validador import *
 
 from utils.validador import *
 
-=======
-from utils.validador import *
-from utils.validador import *
->>>>>>> bd2ade68b150c53f68e6499c4fb0046b05b51654
 from utils import *
 
 from datetime import datetime
@@ -353,17 +348,17 @@ class Administrador(Persona, GestionEmpInterfaz, GestionInformeInterfaz, Gestion
         pass
 
     
-    def crearProyecto(self):
-        pass
+    #def crearProyecto(self):
+        #pass
 
-    def buscarProyecto(self):
-        pass
+    #def buscarProyecto(self):
+        #pass
 
-    def modificarProyecto(self):
-        pass
+    #def modificarProyecto(self):
+        #pass
 
-    def eliminarProyecto(self):
-        pass
+    #def eliminarProyecto(self):
+        #pass
 
     def asignarEmpleadoDeDep(self):
         pass

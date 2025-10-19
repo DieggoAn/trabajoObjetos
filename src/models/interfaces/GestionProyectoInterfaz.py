@@ -17,10 +17,10 @@ class GestionProyectoInterfaz(ABC):
     def eliminarProyecto(self):
         pass
 
-    @abstractmethod
-    def asignarEmpleadoAProyecto(self):
-        pass
+    #@abstractmethod
+    #def asignarEmpleadoAProyecto(self):
+        #pass
 
-    @abstractmethod
-    def desasignarEmpleadoDeProyecto(self):
-        pass
+    #@abstractmethod
+    #def desasignarEmpleadoDeProyecto(self):
+        #pass
