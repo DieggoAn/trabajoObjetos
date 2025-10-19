@@ -146,9 +146,9 @@ def menu_gestion_emp(admin: Administrador):
             case 1:
                 admin.crearEmpleado()
             case 2:
-                admin.insertar_empleado_detalle()
+                admin.crearEmpleadoDetalle()
             case 3:
-                admin.super_buscar_empleado()
+                admin.buscarEmpleado()
             case 4:
                 admin.modificar_empleado()
             case 5:

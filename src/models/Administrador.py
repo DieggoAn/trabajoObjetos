@@ -323,11 +323,136 @@ class Administrador(Persona, GestionEmpInterfaz, GestionInformeInterfaz, Gestion
         print(f"Empleado {nombre} {apellido_paterno} creado exitosamente.")
         print(f"Rol: {rol_usuario} | RUT: {rut.upper()} | ID Departamento: {id_departamento}\n")
 
+    def crearEmpleadoDetalle(self):
+        while True:
+            try:
+                rut = input("Ingrese el RUT del empleado (ej: 12345678-K o 9876543-1): ").strip().lower()
+                validar_rut(rut) # Asumo que esta función levanta ValueError si es inválido
+                break
+            except ValueError as Error:
+                print(Error)
+                
+        roles_validos = {"empleado", "gerente", "administrador"}
+        while True:
+            try:
+                rol_usuario = input("Ingrese el rol del usuario: ").strip().lower()
+                if rol_usuario not in roles_validos:
+                    raise ValueError("Rol inválido. Debe ser: Empleado, Gerente o Administrador.")
+                
+                # Capitaliza la primera letra para que coincida con la llave del diccionario
+                rol_usuario = rol_usuario.capitalize() 
+
+                break
+            except ValueError as Error:
+                print(Error)
+
+        while True:
+            try:
+                direccion = input("Ingrese la direccion del empleado (ej: Av Arturo Prat 967): ")
+                if not direccion:
+                    raise ValueError("Ingrese una dirección válida")
+                break
+            except ValueError as Error:
+                print(Error)
+
+        while True:
+            try:
+                fecha_inicio_contrato = input("Ingrese la fecha de inicio del contrato del empleado (formato DD/MM/AAAA): ")
+                fecha = datetime.strptime(fecha_inicio_contrato, '%d/%m/%Y').date()
+                print(f"Fecha ingresada correctamente: {fecha}")
+                break
+            except ValueError:
+                print("Formato inválido. Use el formato DD/MM/AAAA.")
+
+        while True:
+            try:
+                salario = int(input("Ingrese el salario asignado al empleado: "))
+                if salario <= 0:
+                    raise ValueError("El salario debe ser un número positivo")
+                break
+            except ValueError:
+                print("Ingrese un sueldo valido") 
+
+        while True:
+            try:
+                id_departamento = int(input("Ingrese ID del departamento asignado al empleado: "))
+                # Se abre la conexión a la db
+                conexion = conectar_db() 
+                cursor = conexion.cursor()
+                cursor.execute("SELECT id_departamento FROM departamento WHERE id_departamento = %s", (id_departamento,))
+                if not cursor.fetchone():
+                    print("El departamento ingresado no existe en el sistema.")
+                    cursor.close()
+                    conexion.close()
+                    # Aquí deberías usar 'continue' para volver a pedir el ID, en lugar de 'return'
+                    continue 
+                
+                if len(str(id_departamento)) > 15:
+                    raise ValueError("Debe ser un número de hasta 15 dígitos.")
+                
+                cursor.close()
+                conexion.close()
+                break # Si el ID es válido y existe, rompemos el bucle
+            except ValueError:
+                    print("Debe ingresar carácteres numéricos.")
+
+        clases_usuario = {
+            "Empleado": Empleado,
+            "Gerente": Gerente,
+            "Administrador": Administrador
+        }
+
+        # (Manejo de conexión temporalmente movido a la función de inserción)
+        # (Es mejor práctica pasar la conexión a la función de inserción)
+        
+        # --- ### INICIO DE LA CORRECCIÓN ### ---
+        #
+        # Aquí usamos "argumentos por palabra clave" (ej: rut=...)
+        # para asegurarnos de que pasamos todos los 12 argumentos
+        # a la clase correcta y con los nombres correctos.
+        #
+        try:
+            nuevo_usuario: Persona = clases_usuario[rol_usuario](
+                rut=rut.upper(),
+                direccion=direccion,
+                fecha_inicio_contrato=fecha_inicio_contrato,
+                salario=salario,
+                rol=rol_usuario,                # <-- ¡Este era el que faltaba!
+                id_departamento=id_departamento
+            )
+        except Exception as e:
+            print(f"Error al crear el objeto: {e}")
+            return
+        #
+        # --- ### FIN DE LA CORRECCIÓN ### ---
+        #
+
+        datos_detalle = (
+            nuevo_usuario.rut,
+            nuevo_usuario.direccion,
+            nuevo_usuario.fecha_inicio_contrato,
+            nuevo_usuario.salario,
+            nuevo_usuario.rol,
+            nuevo_usuario.id_departamento
+        )
+        #para mayor persistencia y modularidad, se implementa la función insertar_empleado()
+        insertar_empleado_detalle( datos_detalle)
+        print(f"Datos del empleado {rut} añadidos exitosamente.")
+        print(f"Rol: {rol_usuario} | RUT: {rut.upper()} | ID Departamento: {id_departamento}\n")
+
+
     def mostrar_rol(self):
         print(f"Rol del usuario: Administrador")
 
     def buscarEmpleado(self):
-        pass
+        while True:
+            try:
+                rut = input("Ingrese el RUT del empleado (ej: 12345678-K o 9876543-1): ").strip().lower()
+                validar_rut(rut) # Asumo que esta función levanta ValueError si es inválido
+                break
+            except ValueError as Error:
+                print(Error)
+        
 
     def modificarEmpleado(self):
         pass

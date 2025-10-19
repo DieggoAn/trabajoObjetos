@@ -23,7 +23,7 @@ def validar_rut(rut):
     print(f"RUT ingresado correctamente: {rut.upper()}")
     return rut.upper()
 
-def insertar_empleado_detalle(datos_basico,datos_detalle):
+def insertar_empleado_detalle(datos_detalle):
 
     try:
         conexion = conectar_db()
