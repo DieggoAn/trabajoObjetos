@@ -5,12 +5,12 @@ from config import conectar_db
 from utils.validador import *
 
 class Gerente(Persona, GestionEmpInterfaz, GestionProyectoInterfaz):
-    def __init__ (self, nombres, apellido_paterno, apellido_materno,
+    def __init__ (self, rut, nombres, apellido_paterno, apellido_materno,
                  direccion, fecha_nacimiento, fecha_inicio_contrato,
-                 salario, telefono, rut_gerente, id_departamento):
+                 salario, telefono, contraseña, rol, id_departamento):
         
         super().__init__(
-            rut=rut_gerente,
+            rut=rut,
             nombres=nombres,
             apellido_paterno=apellido_paterno,
             apellido_materno=apellido_materno,
@@ -19,12 +19,12 @@ class Gerente(Persona, GestionEmpInterfaz, GestionProyectoInterfaz):
             fecha_inicio_contrato=fecha_inicio_contrato,
             salario=salario,
             telefono=telefono,
-            contraseña=None,
+            contraseña=contraseña ,
             rol="Gerente",
             id_departamento=id_departamento
 )
 
-        self.rut_gerente = rut_gerente
+        self.rut = rut
         self.id_departamento = id_departamento
 
     """Metodo de la clase Persona"""
