@@ -9,16 +9,8 @@ import mysql.connector
 import bcrypt
 import re
 
-<<<<<<< HEAD
-
-from utils.validador import *
-
-from utils.validador import *
-
-=======
 from utils.validador import *
 from utils.validador import *
->>>>>>> bd2ade68b150c53f68e6499c4fb0046b05b51654
 from utils import *
 
 from datetime import datetime

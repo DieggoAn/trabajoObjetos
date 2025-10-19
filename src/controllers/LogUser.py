@@ -197,7 +197,7 @@ def iniciar_sesion():
             ub.fecha_nacimiento, ub.numero_telefonico, ub.contraseña, ub.rol,
             ud.direccion, ud.fecha_inicio_contrato, ud.salario, ud.id_departamento
         FROM usuario_basico ub
-        JOIN usuario_detalle ud ON ub.rut_usuario = ud.rut_usuario
+        LEFT JOIN usuario_detalle ud ON ub.rut_usuario = ud.rut_usuario
         WHERE ub.rut_usuario = %s"""
 
         cursor.execute(query, (rut,))

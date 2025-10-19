@@ -5,11 +5,11 @@ from models.interfaces.GestionInformeInterfaz import GestionInformeInterfaz
 from config import conectar_db
 
 class Empleado(Persona, RegistroTiempoInterfaz, GestionInformeInterfaz):
-    def __init__ (self, rut_empleado, nombres, apellido_paterno, apellido_materno, direccion,
+    def __init__ (self, rut, nombres, apellido_paterno, apellido_materno, direccion,
                  fecha_nacimiento, fecha_inicio_contrato, salario, telefono, contraseña, rol, id_departamento):
         
         super().__init__(
-        rut=rut_empleado,
+        rut=rut,
         nombres=nombres,
         apellido_paterno=apellido_paterno,
         apellido_materno=apellido_materno,
@@ -82,14 +82,14 @@ class Empleado(Persona, RegistroTiempoInterfaz, GestionInformeInterfaz):
         del self.__apellido_materno
 
     @property
-    def rut_empleado(self):
-        return self.__rut_empleado
-    @rut_empleado.setter
-    def rut_empleado(self, rut):
-        self.__rut_empleado = rut
-    @rut_empleado.deleter
-    def rut_empleado(self):
-        del self.__rut_empleado
+    def rut(self):
+        return self.__rut
+    @rut.setter
+    def rut(self, rut):
+        self.__rut = rut
+    @rut.deleter
+    def rut(self):
+        del self.__rut
     
     @property
     def direccion(self):

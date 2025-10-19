@@ -1,4 +1,4 @@
 from controllers.LogUser import *
 
 
-presentacion_login()
+hola = presentacion_login()
