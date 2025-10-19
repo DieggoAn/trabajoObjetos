@@ -152,7 +152,7 @@ def menu_gestion_emp(admin: Administrador):
             case 4:
                 admin.modificarEmpleado()
             case 5:
-                admin.eliminar_empleado()
+                admin.eliminarEmpleado()
             case 6:
                 print("Será devuelto al menú principal...")
                 input("PRESIONE ENTER PARA CONTINUAR ")

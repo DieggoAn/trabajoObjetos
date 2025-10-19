@@ -3,6 +3,7 @@ from controllers.menus import menu_gestion_emp
 from models.Administrador import *
 from models.Gerente import *
 from controllers.menu_admin import * 
+from controllers.functions_informe import *
 
 nombres_ejemplo = "Ana María"
 apellido_paterno_ejemplo = "Tapia"
@@ -15,7 +16,7 @@ telefono_ejemplo = "912345678"
 rut_ejemplo = "15444333-2"
 estadoSesion_ejemplo = False
 id_departamento_ejemplo = 1
-
+"""
 # Instanciar la clase Administrador
 nuevo_administrador = Administrador(
     nombres=nombres_ejemplo,
@@ -30,7 +31,7 @@ nuevo_administrador = Administrador(
     estadoSesion=estadoSesion_ejemplo,
     id_departamento=id_departamento_ejemplo
 )
-"""
+
 nombres_ejemplo = "Carlos"
 apellido_paterno_ejemplo = "Muñoz"
 apellido_materno_ejemplo = "Soto"
@@ -59,5 +60,6 @@ nuevo_gerente = Gerente(
 ##menu_gestion_proyecto(nuevo_administrador, nuevo_gerente)
 
 """
-menu_gestion_emp(nuevo_administrador)
+#menu_gestion_emp(nuevo_administrador)
+generarInforme()
 

@@ -4,18 +4,17 @@ from controllers.functions_departamento import *
 class GestionDeptoInterfaz(ABC):
     @abstractmethod
     def crearDepartamento(self):
-        crear_departamento()
+        pass
 
     @abstractmethod
     def buscarDepartamento(self):
-        buscar_departamento()
+        pass
 
     @abstractmethod
     def modificarDepartamento(self):
-        modificar_departamento()
-
+        pass
     @abstractmethod
     def eliminarDepartamento(self):
-        eliminar_departamento()
+        pass
 
     

@@ -602,8 +602,61 @@ class Administrador(Persona, GestionEmpInterfaz, GestionInformeInterfaz, Gestion
 
 
     def eliminarEmpleado(self):
-        pass
+        while True:
+            try:
+                rut = input("Ingrese el RUT del empleado a eliminar (ej: 12345678-K): ").strip().lower()
+                if validar_rut(rut):
+                    rut = rut.upper()
+                    break
+            except ValueError as Error:
+                print(Error)
 
+        # --- INICIO DE LA CORRECCIÓN ---
+        
+        # 1. Inicializamos las variables fuera del 'try'
+        conexion = None
+        cursor = None
+        
+        # 2. Un SOLO 'try' debe envolver TODA la operación
+        try:
+            conexion = conectar_db()
+            cursor = conexion.cursor(dictionary=True)
+            
+            # 3. El SELECT (que antes estaba desprotegido) ahora está dentro
+            cursor.execute("SELECT nombres, apellido_paterno, rol FROM Usuario WHERE rut_usuario = %s", (rut,))
+            empleado = cursor.fetchone()
+
+            if not empleado:
+                print("No se encontró ningún empleado con ese RUT.")
+                # 4. Se quitan los .close() de aquí. El 'finally' lo hará.
+                return
+            
+            print("\nEmpleado encontrado:")
+            print(f"Nombre: {empleado['nombres']} {empleado['apellido_paterno']}")
+            print(f"Rol: {empleado['rol']}")
+
+            confirmacion = input("¿Estás seguro que deseas eliminar este empleado? Esta acción no se podrá deshacer. (S/N): ").strip().lower()
+            if confirmacion != "s":
+                print("Operación cancelada.")
+                # 5. Se quitan los .close() de aquí. El 'finally' lo hará.
+                return
+            
+            # 6. Se ejecuta el DELETE (ya no necesita su propio 'try...finally')
+            cursor.execute("DELETE FROM Usuario WHERE rut_usuario = %s", (rut,))
+            conexion.commit()
+            print(f"El empleado con RUT {rut} ha sido eliminado de forma permanente.\n")
+
+        except Exception as e:
+            print(f"Error inesperado al eliminar: {e}")
+            if conexion:
+                conexion.rollback() 
+                
+        finally:
+            if cursor:
+                cursor.close()
+            if conexion:
+                conexion.close()
+        
     def reasignarEmpleadoDeDep(self):
         pass
 

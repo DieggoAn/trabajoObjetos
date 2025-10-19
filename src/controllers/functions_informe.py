@@ -1,4 +1,4 @@
-from models import Administrador, Empleado, Gerente, InformeAdmin
+from models import Administrador, Gerente, InformeAdmin
 from utils.validador import validar_rut
 import datetime
 from config import conectar_db
@@ -6,7 +6,7 @@ import mysql.connector
 from fpdf import FPDF
 
 
-def crear_informe(admin: Administrador, emp: Empleado, gerente: Gerente):
+def crear_informe(admin: Administrador, gerente: Gerente):
     formatos_disp = {
         1: "pdf",
         2: "excel"
@@ -90,7 +90,7 @@ def crear_informe(admin: Administrador, emp: Empleado, gerente: Gerente):
         if conexion:
             conexion.close()
 
-def buscar_informe(admin: Administrador, emp: Empleado, gerente: Gerente):
+def buscar_informe(admin: Administrador, gerente: Gerente):
     while True:
         try:
             id_informe = int(input("Ingrese la ID del informe que desea buscar: "))
@@ -161,7 +161,7 @@ def buscar_informe(admin: Administrador, emp: Empleado, gerente: Gerente):
         if conexion:
             conexion.close()
 
-def modificar_informe(admin: Administrador, emp: Empleado, gerente: Gerente):
+def modificar_informe(admin: Administrador, gerente: Gerente):
     while True:
         try:
             id_informe = int(input("Ingrese la ID del informe que desea modificar: "))
@@ -281,7 +281,7 @@ def modificar_informe(admin: Administrador, emp: Empleado, gerente: Gerente):
         if conexion:
             conexion.close()
 
-def eliminar_informe(admin: Administrador, emp: Empleado, gerente: Gerente):
+def eliminar_informe(admin: Administrador, gerente: Gerente):
     while True:
         try:
             id_informe = int(input("Ingrese la ID del informe que desea eliminar: "))
@@ -355,72 +355,74 @@ class pdf(FPDF):
                     except ValueError as Error:
                         print(f"Entrada inválida: {Error}")
                 
-                    try:
-                        conexion = conectar_db()
-                        cursor = conexion.cursor(dictionary=True)
+                try:
+                    conexion = conectar_db()
+                    cursor = conexion.cursor(dictionary=True)
 
-                        query = """
-                            SELECT i.id_informe, i.descripcion, i.formato, i.fecha, i.rut_usuario, u.rol
-                            FROM informe i
-                            JOIN usuario_basico u ON i.rut_usuario = u.rut_usuario
-                            WHERE i.id_informe = %s
-                        """
-                        cursor.execute(query, (id_informe,))
-                        resultado = cursor.fetchone()
+                    query = """
+                        SELECT i.id_informe, i.descripcion, i.formato, i.fecha, i.rut_usuario, u.rol
+                        FROM informe i
+                        JOIN usuario_basico u ON i.rut_usuario = u.rut_usuario
+                        WHERE i.id_informe = %s
+                    """
+                    cursor.execute(query, (id_informe,))
+                    resultado = cursor.fetchone()
 
-                        if not resultado:
-                            print(f"No se ha encontrado ningún informe con la ID proporcionada: {id_informe}")
-                            return
-                        
-                        print("Informe encontrado con éxito: ")
-                        #print de id del informe en el pdf
-                        self.set_font(family = "Arial", style = "B", size = 18)
-                        self.cell(w = 0, h = 10, txt = "ID del infrome: ", ln = 1, align = "C")
-                        self.set_font(family = "Arial", style = "I", size = 12)
-                        self.cell(w = 0, h = 10, txt = f"{resultado['id_informe']}", ln = 1, align = "C")
-                        self.ln(2)
-                        #print del rut del usuario en el pdf
-                        self.set_font(family = "Arial", style = "B", size = 18)
-                        self.cell(w = 0, h = 10, txt = "RUT del usuario: ", ln = 1, align = "C")
-                        self.set_font(family = "Arial", style = "I", size = 12)
-                        self.cell(w = 0, h = 10, txt = f"{resultado['rut_usuario']}", ln = 1, align = "C")
-                        self.ln(2)
-                        #print del rol del usuario en el pdf
-                        self.set_font(family = "Arial", style = "B", size = 18)
-                        self.cell(w = 0, h = 10, txt = "Rol del usuario: ", ln = 1, align = "C")
-                        self.set_font(family = "Arial", style = "I", size = 12)
-                        self.cell(w = 0, h = 10, txt = f"{resultado['rol'].capitalize()}", ln = 1, align = "C")
-                        self.ln(2)
-                        #print de la descripción de avances en el pdf
-                        self.set_font(family = "Arial", style = "B", size = 18)
-                        self.cell(w = 0, h = 10, txt = "Descripcion de avances: ", ln = 1, align = "C")
-                        self.set_font(family = "Arial", style = "I", size = 12)
-                        self.cell(w = 0, h = 10, txt = f"{resultado['descripcion']}", ln = 1, align = "C")
-                        self.ln(2)
-                        
-                        return id_informe 
-
-                    except mysql.connector.Error as Error:
-                        print(f"Error inesperado: {Error}")
-                    finally:
-                        if cursor:
-                            cursor.close()
-                        if conexion:
-                            conexion.close()
+                    if not resultado:
+                        print(f"No se ha encontrado ningún informe con la ID proporcionada: {id_informe}")
+                        return
                     
+                    print("Informe encontrado con éxito: ")
+                    #print de id del informe en el pdf
+                    self.set_font(family = "Arial", style = "B", size = 18)
+                    self.cell(w = 0, h = 10, txt = "ID del infrome: ", ln = 1, align = "C")
+                    self.set_font(family = "Arial", style = "I", size = 12)
+                    self.cell(w = 0, h = 10, txt = f"{resultado['id_informe']}", ln = 1, align = "C")
+                    self.ln(2)
+                    #print del rut del usuario en el pdf
+                    self.set_font(family = "Arial", style = "B", size = 18)
+                    self.cell(w = 0, h = 10, txt = "RUT del usuario: ", ln = 1, align = "C")
+                    self.set_font(family = "Arial", style = "I", size = 12)
+                    self.cell(w = 0, h = 10, txt = f"{resultado['rut_usuario']}", ln = 1, align = "C")
+                    self.ln(2)
+                    #print del rol del usuario en el pdf
+                    self.set_font(family = "Arial", style = "B", size = 18)
+                    self.cell(w = 0, h = 10, txt = "Rol del usuario: ", ln = 1, align = "C")
+                    self.set_font(family = "Arial", style = "I", size = 12)
+                    self.cell(w = 0, h = 10, txt = f"{resultado['rol'].capitalize()}", ln = 1, align = "C")
+                    self.ln(2)
+                    #print de la descripción de avances en el pdf
+                    self.set_font(family = "Arial", style = "B", size = 18)
+                    self.cell(w = 0, h = 10, txt = "Descripcion de avances: ", ln = 1, align = "C")
+                    self.set_font(family = "Arial", style = "I", size = 12)
+                    self.cell(w = 0, h = 10, txt = f"{resultado['descripcion']}", ln = 1, align = "C")
+                    self.ln(2)
+                    
+                    return id_informe 
+
+                except mysql.connector.Error as Error:
+                    print(f"Error inesperado: {Error}")
+                finally:
+                    if cursor:
+                        cursor.close()
+                    if conexion:
+                        conexion.close()
+                 
 
             def footer(self):
                 self.set_y(-15)
                 self.set_font(family = "Arial", style = "I", size = 12)
-                self.cell(w = 0, h = 10, txt = f"Generado el {datetime.now().strftime('%d/%m/%y')}", ln = 0, align = "C")
+                self.cell(w = 0, h = 10, txt = f"Generado el {datetime.datetime.now().strftime('%d/%m/%y')}", ln = 0, align = "C")
 
-archivo = pdf()
-archivo.add_page()
-id_pdf = archivo.cuerpo()  # Guardamos el ID que retorna el cuerpo
-
-if id_pdf is not None:
-    nombre_archivo = f"Informe_Empleado_{id_pdf}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.pdf"
-    archivo.output(name=nombre_archivo)
-    print(f"PDF generado exitosamente: {nombre_archivo}")
-else:
-    print("No se generó el PDF porque no se encontró el informe.")
+def generarInforme():
+    archivo = pdf()
+    archivo.add_page()
+    id_pdf = archivo.cuerpo()  # Guardamos el ID que retorna el cuerpo
+    print (id_pdf)
+    if id_pdf is not None:
+        nombre_archivo = f"Informe_Empleado_{id_pdf}_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}.pdf"
+        nombre_ruta = "trabajoObjetos/docs/" + nombre_archivo
+        archivo.output(name=nombre_ruta,dest='F')
+        print(f"PDF generado exitosamente: {nombre_archivo}")
+    else:
+        print("No se generó el PDF porque no se encontró el informe.")

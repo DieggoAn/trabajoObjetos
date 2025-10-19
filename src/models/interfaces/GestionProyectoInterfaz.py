@@ -4,19 +4,19 @@ from controllers.functions_proyecto import *
 class GestionProyectoInterfaz(ABC):
     @abstractmethod
     def crearProyecto(self):
-        crear_proyecto()
+        pass
 
     @abstractmethod
     def buscarProyecto(self):
-        buscar_proyecto()
+        pass
 
     @abstractmethod
     def modificarProyecto(self):
-        modificar_proyecto()
+        pass
 
     @abstractmethod
     def eliminarProyecto(self):
-        eliminar_proyecto()
+        pass
 
     #@abstractmethod
     #def asignarEmpleadoAProyecto(self):

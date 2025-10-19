@@ -1,5 +1,3 @@
-# Lógica de LogIn del sistema, con opciones de iniciar sesión y registro. // posiblemente también recuperar contraseña
-
 import mysql.connector
 import pwinput
 from utils.validador import validar_rut

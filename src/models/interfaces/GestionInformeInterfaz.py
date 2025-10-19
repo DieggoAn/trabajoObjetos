@@ -1,20 +1,20 @@
 from abc import ABC, abstractmethod
-from controllers.functions_informe import * 
+#from controllers.functions_informe import * 
 
 class GestionInformeInterfaz(ABC):
 
     @abstractmethod
     def crearInforme(self):
-        crear_informe()
+        pass
 
     @abstractmethod
     def buscarInforme(self):
-        buscar_informe()
+        pass
 
     @abstractmethod
     def modificarInforme(self):
-        modificar_informe()
+        pass
 
     @abstractmethod
     def eliminarInforme(self):
-        eliminar_informe()
+        pass
