@@ -14,34 +14,6 @@ def crear_departamento():
         except Exception as Error:
                 print(f"Error inesperado al ingresar el nombre: {Error}")
 
-    while True:
-        try:
-            rut_gerente_asociado = input("Ingrese el RUT del gerente (ej: 12345678-K): ").strip().lower()
-            validar_rut(rut_gerente_asociado)
-
-            # Verificación de existencia del gerente en la base de datos
-
-            conexion = conectar_db()
-            cursor = conexion.cursor(dictionary=True)
-            cursor.execute("SELECT rol FROM usuario_basico WHERE rut_usuario = %s", (rut_gerente_asociado.upper(),))
-            resultado = cursor.fetchone()
-
-            if not resultado:
-                print("El RUT no está registrado en el sistema.")
-                continue
-            elif resultado['rol'].lower() != "gerente":
-                print("El usuario no tiene rol de Gerente.")
-                continue
-            else:
-                break
-        except ValueError as Error:
-            print(f"Error inesperado: {Error}")
-        finally:
-            if cursor:
-                cursor.close()
-            if conexion:
-                conexion.close()
-
     try:
         conexion = conectar_db()
         cursor = conexion.cursor()
@@ -51,15 +23,17 @@ def crear_departamento():
             return
         
         query = """
-            INSERT INTO departamento (nombre, rut_usuario) VALUES (%s, %s)
+            INSERT INTO departamento (nombre,descripcion) VALUES (%s,%s)
         """
-        valores = (nombre, rut_gerente_asociado.upper())
+        valores = (nombre,"")
         cursor.execute(query, valores)
         conexion.commit()
         id_generado = cursor.lastrowid
         print(f"Departamento creado con ID: {id_generado}")
 
-        nuevo_departamento = Departamento(nombre=nombre, rut_gerente=rut_gerente_asociado.upper())
+        nuevo_departamento = Departamento.Departamento(id_generado,nombre=nombre)
+
+        nuevo_departamento.asignarGerente()
     except Exception as Error:
         print(f"Error inesperado: {Error}")
     finally:
@@ -156,7 +130,7 @@ def modificar_departamento():
                         print("El RUT no está registrado en el sistema.")
                         continue
                     else:
-                        depto_obj.asignarGerente(cursor,rut_gerente)
+                        depto_obj.asignarGerente()
                         break
                 except ValueError as Error:
                     print(f"Error inesperado: {Error}")
@@ -219,9 +193,18 @@ def buscar_departamento():
         cursor = conexion.cursor()
 
         query = """
-            SELECT id_departamento, nombre, rut_usuario, descripcion   
-            FROM departamento
-            WHERE id_departamento = %s
+            SELECT 
+                d.id_departamento, 
+                d.nombre, 
+                d.descripcion,
+                u.rut_usuario AS rut_gerente
+            FROM 
+                departamento AS d
+            LEFT JOIN 
+                usuario_detalle AS u ON d.id_departamento = u.id_departamento 
+                                    AND u.rol = 'gerente'
+            WHERE 
+                d.id_departamento = %s
         """
         cursor.execute(query, (id_departamento,))
         resultado = cursor.fetchone()

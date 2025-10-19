@@ -62,5 +62,5 @@ nuevo_gerente = Gerente(
 ##menu_gestion_proyecto(nuevo_administrador, nuevo_gerente)
 
 """
-menu_gestion_emp(nuevo_administrador)
-
+##menu_gestion_emp(nuevo_administrador)
+menu_gestion_depto()
