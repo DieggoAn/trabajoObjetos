@@ -1,6 +1,12 @@
 from config import conectar_db
+<<<<<<< HEAD
+import re
+import mysql.connector
+
+=======
 import mysql.connector
 import re 
+>>>>>>> ddea6c158a68d7c7e52e40e28aef79616620f1b0
 def validar_rut(rut):
     rut = rut.strip().lower()
     if rut.count('-') != 1:

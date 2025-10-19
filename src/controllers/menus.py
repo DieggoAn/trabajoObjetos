@@ -3,7 +3,7 @@ from models import (Persona,
                     Gerente,
                     Departamento,
                     Proyecto)
-from models.Administrador import Administrador
+from models.Administrador import *
 from .functions import *
 from utils.validador import *
 from .functions_proyecto import * 
