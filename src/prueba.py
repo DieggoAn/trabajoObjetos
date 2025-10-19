@@ -2,7 +2,8 @@ from controllers.functions import *
 from controllers.menus import *
 from models.Administrador import *
 from models.Gerente import *
-
+from controllers.menu_admin import * 
+"""
 nombres_ejemplo = "Ana María"
 apellido_paterno_ejemplo = "Tapia"
 apellido_materno_ejemplo = "Rojas"
@@ -56,5 +57,6 @@ nuevo_gerente = Gerente(
 )
 #menu_gestion_informe()
 menu_gestion_proyecto(nuevo_administrador, nuevo_gerente)
+"""
 
-
+menu_admin()

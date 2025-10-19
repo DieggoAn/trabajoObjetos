@@ -1,5 +1,7 @@
 from config import conectar_db
 import re
+import mysql.connector
+
 def validar_rut(rut):
     rut = rut.strip().lower()
     if rut.count('-') != 1:
