@@ -8,10 +8,7 @@ from config import conectar_db
 import mysql.connector
 import bcrypt
 import re
-<<<<<<< HEAD
-
-=======
->>>>>>> ddea6c158a68d7c7e52e40e28aef79616620f1b0
+import pwinput
 from utils.validador import *
 from utils.validador import *
 from utils import *
@@ -255,7 +252,7 @@ class Administrador(Persona, GestionEmpInterfaz, GestionInformeInterfaz, Gestion
 
         while True:
             try:
-                contraseña_texto_plano = input("Ingrese la contraseña para el nuevo empleado: ")
+                contraseña_texto_plano = pwinput.pwinput("Ingrese la contraseña para el nuevo empleado: ", mask = "*")
                 if validar_contraseña_segura(contraseña_texto_plano):
                     contraseña_hash = bcrypt.hashpw(contraseña_texto_plano.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
                     break

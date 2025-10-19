@@ -1,21 +1,22 @@
 from abc import ABC, abstractmethod
+from controllers.functions_proyecto import * 
 
 class GestionProyectoInterfaz(ABC):
     @abstractmethod
     def crearProyecto(self):
-        pass
+        crear_proyecto()
 
     @abstractmethod
     def buscarProyecto(self):
-        pass
+        buscar_proyecto()
 
     @abstractmethod
     def modificarProyecto(self):
-        pass
+        modificar_proyecto()
 
     @abstractmethod
     def eliminarProyecto(self):
-        pass
+        eliminar_proyecto()
 
     #@abstractmethod
     #def asignarEmpleadoAProyecto(self):

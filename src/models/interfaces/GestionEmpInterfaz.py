@@ -1,22 +1,24 @@
 from abc import ABC, abstractmethod
+from controllers.functions import * 
+from controllers.LogUser import *
 
 class GestionEmpInterfaz(ABC):
 
     @abstractmethod
     def crearEmpleado(self):
-        pass
+        registrar_usuario()
 
     @abstractmethod
     def buscarEmpleado(self):
-        pass
+        buscar_empleado()
 
     @abstractmethod
     def modificarEmpleado(self):
-        pass
+        modificar_empleado()
 
     @abstractmethod
     def eliminarEmpleado(self):
-        pass
+        eliminar_empleado()
 
     #@abstractmethod
     #def asignarEmpleadoDeDep(self):

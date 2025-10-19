@@ -1,6 +1,7 @@
 # Lógica de LogIn del sistema, con opciones de iniciar sesión y registro. // posiblemente también recuperar contraseña
 
 import mysql.connector
+import pwinput
 from utils.validador import validar_rut
 from config import conectar_db
 import bcrypt
@@ -187,7 +188,7 @@ def iniciar_sesion():
         rut = input("Ingrese su RUT: ").strip().lower()
         validar_rut(rut)
 
-        contraseña_ingresada = input("Ingrese su contraseña: ").strip()
+        contraseña_ingresada = pwinput.pwinput("Ingrese su contraseña: ", mask = "*").strip()
 
         conexion = conectar_db()
         cursor = conexion.cursor(dictionary=True)
