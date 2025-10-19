@@ -56,10 +56,10 @@ class Empleado(Persona, RegistroTiempoInterfaz, GestionInformeInterfaz):
         return self.__nombres
     @nombres.setter
     def nombres(self, nombres):
-        self.__nombre = nombres
+        self.__nombres = nombres
     @nombres.deleter
     def nombres(self):
-        del self.__nombres
+        del self.nombres
     
     @property
     def apellido_paterno(self):

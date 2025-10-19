@@ -55,6 +55,6 @@ nuevo_gerente = Gerente(
     id_departamento=id_departamento_ejemplo
 )
 #menu_gestion_informe()
-menu_gestion_proyecto(nuevo_administrador, nuevo_gerente)
-
+##menu_gestion_proyecto(nuevo_administrador, nuevo_gerente)
+menu_gestion_emp(nuevo_administrador)
 

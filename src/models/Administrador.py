@@ -8,17 +8,8 @@ from config import conectar_db
 import mysql.connector
 import bcrypt
 import re
-
-<<<<<<< HEAD
-
-from utils.validador import *
-
-from utils.validador import *
-
-=======
 from utils.validador import *
 from utils.validador import *
->>>>>>> 34301cba4c36c752d2fbc745af3996e29e3f2cd3
 from utils import *
 
 from datetime import datetime
@@ -145,7 +136,7 @@ class Administrador(Persona, GestionEmpInterfaz, GestionInformeInterfaz, Gestion
         while True:
             try:
                 rut = input("Ingrese el RUT del empleado (ej: 12345678-K o 9876543-1): ").strip().lower()
-                validar_rut(rut)
+                validar_rut(rut) # Asumo que esta función levanta ValueError si es inválido
                 break
             except ValueError as Error:
                 print(Error)
@@ -156,7 +147,9 @@ class Administrador(Persona, GestionEmpInterfaz, GestionInformeInterfaz, Gestion
                 rol_usuario = input("Ingrese el rol del usuario: ").strip().lower()
                 if rol_usuario not in roles_validos:
                     raise ValueError("Rol inválido. Debe ser: Empleado, Gerente o Administrador.")
-                rol_usuario = rol_usuario.capitalize()
+                
+                # Capitaliza la primera letra para que coincida con la llave del diccionario
+                rol_usuario = rol_usuario.capitalize() 
 
                 break
             except ValueError as Error:
@@ -244,11 +237,15 @@ class Administrador(Persona, GestionEmpInterfaz, GestionInformeInterfaz, Gestion
                     print("El departamento ingresado no existe en el sistema.")
                     cursor.close()
                     conexion.close()
-                    return
+                    # Aquí deberías usar 'continue' para volver a pedir el ID, en lugar de 'return'
+                    continue 
                 
                 if len(str(id_departamento)) > 15:
                     raise ValueError("Debe ser un número de hasta 15 dígitos.")
-                break
+                
+                cursor.close()
+                conexion.close()
+                break # Si el ID es válido y existe, rompemos el bucle
             except ValueError:
                     print("Debe ingresar carácteres numéricos.")
 
@@ -259,30 +256,47 @@ class Administrador(Persona, GestionEmpInterfaz, GestionInformeInterfaz, Gestion
                     contraseña_hash = bcrypt.hashpw(contraseña_texto_plano.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
                     break
             except ValueError as Error:
+                # Asumo que validar_contraseña_segura levanta ValueError
+                print(Error)
+            except Exception as Error: 
                 print(f"Error inesperado al guardar la contraseña: {Error}")
 
         clases_usuario = {
-            "Empleado":Empleado,
-            "Gerente":Gerente,
-            "Administrador":Administrador
+            "Empleado": Empleado,
+            "Gerente": Gerente,
+            "Administrador": Administrador
         }
 
-        conexion = conectar_db()
-        cursor = conexion.cursor()
-        cursor.execute("SELECT rut_usuario FROM usuario_basico WHERE rut_usuario = %s", (rut.upper(),))
-        if cursor.fetchone():
-            print("El usuario ya existe en el sistema.")
-            cursor.close()
-            conexion.close()
+        # (Manejo de conexión temporalmente movido a la función de inserción)
+        # (Es mejor práctica pasar la conexión a la función de inserción)
+        
+        # --- ### INICIO DE LA CORRECCIÓN ### ---
+        #
+        # Aquí usamos "argumentos por palabra clave" (ej: rut=...)
+        # para asegurarnos de que pasamos todos los 12 argumentos
+        # a la clase correcta y con los nombres correctos.
+        #
+        try:
+            nuevo_usuario: Persona = clases_usuario[rol_usuario](
+                rut=rut.upper(),
+                nombres=nombre,                 # La clase espera 'nombres'
+                apellido_paterno=apellido_paterno,
+                apellido_materno=apellido_materno,
+                direccion=direccion,
+                fecha_nacimiento=fecha_nacimiento,
+                fecha_inicio_contrato=fecha_inicio_contrato,
+                salario=salario,
+                telefono=nro_telefono,          # La clase espera 'telefono'
+                contraseña=contraseña_hash,     # La clase espera 'contraseña'
+                rol=rol_usuario,                # <-- ¡Este era el que faltaba!
+                id_departamento=id_departamento
+            )
+        except Exception as e:
+            print(f"Error al crear el objeto: {e}")
             return
-        cursor.close() #Y aquí se cierra la conexión a la db.
-        conexion.close()
-
-        nuevo_usuario: Persona = clases_usuario[rol_usuario](
-            rut.upper(), nombre, apellido_paterno, apellido_materno,
-            direccion, fecha_nacimiento, fecha_inicio_contrato,
-            salario, nro_telefono, contraseña_hash, id_departamento
-        )
+        #
+        # --- ### FIN DE LA CORRECCIÓN ### ---
+        #
 
         datos_basico = (
             nuevo_usuario.rut,
@@ -291,7 +305,7 @@ class Administrador(Persona, GestionEmpInterfaz, GestionInformeInterfaz, Gestion
             nuevo_usuario.apellido_materno,
             nuevo_usuario.fecha_nacimiento,
             nuevo_usuario.telefono,
-            nuevo_usuario.contraseña_hash,
+            nuevo_usuario.contraseña, # La clase padre guarda el hash en 'contraseña'
             nuevo_usuario.rol
         )
 
@@ -304,7 +318,7 @@ class Administrador(Persona, GestionEmpInterfaz, GestionInformeInterfaz, Gestion
             nuevo_usuario.id_departamento
         )
         #para mayor persistencia y modularidad, se implementa la función insertar_empleado()
-        insertar_empleado_detalle(datos_basico, datos_detalle)
+        insertar_empleado_completo(datos_basico, datos_detalle)
         print(f"Empleado {nombre} {apellido_paterno} creado exitosamente.")
         print(f"Rol: {rol_usuario} | RUT: {rut.upper()} | ID Departamento: {id_departamento}\n")
 
