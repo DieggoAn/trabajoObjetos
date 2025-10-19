@@ -3,7 +3,7 @@ from models import (Persona,
                     Gerente,
                     Departamento,
                     Proyecto)
-from models.Administrador import *
+from models.Administrador import Administrador
 from .functions import *
 from utils.validador import *
 from .functions_proyecto import * 
@@ -148,9 +148,9 @@ def menu_gestion_emp(admin: Administrador):
             case 2:
                 admin.crearEmpleadoDetalle()
             case 3:
-                admin.buscarEmpleado()
+                admin.super_buscar_empleado()
             case 4:
-                admin.modificar_empleado()
+                admin.modificarEmpleado()
             case 5:
                 admin.eliminar_empleado()
             case 6:
