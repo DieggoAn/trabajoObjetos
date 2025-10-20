@@ -45,11 +45,14 @@ def crear_departamento():
     return nuevo_departamento
 
 def modificar_departamento():
-    try:
-        id_departamento = int(input("Ingrese el ID del departamento a modificar: "))
-    except ValueError:
-        print("Debe ingresar un carácter numérico para continuar.")
-        return
+    while True:
+        try:
+            id_departamento = int(input("Ingrese el ID del departamento a modificar: "))
+            if not id_departamento:
+                raise ValueError("Debe ingresar un carácter numérico para continuar.")
+            break
+        except ValueError as Error:
+            print(Error)
 
     try:
         conexion = conectar_db()

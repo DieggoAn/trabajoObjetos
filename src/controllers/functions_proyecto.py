@@ -147,7 +147,7 @@ def modificar_proyecto():
 
         campo = campos[opcion]
         print(f"Valor actual de '{campo}': {proyecto[campo]}")
-        nuevo_valor = input(f"Ingrese el nuevo valor para '{campo}': ").strip()
+        nuevo_valor = input(f"Ingrese el nuevo valor para '{campo}': ").strip() #agregar un while True???
 
         if campo == "nombre":
             if not nuevo_valor or not all(c.isalnum() or c.isspace() for c in nuevo_valor):

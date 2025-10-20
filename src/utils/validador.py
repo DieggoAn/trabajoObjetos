@@ -95,3 +95,64 @@ def validar_contraseña_segura(contraseña):
     
     return True
 
+def buscar_empleado_general(rut):
+    try:
+        rut = validar_rut(rut)  # Si es válido, retorna el RUT limpio
+        print(f"RUT ingresado correctamente: {rut}")
+    except ValueError as Error:
+        print(Error)
+        return  # Salir si el RUT no es válido
+
+    try:
+        conexion = conectar_db()
+        cursor = conexion.cursor()
+
+        query = """
+        SELECT rut_usuario
+        FROM usuario
+        WHERE rut_usuario = %s
+        """
+        cursor.execute(query, (rut,))
+        resultado = cursor.fetchone()
+
+        if resultado:
+            print("El usuario se encuentra registrado en el sistema.\n")
+            return True
+        else:
+            print("El usuario no está registrado.")
+            return False
+    except Exception as e:
+        print(f"Error inesperado al buscar el empleado: {e}")
+    finally:
+        if cursor:
+            cursor.close()
+        if conexion:
+            conexion.close()
+
+def buscar_proyecto_general(id_proyecto):
+    try:
+        conexion = conectar_db()
+        cursor = conexion.cursor()
+
+        query = """
+            SELECT p.id_proyecto
+            FROM proyecto p
+            JOIN departamento d ON p.id_departamento = d.id_departamento
+            WHERE p.id_proyecto = %s
+        """
+        cursor.execute(query, (id_proyecto,))
+        resultado = cursor.fetchone()
+
+        if resultado:
+            print("El proyecto se encuentra registrado en el sistema.\n")
+            return True
+        else:
+            print("No se encontró a ningún proyecto con esta ID.\n")
+            return False
+    except Exception as Error:
+        print(f"Error inesperado al buscar el proyecto: {Error}")
+    finally:
+        if cursor:
+            cursor.close()
+        if conexion:
+            conexion.close()
