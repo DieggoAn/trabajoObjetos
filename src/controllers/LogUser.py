@@ -241,7 +241,7 @@ def iniciar_sesion():
                         id_departamento=datos['id_departamento']
                     )
                 case "Gerente":
-                    usuario = Gerente(
+                    usuario = Gerente.Gerente(
                         rut=datos['rut_usuario'],
                         nombres=datos['nombres'],
                         apellido_paterno=datos['apellido_paterno'],

@@ -1,16 +1,15 @@
-from models import (Persona,
-                    Empleado,
-                    Gerente,
-                    Departamento,
-                    Proyecto)
+from models.Gerente import Gerente
+from models.Empleado import Empleado
 from models.Administrador import Administrador
-from .functions import *
-from utils.validador import *
-from .functions_proyecto import * 
-from .functions_departamento import * 
-from .functions_informe import *
+from .functions_departamento import (
+    crear_departamento,
+    buscar_departamento,
+    modificar_departamento,
+    eliminar_departamento
+)
+from typing import Union
 
-def menu_gestion_proyecto(admin: Administrador, gerente: Gerente):
+def menu_gestion_proyecto(usuario: Union [Administrador,Gerente]):
     print("MENÚ DE GESTION DE PROYECTOS\n")
     while True:
         print("OPCIÓN 1. CREAR PROYECTO")
@@ -29,31 +28,23 @@ def menu_gestion_proyecto(admin: Administrador, gerente: Gerente):
 
         match opcion_user:
             case 1:
-                if admin:
-                    admin.crear_proyecto()
-                elif gerente:
-                    gerente.crear_proyecto()
+                if usuario:
+                    usuario.crear_proyecto()
                 else:
                     print("No tienes los privilegios necesarios para acceder.")
             case 2:
-                if admin:
-                    admin.buscar_proyecto()
-                elif gerente:
-                    gerente.buscar_proyecto()
+                if usuario:
+                    usuario.buscar_proyecto()
                 else:
                     print("No tienes los privilegios de acceso necesarios para continuar.")
             case 3:
-                if admin:
-                    admin.modificar_proyecto()
-                elif gerente:
-                    gerente.modificar_proyecto()
+                if usuario:
+                    usuario.modificar_proyecto()
                 else:
                     print("No tienes los privilegios ncesarios para continuar.")
             case 4:
-                if admin:
-                    admin.eliminar_proyecto()
-                elif gerente:
-                    gerente.eliminar_proyecto()
+                if usuario:
+                    usuario.eliminar_proyecto()
                 else:
                     print("No tienes los privilegios necesarios para continuar.")
             case 5:
@@ -62,7 +53,7 @@ def menu_gestion_proyecto(admin: Administrador, gerente: Gerente):
                 break
 
 
-def menu_gestion_informe(admin: Administrador = None, emp: Empleado = None, gerente: Gerente = None):
+def menu_gestion_informe(usuario: Union [Empleado, Administrador, Gerente]):
     print("MENÚ DE GESTION DE INFORMES\n")
     while True:
         print("OPCIÓN 1. CREAR INFORME")
@@ -82,39 +73,23 @@ def menu_gestion_informe(admin: Administrador = None, emp: Empleado = None, gere
 
         match opcion_user:
             case 1:
-                if admin:
-                    admin.crearInforme()
-                elif gerente:
-                    gerente.crear_informe()
-                elif emp:
-                    emp.crear_informe()
+                if usuario:
+                    usuario.crearInforme()
                 else:
                     print("No tienes los privilegios de acceso necesarios.")
             case 2:
-                if admin:
-                    admin.buscarInforme()
-                elif gerente:
-                    gerente.buscar_informe()
-                elif emp:
-                    emp.buscar_informe()
+                if usuario:
+                    usuario.buscarInforme()
                 else:
                     print("No tienes los privilegios de acceso necesarios.")
             case 3:
-                if admin:
-                    admin.modificarInforme()
-                elif gerente:
-                    gerente.modificar_informe()
-                elif emp:
-                    emp.modificar_informe()
+                if usuario:
+                    usuario.modificarInforme()
                 else:
                     print("No tienes los privilegios de acceso necesarios.")
             case 4:
-                if admin:
-                    admin.eliminar_informe()
-                elif gerente:
-                    gerente.eliminar_informe()
-                elif emp:
-                    emp.eliminar_informe()
+                if usuario:
+                    usuario.eliminar_informe()
                 else:
                     print("No tienes los privilegios de acceso necesarios para continuar")
             case 5:
@@ -123,7 +98,7 @@ def menu_gestion_informe(admin: Administrador = None, emp: Empleado = None, gere
                 break
 
 
-def menu_gestion_emp(admin: Administrador):
+def menu_gestion_emp(usuario: Union [Administrador, Gerente]):
     print("MENÚ DE GESTION DE EMPLEADOS\n")
     while True:
         print("OPCIÓN 1. CREAR EMPLEADO DESDE CERO")
@@ -144,15 +119,15 @@ def menu_gestion_emp(admin: Administrador):
 
         match opcion_user:
             case 1:
-                admin.crearEmpleado()
+                usuario.crearEmpleado()
             case 2:
-                admin.crearEmpleadoDetalle()
+                usuario.crearEmpleadoDetalle()
             case 3:
-                admin.super_buscar_empleado()
+                usuario.super_buscar_empleado()
             case 4:
-                admin.modificarEmpleado()
+                usuario.modificarEmpleado()
             case 5:
-                admin.eliminarEmpleado()
+                usuario.eliminarEmpleado()
             case 6:
                 print("Será devuelto al menú principal...")
                 input("PRESIONE ENTER PARA CONTINUAR ")
