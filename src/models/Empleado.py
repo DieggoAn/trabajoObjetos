@@ -147,5 +147,3 @@ class Empleado(Persona, RegistroTiempoInterfaz, GestionInformeInterfaz):
     def eliminarInforme(self):
         pass
 
-    def reasignarEmpleadoDeDep(self):
-        pass

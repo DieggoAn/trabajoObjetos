@@ -10,8 +10,6 @@ import bcrypt
 import re
 import pwinput
 from utils.validador import *
-from utils.validador import *
-from utils import *
 from datetime import datetime
 
 
@@ -80,7 +78,6 @@ class Administrador(Persona, GestionEmpInterfaz, GestionInformeInterfaz, Gestion
     @salario.setter
     def salario(self, salario):
         self.__salario = salario
-
     @salario.deleter
     def salario(self):
         del self.__salario
@@ -663,9 +660,6 @@ class Administrador(Persona, GestionEmpInterfaz, GestionInformeInterfaz, Gestion
                 cursor.close()
             if conexion:
                 conexion.close()
-        
-    def reasignarEmpleadoDeDep(self):
-        pass
 
     def eliminarEmpleadoDeDep(self):
         pass
@@ -890,9 +884,6 @@ class Administrador(Persona, GestionEmpInterfaz, GestionInformeInterfaz, Gestion
         pass
 
     def eliminarProyecto(self):
-        pass
-
-    def asignarEmpleadoDeDep(self):
         pass
 
     def asignar_emp_a_proyecto(self, id_proyecto, rut_usuario):

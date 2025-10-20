@@ -1,18 +1,7 @@
 from config import conectar_db
 from datetime import datetime
-from models import (Persona,
-                    Empleado,
-                    Gerente,
-                    Administrador,
-                    Departamento,
-                    Proyecto)
-import mysql.connector
-import re
-from models import (InformeEmpleado,
-                    InformeGerente,
-                    InformeAdmin)
 from utils.validador import validar_rut
-from models.Administrador import *
+import mysql.connector
 
 def buscar_empleado(rut):
     try:
