@@ -1,5 +1,8 @@
 from controllers.LogUser import *
+from controllers.menu_admin import menu_admin
 
 
-hola = presentacion_login()
-print (hola)
+usuario = presentacion_login()
+
+if usuario.rol == "Administrador":
+    menu_admin(usuario)

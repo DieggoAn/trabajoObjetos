@@ -2,8 +2,9 @@ from .menus import (menu_gestion_emp,
                        menu_gestion_depto,
                        menu_gestion_informe,
                        menu_gestion_proyecto)
+from models.Administrador import Administrador
 
-def menu_admin():
+def menu_admin(admin: Administrador):
     """
     Muestra el menú principal para el rol de administrador.
     Permite gestionar empleados, departamentos, informes y proyectos.
@@ -28,16 +29,16 @@ def menu_admin():
 
         match opcion_user:
             case 1:
-                menu_gestion_emp()
+                menu_gestion_emp(admin)
 
             case 2:
                 menu_gestion_depto()
 
             case 3:
-                menu_gestion_informe()
+                menu_gestion_informe(admin)
 
             case 4:
-                menu_gestion_proyecto()
+                menu_gestion_proyecto(admin)
 
             case 5:
                 print("Sesión cerrada exitosamente.")
