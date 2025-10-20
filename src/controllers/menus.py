@@ -62,7 +62,7 @@ def menu_gestion_proyecto(admin: Administrador, gerente: Gerente):
                 break
 
 
-def menu_gestion_informe(admin: Administrador, emp: Empleado, gerente: Gerente):
+def menu_gestion_informe(admin: Administrador = None, emp: Empleado = None, gerente: Gerente = None):
     print("MENÚ DE GESTION DE INFORMES\n")
     while True:
         print("OPCIÓN 1. CREAR INFORME")
@@ -83,7 +83,7 @@ def menu_gestion_informe(admin: Administrador, emp: Empleado, gerente: Gerente):
         match opcion_user:
             case 1:
                 if admin:
-                    admin.crear_informe()
+                    admin.crearInforme()
                 elif gerente:
                     gerente.crear_informe()
                 elif emp:
@@ -92,7 +92,7 @@ def menu_gestion_informe(admin: Administrador, emp: Empleado, gerente: Gerente):
                     print("No tienes los privilegios de acceso necesarios.")
             case 2:
                 if admin:
-                    admin.buscar_informe()
+                    admin.buscarInforme()
                 elif gerente:
                     gerente.buscar_informe()
                 elif emp:
@@ -101,7 +101,7 @@ def menu_gestion_informe(admin: Administrador, emp: Empleado, gerente: Gerente):
                     print("No tienes los privilegios de acceso necesarios.")
             case 3:
                 if admin:
-                    admin.modificar_informe()
+                    admin.modificarInforme()
                 elif gerente:
                     gerente.modificar_informe()
                 elif emp:

@@ -12,7 +12,6 @@ import pwinput
 from utils.validador import *
 from utils.validador import *
 from utils import *
-
 from datetime import datetime
 
 
@@ -686,13 +685,196 @@ class Administrador(Persona, GestionEmpInterfaz, GestionInformeInterfaz, Gestion
 
 
     def crearInforme(self):
-        pass
+            """
+            Permite al Administrador crear un nuevo registro de informe
+            en la base de datos.
+            """
+            print("\n--- Creación de Nuevo Informe (Admin) ---")
+            
+            # 1. Obtener datos por input
+            while True:
+                descripcion = input("Ingrese la descripción del informe: ").strip()
+                if descripcion:
+                    break
+                print("Error: La descripción no puede estar vacía.")
+
+            while True:
+                formato = input("Ingrese el formato (ej: PDF, CSV, Excel): ").strip().upper()
+                if formato:
+                    break
+                print("Error: El formato no puede estar vacío.")
+            
+            # 2. Obtener datos automáticos
+            fecha_creacion = datetime.now().date()
+            
+            # Asumimos que el RUT está guardado en self.rut gracias al __init__
+            # (Si usaste una variable privada, podría ser self._rut)
+            try:
+                rut_admin = self.rut[0]
+            except AttributeError:
+                print("Error: No se pudo obtener el RUT del administrador.")
+                return
+
+            # 3. Operación de Base de Datos
+            conexion = None
+            cursor = None
+            
+            try:
+                conexion = conectar_db()
+                cursor = conexion.cursor()
+
+                query = """
+                    INSERT INTO informe (descripcion, formato, fecha, rut_usuario)
+                    VALUES (%s, %s, %s, %s)
+                """
+                valores = (descripcion, formato, fecha_creacion, rut_admin)
+                cursor.execute(query, valores)
+                conexion.commit()
+                
+                id_informe = cursor.lastrowid
+                print(f"\n¡Éxito! Informe ID:{id_informe} creado exitosamente.")
+                print(f"Autor: {rut_admin}")
+                print(f"Fecha: {fecha_creacion.strftime('%Y-%m-%d %H:%M:%S')}")
+
+            except Exception as e:
+                print(f"\nError al guardar el informe en la base de datos: {e}")
+                if conexion:
+                    conexion.rollback() # Revertir cambios si algo falló
+            
+            finally:
+                if cursor:
+                    cursor.close()
+                if conexion:
+                    conexion.close()
 
     def buscarInforme(self):
-        pass
+            """
+            Busca un informe en la base de datos por su ID
+            e imprime los detalles.
+            """
+            print("\n--- Búsqueda de Informe ---")
+
+            # 1. Obtener y validar el ID del informe
+            id_a_buscar = None
+            while True:
+                try:
+                    id_a_buscar = int(input("Ingrese el ID del informe a buscar: "))
+                    if id_a_buscar > 0:
+                        break
+                    print("Error: El ID debe ser un número positivo.")
+                except ValueError:
+                    print("Error: Debe ingresar un valor numérico.")
+
+            # 2. Operación de Base de Datos
+            conexion = None
+            cursor = None
+            
+            try:
+                conexion = conectar_db()
+                # Usamos dictionary=True para obtener resultados como diccionarios
+                cursor = conexion.cursor(dictionary=True)
+
+                query = """
+                    SELECT id_informe, descripcion, formato, fecha, rut_usuario
+                    FROM informe
+                    WHERE id_informe = %s
+                """
+                
+                cursor.execute(query, (id_a_buscar,))
+                resultado = cursor.fetchone()
+
+                # 3. Imprimir resultados
+                if resultado:
+                    print("\n--- Informe Encontrado ---")
+                    print(f"ID Informe:  {resultado['id_informe']}")
+                    print(f"Autor (RUT): {resultado['rut_usuario']}")
+                    print(f"Fecha (YYYY-MM-DD): {resultado['fecha']}")
+                    print(f"Formato:     {resultado['formato']}")
+                    print(f"Descripción: {resultado['descripcion']}")
+                else:
+                    print(f"\nNo se encontró ningún informe con el ID: {id_a_buscar}")
+
+            except Exception as e:
+                print(f"\nError al buscar el informe en la base de datos: {e}")
+            
+            finally:
+                if cursor:
+                    cursor.close()
+                if conexion:
+                    conexion.close()
 
     def modificarInforme(self):
-        pass
+        """
+        Busca un informe por ID y actualiza su descripción y fecha.
+        """
+        print("\n--- Modificación de Informe ---")
+
+        # 1. Obtener y validar el ID del informe
+        id_a_modificar = None
+        while True:
+            try:
+                id_a_modificar = int(input("Ingrese el ID del informe a modificar: "))
+                if id_a_modificar > 0:
+                    break
+                print("Error: El ID debe ser un número positivo.")
+            except ValueError:
+                print("Error: Debe ingresar un valor numérico.")
+
+        # 2. Operación de Base de Datos
+        conexion = None
+        cursor = None
+        
+        try:
+            conexion = conectar_db()
+            cursor = conexion.cursor()
+
+            # 3. VERIFICAR SI EL INFORME EXISTE
+            query_verificar = "SELECT id_informe FROM informe WHERE id_informe = %s"
+            cursor.execute(query_verificar, (id_a_modificar,))
+            resultado = cursor.fetchone()
+
+            if not resultado:
+                print(f"\nNo se encontró ningún informe con el ID: {id_a_modificar}")
+                return # Salimos de la función si no existe
+            
+            # 4. SI EXISTE, PEDIMOS NUEVOS DATOS
+            print("Informe encontrado. Ingrese los nuevos datos.")
+            
+            nueva_descripcion = ""
+            while True:
+                nueva_descripcion = input("Ingrese la nueva descripción: ").strip()
+                if nueva_descripcion:
+                    break
+                print("Error: La descripción no puede estar vacía.")
+
+            # Obtenemos la fecha actual (tipo DATE)
+            nueva_fecha = datetime.now().date()
+
+            # 5. EJECUTAR LA ACTUALIZACIÓN
+            query_actualizar = """
+                UPDATE informe 
+                SET descripcion = %s, fecha = %s 
+                WHERE id_informe = %s
+            """
+            valores = (nueva_descripcion, nueva_fecha, id_a_modificar)
+            
+            cursor.execute(query_actualizar, valores)
+            conexion.commit()
+            
+            print("\n¡Éxito! El informe ha sido modificado.")
+            print(f"ID: {id_a_modificar}")
+            print(f"Nueva Fecha: {nueva_fecha}")
+
+        except Exception as e:
+            print(f"\nError al modificar el informe: {e}")
+            if conexion:
+                conexion.rollback() # Revertir cambios si algo falló
+        
+        finally:
+            if cursor:
+                cursor.close()
+            if conexion:
+                conexion.close()
 
     def eliminarInforme(self):
         pass

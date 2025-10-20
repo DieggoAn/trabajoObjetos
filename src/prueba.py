@@ -14,7 +14,7 @@ fecha_inicio_contrato_ejemplo = "2023-03-01"
 salario_ejemplo = 1800000
 telefono_ejemplo = "912345678"
 contraseña_ejemplo = "91919191"
-rut_ejemplo = "15444333-2"
+rut_ejemplo = "20135111-1",
 estadoSesion_ejemplo = False
 id_departamento_ejemplo = 1
 
@@ -63,4 +63,5 @@ nuevo_gerente = Gerente(
 
 """
 ##menu_gestion_emp(nuevo_administrador)
-menu_gestion_depto()
+##menu_gestion_depto()
+menu_gestion_informe(nuevo_administrador)

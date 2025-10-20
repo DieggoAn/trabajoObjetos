@@ -6,7 +6,7 @@ import mysql.connector
 from fpdf import FPDF
 
 
-def crear_informe(admin: Administrador, gerente: Gerente):
+def crear_informe(admin: Administrador=None, gerente: Gerente=None):
     formatos_disp = {
         1: "pdf",
         2: "excel"

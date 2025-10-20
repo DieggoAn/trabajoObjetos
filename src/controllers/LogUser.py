@@ -29,8 +29,8 @@ def presentacion_login():
 
         match opcion_user:
             case 1:
-                iniciar_sesion()
-
+                usuario = iniciar_sesion()
+                return usuario
             case 2:
                 registrar_usuario()
 
@@ -226,7 +226,7 @@ def iniciar_sesion():
                         id_departamento=datos['id_departamento']
                     )
                 case "Administrador":
-                    usuario = Administrador(
+                    usuario = Administrador.Administrador(
                         rut=datos['rut_usuario'],
                         nombres=datos['nombres'],
                         apellido_paterno=datos['apellido_paterno'],
