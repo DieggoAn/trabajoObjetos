@@ -1,6 +1,4 @@
 from abc import ABC, abstractmethod
-#from controllers.functions import * 
-#from controllers.LogUser import registrar_usuario
 
 class GestionEmpInterfaz(ABC):
 

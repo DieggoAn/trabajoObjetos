@@ -156,3 +156,34 @@ def buscar_proyecto_general(id_proyecto):
             cursor.close()
         if conexion:
             conexion.close()
+
+def insertar_empleado_completo(datos_basico, datos_detalle):
+    try:
+        conexion = conectar_db()
+        cursor = conexion.cursor()
+        query_basico = """
+            INSERT INTO usuario_basico (
+                rut_usuario, nombres, apellido_paterno, apellido_materno,
+                fecha_nacimiento, numero_telefonico, direccion, contraseña, email
+            ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s,%s)
+        """
+        query_detalle = """
+            INSERT INTO usuario_detalle (
+                rut_usuario, fecha_inicio_contrato,
+                salario, rol, id_departamento
+            ) VALUES (%s, %s, %s, %s, %s)
+        """
+        cursor.execute(query_basico, datos_basico)
+        cursor.execute(query_detalle, datos_detalle)
+        conexion.commit()
+        print("Empleado creado con éxito.\n")
+
+    except mysql.connector.Error as Error:
+        print(f"Error inesperado: {Error}")
+    finally:
+        if cursor:
+            cursor.close()
+        if conexion:
+            conexion.close()
+
+

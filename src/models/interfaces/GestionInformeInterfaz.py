@@ -1,5 +1,4 @@
 from abc import ABC, abstractmethod
-#from controllers.functions_informe import * 
 
 class GestionInformeInterfaz(ABC):
 
