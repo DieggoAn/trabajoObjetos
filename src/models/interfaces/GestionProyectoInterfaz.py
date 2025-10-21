@@ -1,5 +1,4 @@
 from abc import ABC, abstractmethod
-from controllers.functions_proyecto import * 
 
 class GestionProyectoInterfaz(ABC):
     @abstractmethod
