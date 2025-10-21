@@ -99,7 +99,7 @@ def modificar_departamento():
 
                     conexion = conectar_db()
                     cursor = conexion.cursor(dictionary=True)
-                    cursor.execute("SELECT rol FROM usuario_basico WHERE rut_usuario = %s", (rut_empleado.upper(),))
+                    cursor.execute("SELECT rol FROM usuario_detalle WHERE rut_usuario = %s", (rut_empleado.upper(),))
                     resultado = cursor.fetchone()
 
                     if not resultado:
@@ -126,7 +126,7 @@ def modificar_departamento():
 
                     conexion = conectar_db()
                     cursor = conexion.cursor(dictionary=True)
-                    cursor.execute("SELECT rol FROM usuario_basico WHERE rut_usuario = %s", (rut_gerente.upper(),))
+                    cursor.execute("SELECT rol FROM usuario_detalle WHERE rut_usuario = %s", (rut_gerente.upper(),))
                     resultado = cursor.fetchone()
 
                     if not resultado:
