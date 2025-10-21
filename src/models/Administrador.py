@@ -910,31 +910,30 @@ class Administrador(Persona, GestionEmpInterfaz, GestionInformeInterfaz, Gestion
             except ValueError:
                 print("Formato inválido. Use el formato DD/MM/AAAA.")
              
-            try:
-                conexion = conectar_db()
-                cursor = conexion.cursor()
-                cursor.execute("SELECT id_proyecto FROM proyecto WHERE LOWER(nombre) = %s", (nombre.lower(),))
-                if cursor.fetchone():
-                    print("Ya existe un proyecto con ese nombre.")
-                    return
-        
-                query = "INSERT INTO proyecto (nombre, descripcion, fecha_inicio) VALUES (%s, %s, %s)"
-                valores = (nombre, descripcion, fecha)
-                cursor.execute(query, valores)
-                conexion.commit()
-                id_generado = cursor.lastrowid
-                print(f"Detalles del proyecto creado:\n")
-                print(f"Nombre: {nombre} | Descripción: {descripcion} | Fecha: {fecha} | ID: {id_generado}")
+        try:
+            conexion = conectar_db()
+            cursor = conexion.cursor()
+            cursor.execute("SELECT id_proyecto FROM proyecto WHERE LOWER(nombre) = %s", (nombre.lower(),))
+            if cursor.fetchone():
+                print("Ya existe un proyecto con ese nombre.")
+                return
+    
+            query = "INSERT INTO proyecto (nombre, descripcion, fecha_inicio) VALUES (%s, %s, %s)"
+            valores = (nombre, descripcion, fecha)
+            cursor.execute(query, valores)
+            conexion.commit()
+            id_generado = cursor.lastrowid
+            print(f"Detalles del proyecto creado:\n")
+            print(f"Nombre: {nombre} | Descripción: {descripcion} | Fecha: {fecha} | ID: {id_generado}")
 
-                proyecto_nuevo = Proyecto(id_generado, nombre, descripcion, fecha)
-                return proyecto_nuevo
-            except Exception as Error:
-                print(f"Error al crear el proyecto: {Error}")
-            finally:
-                if cursor:
-                    cursor.close()
-                if conexion:
-                    conexion.close()
+
+        except Exception as Error:
+            print(f"Error al crear el proyecto: {Error}")
+        finally:
+            if cursor:
+                cursor.close()
+            if conexion:
+                conexion.close()
 
     def buscarProyecto(self):
         while True:
@@ -944,40 +943,51 @@ class Administrador(Persona, GestionEmpInterfaz, GestionInformeInterfaz, Gestion
             except ValueError as Error:
                 print(f"Error inesperado: {Error}")
 
-            try:
-                conexion = conectar_db()
-                cursor = conexion.cursor()
+        try:
+            conexion = conectar_db()
+            cursor = conexion.cursor()
 
-                query = """
-                    SELECT p.id_proyecto, p.nombre, p.descripcion, p.fecha_inicio, p.id_departamento, d.nombre AS nombre_departamento
-                    FROM proyecto p
-                    JOIN departamento d ON p.id_departamento = d.id_departamento
-                    WHERE p.id_proyecto = %s
-                    """
-                cursor.execute(query, (id_proyecto,))
-                resultado = cursor.fetchone()
+            query = """
+                SELECT 
+                    p.id_proyecto, 
+                    p.nombre, 
+                    p.descripcion, 
+                    p.fecha_inicio, 
+                    ud.rut_usuario, 
+                    ud.id_departamento
+                FROM 
+                    proyecto AS p
+                LEFT JOIN 
+                    proyecto_has_usuario_detalle AS phu ON p.id_proyecto = phu.id_proyecto
+                LEFT JOIN 
+                    usuario_detalle AS ud ON phu.rut_usuario = ud.rut_usuario
+                WHERE 
+                    p.id_proyecto = %s;
+                """
+            cursor.execute(query, (id_proyecto,))
+            resultado = cursor.fetchone()
 
-                if resultado:
-                    print("\nDatos del proyecto encontrado:")
-                    campos = ["ID Proyecto",
-                        "Nombre",
-                        "Descripcion",
-                        "Fecha de inicio",
-                        "ID Departamento",
-                        "Nombre del departamento"
-                    ]               
-                    for campo, valor in zip(campos, resultado):
-                        print(f"{campo}: {valor}")
-                        print()
-                else:
-                    print("No se encontró a ningún proyecto con esta ID.\n")
-            except Exception as Error:
-                print(f"Error inesperado al buscar el proyecto: {Error}")
-            finally:
-                if cursor:
-                    cursor.close()
-                if conexion:
-                    conexion.close()
+            if resultado:
+                print("\nDatos del proyecto encontrado:")
+                campos = ["ID Proyecto",
+                    "Nombre",
+                    "Descripcion",
+                    "Fecha de inicio",
+                    "ID Departamento",
+                    "Nombre del departamento"
+                ]               
+                for campo, valor in zip(campos, resultado):
+                    print(f"{campo}: {valor}")
+                    print()
+            else:
+                print("No se encontró a ningún proyecto con esta ID.\n")
+        except Exception as Error:
+            print(f"Error inesperado al buscar el proyecto: {Error}")
+        finally:
+            if cursor:
+                cursor.close()
+            if conexion:
+                conexion.close()
 
     def modificarProyecto(self):
         while True:

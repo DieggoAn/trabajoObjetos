@@ -29,22 +29,22 @@ def menu_gestion_proyecto(usuario: Union [Administrador,Gerente]):
         match opcion_user:
             case 1:
                 if usuario:
-                    usuario.crear_proyecto()
+                    usuario.crearProyecto()
                 else:
                     print("No tienes los privilegios necesarios para acceder.")
             case 2:
                 if usuario:
-                    usuario.buscar_proyecto()
+                    usuario.buscarProyecto()
                 else:
                     print("No tienes los privilegios de acceso necesarios para continuar.")
             case 3:
                 if usuario:
-                    usuario.modificar_proyecto()
+                    usuario.modificarProyecto()
                 else:
                     print("No tienes los privilegios ncesarios para continuar.")
             case 4:
                 if usuario:
-                    usuario.eliminar_proyecto()
+                    usuario.eliminarProyecto()
                 else:
                     print("No tienes los privilegios necesarios para continuar.")
             case 5:
