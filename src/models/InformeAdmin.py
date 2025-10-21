@@ -5,15 +5,14 @@ class InformeAdmin(Informe, ExportarInformeInterfaz):
     def __init__ (self,
                   idInforme,
                   descripcion,
-                  formato,
                   fecha, rutAdmin):
         
-        super().__init__(idInforme, descripcion, formato, fecha)
+        super().__init__(idInforme, descripcion, fecha)
 
         self.rutAdmin = rutAdmin
 
     def __str__ (self):
-        return f"Datos del informe de ADMIN:\nID: {self.idInforme}\nFormato: {self.formato}\nFecha: {self.fecha}"
+        return f"Datos del informe de ADMIN:\nID: {self.idInforme}\nFecha: {self.fecha}"
     
     """Métodos de la interfaz exportar informe"""
 

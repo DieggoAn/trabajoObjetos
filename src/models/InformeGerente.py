@@ -5,10 +5,9 @@ class InformeGerente(Informe, ExportarInformeInterfaz):
     def __init__(self,
                   idInforme,
                   descripcion,
-                  formato,
                   fecha,
                   rutGerente):
-        super().__init__(idInforme, descripcion, formato, fecha)
+        super().__init__(idInforme, descripcion, fecha)
 
         self.rutGerente = rutGerente
 
@@ -16,7 +15,6 @@ class InformeGerente(Informe, ExportarInformeInterfaz):
         return (f"Datos del informe de GERENTE:\n"
                 f"ID: {self.idInforme}\n"
                 f"Descripción: {self.descripcion}\n"
-                f"Formato: {self.formato}\n"
                 f"Fecha: {self.fecha}\n"
                 f"RUT Gerente: {self.rutGerente}")
     

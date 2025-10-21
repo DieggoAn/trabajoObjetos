@@ -3,7 +3,7 @@ from config import conectar_db
 
 class Persona(ABC):
     def __init__(self, rut, nombres, apellido_paterno, apellido_materno, direccion,
-                 fecha_nacimiento, fecha_inicio_contrato, salario, telefono, rol, contraseña, id_departamento):
+                 fecha_nacimiento, fecha_inicio_contrato, salario, telefono, rol, email, contraseña, id_departamento):
         self.rut = rut
         self.nombres = nombres
         self.apellido_paterno = apellido_paterno
@@ -15,6 +15,7 @@ class Persona(ABC):
         self.telefono = telefono
         self.contraseña = contraseña
         self.rol = rol
+        self.email = email
         self.id_departamento = id_departamento
 
     def __str__(self):

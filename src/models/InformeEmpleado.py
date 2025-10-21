@@ -8,9 +8,8 @@ class InformeEmpleado(Informe, ExportarInformeInterfaz):
     def __init__ (self,
                   idInforme,
                   descripcion,
-                  formato,
                   fecha, rutEmpleado):
-        super().__init__(idInforme, descripcion, formato, fecha)
+        super().__init__(idInforme, descripcion, fecha)
 
         self.rutEmpleado = rutEmpleado
 
@@ -18,7 +17,6 @@ class InformeEmpleado(Informe, ExportarInformeInterfaz):
         return (f"Datos del informe de EMPLEADO:\n"
                 f"ID: {self.idInforme}\n"
                 f"Descripción: {self.descripcion}\n"
-                f"Formato: {self.formato}\n"
                 f"Fecha: {self.fecha}\n"
                 f"RUT Empleado: {self.rutEmpleado}")
 

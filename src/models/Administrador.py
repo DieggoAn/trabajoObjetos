@@ -16,7 +16,7 @@ from datetime import datetime
 class Administrador(Persona, GestionEmpInterfaz, GestionInformeInterfaz, GestionDeptoInterfaz):
     def __init__(self, nombres, apellido_paterno, apellido_materno,
                  direccion, fecha_nacimiento, fecha_inicio_contrato,
-                 salario, telefono,contraseña, rut,rol, id_departamento):
+                 salario, telefono,contraseña, rut, rol, email, id_departamento):
         
         super().__init__(
             rut=rut,
@@ -30,6 +30,7 @@ class Administrador(Persona, GestionEmpInterfaz, GestionInformeInterfaz, Gestion
             telefono=telefono,
             contraseña=contraseña,
             rol="Administrador",
+            email=email,
             id_departamento=id_departamento)
 
     def __str__(self):
@@ -301,13 +302,13 @@ class Administrador(Persona, GestionEmpInterfaz, GestionInformeInterfaz, Gestion
             nuevo_usuario.apellido_materno,
             nuevo_usuario.fecha_nacimiento,
             nuevo_usuario.telefono,
+            nuevo_usuario.direccion,
             nuevo_usuario.contraseña, # La clase padre guarda el hash en 'contraseña'
-            nuevo_usuario.rol
+            nuevo_usuario.email
         )
 
         datos_detalle = (
             nuevo_usuario.rut,
-            nuevo_usuario.direccion,
             nuevo_usuario.fecha_inicio_contrato,
             nuevo_usuario.salario,
             nuevo_usuario.rol,
@@ -424,7 +425,6 @@ class Administrador(Persona, GestionEmpInterfaz, GestionInformeInterfaz, Gestion
 
         datos_detalle = (
             nuevo_usuario.rut,
-            nuevo_usuario.direccion,
             nuevo_usuario.fecha_inicio_contrato,
             nuevo_usuario.salario,
             nuevo_usuario.rol,
@@ -453,8 +453,8 @@ class Administrador(Persona, GestionEmpInterfaz, GestionInformeInterfaz, Gestion
 
         query = """
         SELECT ub.rut_usuario, ub.nombres, ub.apellido_paterno, ub.apellido_materno,
-            ud.direccion, ub.fecha_nacimiento, ud.fecha_inicio_contrato,
-            ud.salario, ub.numero_telefonico, ub.rol, ud.id_departamento
+            ub.direccion, ub.fecha_nacimiento, ud.fecha_inicio_contrato,
+            ud.salario, ub.numero_telefonico, ud.rol, ud.id_departamento, ub.email
         FROM usuario_basico ub
         JOIN usuario_detalle ud ON ub.rut_usuario = ud.rut_usuario
         WHERE ub.rut_usuario = %s
@@ -525,8 +525,8 @@ class Administrador(Persona, GestionEmpInterfaz, GestionInformeInterfaz, Gestion
 
         try:
             opcion = int(input("Seleccione una opción (1-10): "))
-            basico = [1,2,3,5,8]
-            detalle = [4,6,7,9,10]
+            basico = [1,2,3,4,5,8,10]
+            detalle = [4,6,7,9,11]
             campos = {
                 1: "nombres",
                 2: "apellido_paterno",
@@ -537,7 +537,8 @@ class Administrador(Persona, GestionEmpInterfaz, GestionInformeInterfaz, Gestion
                 7: "salario",
                 8: "numero_telefonico",
                 9: "rol",
-                10: "id_departamento"
+                10: "email",
+                11: "id_departamento"
             }
             if opcion not in campos:
                 print("Opción inválida.")
@@ -692,12 +693,6 @@ class Administrador(Persona, GestionEmpInterfaz, GestionInformeInterfaz, Gestion
                     break
                 print("Error: La descripción no puede estar vacía.")
 
-            while True:
-                formato = input("Ingrese el formato (ej: PDF, CSV, Excel): ").strip().upper()
-                if formato:
-                    break
-                print("Error: El formato no puede estar vacío.")
-            
             # 2. Obtener datos automáticos
             fecha_creacion = datetime.now().date()
             
@@ -718,10 +713,10 @@ class Administrador(Persona, GestionEmpInterfaz, GestionInformeInterfaz, Gestion
                 cursor = conexion.cursor()
 
                 query = """
-                    INSERT INTO informe (descripcion, formato, fecha, rut_usuario)
-                    VALUES (%s, %s, %s, %s)
+                    INSERT INTO informe (descripcion, fecha, rut_usuario)
+                    VALUES (%s, %s, %s)
                 """
-                valores = (descripcion, formato, fecha_creacion, rut_admin)
+                valores = (descripcion, fecha_creacion, rut_admin)
                 cursor.execute(query, valores)
                 conexion.commit()
                 
@@ -769,7 +764,7 @@ class Administrador(Persona, GestionEmpInterfaz, GestionInformeInterfaz, Gestion
                 cursor = conexion.cursor(dictionary=True)
 
                 query = """
-                    SELECT id_informe, descripcion, formato, fecha, rut_usuario
+                    SELECT id_informe, descripcion, fecha, rut_usuario
                     FROM informe
                     WHERE id_informe = %s
                 """
@@ -783,7 +778,6 @@ class Administrador(Persona, GestionEmpInterfaz, GestionInformeInterfaz, Gestion
                     print(f"ID Informe:  {resultado['id_informe']}")
                     print(f"Autor (RUT): {resultado['rut_usuario']}")
                     print(f"Fecha (YYYY-MM-DD): {resultado['fecha']}")
-                    print(f"Formato:     {resultado['formato']}")
                     print(f"Descripción: {resultado['descripcion']}")
                 else:
                     print(f"\nNo se encontró ningún informe con el ID: {id_a_buscar}")

@@ -30,9 +30,9 @@ def insertar_empleado_detalle(datos_detalle):
         cursor = conexion.cursor()
         query_detalle = """
             INSERT INTO usuario_detalle (
-                rut_usuario, direccion, fecha_inicio_contrato,
+                rut_usuario, fecha_inicio_contrato,
                 salario, rol, id_departamento
-            ) VALUES (%s, %s, %s, %s, %s, %s)
+            ) VALUES (%s, %s, %s, %s, %s)
         """
         cursor.execute(query_detalle, datos_detalle)
         conexion.commit()
@@ -52,14 +52,14 @@ def insertar_empleado_completo(datos_basico, datos_detalle):
         query_basico = """
             INSERT INTO usuario_basico (
                 rut_usuario, nombres, apellido_paterno, apellido_materno,
-                fecha_nacimiento, numero_telefonico, contraseña, rol
-            ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+                fecha_nacimiento, numero_telefonico, direccion , contraseña, email
+            ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
         """
         query_detalle = """
             INSERT INTO usuario_detalle (
-                rut_usuario, direccion, fecha_inicio_contrato,
+                rut_usuario, fecha_inicio_contrato,
                 salario, rol, id_departamento
-            ) VALUES (%s, %s, %s, %s, %s, %s)
+            ) VALUES (%s, %s, %s, %s, %s)
         """
         cursor.execute(query_basico, datos_basico)
         cursor.execute(query_detalle, datos_detalle)

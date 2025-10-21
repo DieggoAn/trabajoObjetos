@@ -12,7 +12,7 @@ import bcrypt
 class Gerente(Persona, GestionEmpInterfaz, GestionProyectoInterfaz):
     def __init__ (self, rut, nombres, apellido_paterno, apellido_materno,
                  direccion, fecha_nacimiento, fecha_inicio_contrato,
-                 salario, telefono, contraseña, rol, id_departamento):
+                 salario, telefono, contraseña, rol,email , id_departamento):
         
         super().__init__(
             rut=rut,
@@ -26,6 +26,7 @@ class Gerente(Persona, GestionEmpInterfaz, GestionProyectoInterfaz):
             telefono=telefono,
             contraseña=contraseña ,
             rol="Gerente",
+            email=email,
             id_departamento=id_departamento
 )
 

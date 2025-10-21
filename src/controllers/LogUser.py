@@ -159,8 +159,8 @@ def registrar_usuario():
             query = """
             INSERT INTO usuario_basico (
                 rut_usuario, nombres, apellido_paterno, apellido_materno,
-                fecha_nacimiento, numero_telefonico, contraseña
-            ) VALUES (%s, %s, %s, %s, %s, %s, %s)
+                fecha_nacimiento, direccion, numero_telefonico, contraseña, email
+            ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
             """
 
             valores = (
@@ -193,8 +193,8 @@ def iniciar_sesion():
 
         query = """SELECT
             ub.rut_usuario, ub.nombres, ub.apellido_paterno, ub.apellido_materno,
-            ub.fecha_nacimiento, ub.numero_telefonico, ub.contraseña, ub.rol,
-            ud.direccion, ud.fecha_inicio_contrato, ud.salario, ud.id_departamento
+            ub.fecha_nacimiento, ub.numero_telefonico, ub.contraseña, ud.rol,
+            ub.direccion, ud.fecha_inicio_contrato, ud.salario, ud.id_departamento, ub.email
         FROM usuario_basico ub
         LEFT JOIN usuario_detalle ud ON ub.rut_usuario = ud.rut_usuario
         WHERE ub.rut_usuario = %s"""

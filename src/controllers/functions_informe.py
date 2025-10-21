@@ -61,15 +61,15 @@ def crear_informe(admin: Administrador=None, gerente: Gerente=None):
         conexion = conectar_db()
         cursor = conexion.cursor(dictionary=True)
         query = """
-            INSERT INTO informe (descripcion, formato, fecha, rut_usuario)
-            VALUES (%s, %s, %s, %s)
+            INSERT INTO informe (descripcion, fecha, rut_usuario)
+            VALUES (%s, %s, %s)
         """
-        valores = (descripcion, formato, fecha, rut)
+        valores = (descripcion, fecha, rut)
         cursor.execute(query, valores)
         conexion.commit()
         id_generado = cursor.lastrowid
         print(f"Detalles del informe creado:\n")
-        print(f"ID generado: {id_generado} | Formato: {formato} | Fecha: {fecha} | RUT: {rut}\nDescripción: {descripcion}\n")
+        print(f"ID generado: {id_generado} | Fecha: {fecha} | RUT: {rut}\nDescripción: {descripcion}\n")
 
         if admin:
             informe_nuevo = InformeAdmin(id_generado, descripcion, formato, fecha, rut)

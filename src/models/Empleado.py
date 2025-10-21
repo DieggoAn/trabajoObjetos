@@ -7,7 +7,7 @@ from datetime import datetime
 
 class Empleado(Persona, RegistroTiempoInterfaz, GestionInformeInterfaz):
     def __init__ (self, rut,direccion, fecha_inicio_contrato,salario,rol,id_departamento, nombres=None, apellido_paterno=None, apellido_materno=None, 
-                 fecha_nacimiento=None,  telefono=None, contraseña=None):
+                 fecha_nacimiento=None, email = None,  telefono=None, contraseña=None):
         
         super().__init__(
         rut=rut,
@@ -21,6 +21,7 @@ class Empleado(Persona, RegistroTiempoInterfaz, GestionInformeInterfaz):
         telefono=telefono,
         contraseña=contraseña,
         rol=rol,
+        email=email,
         id_departamento=id_departamento)
         
         ##self.registro = RegistroTiempo(self.rut,self.fecha_inicio_contrato,self)
@@ -145,12 +146,6 @@ class Empleado(Persona, RegistroTiempoInterfaz, GestionInformeInterfaz):
             if descripcion:
                 break
             print("Error: La descripción no puede estar vacía.")
-
-        while True:
-            formato = input("Ingrese el formato (ej: PDF, CSV, Excel): ").strip().upper()
-            if formato:
-                break
-            print("Error: El formato no puede estar vacío.")
         
         # 2. Obtener datos automáticos
         fecha_creacion = datetime.now().date()
@@ -172,10 +167,10 @@ class Empleado(Persona, RegistroTiempoInterfaz, GestionInformeInterfaz):
             cursor = conexion.cursor()
 
             query = """
-                INSERT INTO informe (descripcion, formato, fecha, rut_usuario)
-                VALUES (%s, %s, %s, %s)
+                INSERT INTO informe (descripcion, fecha, rut_usuario)
+                VALUES (%s, %s, %s)
             """
-            valores = (descripcion, formato, fecha_creacion, rut_admin)
+            valores = (descripcion, fecha_creacion, rut_admin)
             cursor.execute(query, valores)
             conexion.commit()
             
@@ -223,7 +218,7 @@ class Empleado(Persona, RegistroTiempoInterfaz, GestionInformeInterfaz):
 
             # Definimos la consulta base y los valores
             query = """
-                SELECT id_informe, descripcion, formato, fecha, rut_usuario
+                SELECT id_informe, descripcion, fecha, rut_usuario
                 FROM informe
                 WHERE id_informe = %s
             """
@@ -248,7 +243,6 @@ class Empleado(Persona, RegistroTiempoInterfaz, GestionInformeInterfaz):
                 print(f"ID Informe:  {resultado['id_informe']}")
                 print(f"Autor (RUT): {resultado['rut_usuario']}")
                 print(f"Fecha (YYYY-MM-DD): {resultado['fecha']}")
-                print(f"Formato:     {resultado['formato']}")
                 print(f"Descripción: {resultado['descripcion']}")
             else:
                 # Esta respuesta ahora cubre "no existe" y "no tienes permiso"
