@@ -17,7 +17,7 @@ class Empleado(Persona, RegistroTiempoInterfaz, GestionInformeInterfaz):
         nombres=nombres,
         apellido_paterno=apellido_paterno,
         apellido_materno=apellido_materno,
-        direccion=direccion,
+        direccion=direccion, 
         fecha_nacimiento=fecha_nacimiento,
         fecha_inicio_contrato=fecha_inicio_contrato,
         salario=salario,
@@ -27,7 +27,6 @@ class Empleado(Persona, RegistroTiempoInterfaz, GestionInformeInterfaz):
         id_departamento=id_departamento,
         email=email)
         
-        ##self.registro = RegistroTiempo(self.rut,self.fecha_inicio_contrato,self)
 
     def mostrar_rol(self):
         return f"ROL: Empleado\nID Departamento: {self.id_departamento}"
@@ -66,7 +65,7 @@ class Empleado(Persona, RegistroTiempoInterfaz, GestionInformeInterfaz):
 
                 while True:
                     try:
-                        horas_trabajadas = int(input("Ingrese un número de hasta 3 dígitos: "))
+                        horas_trabajadas = int(input("Ingrese las horas trabajadas: "))
                         if 1 <= horas_trabajadas <= 999:
                             break
                         else:
@@ -89,7 +88,7 @@ class Empleado(Persona, RegistroTiempoInterfaz, GestionInformeInterfaz):
                     query = """
                         INSERT INTO registro_tiempo (
                             fecha, horas_trabajadas, descripcion_tarea, 
-                            rut_usuario, id_proyetco 
+                            rut_usuario, id_proyecto 
                         ) VALUES (%s, %s, %s, %s, %s)
                     """
                     valores = (
@@ -100,12 +99,14 @@ class Empleado(Persona, RegistroTiempoInterfaz, GestionInformeInterfaz):
                     cursor.close()
                     conexion.close()
                     id_generado = cursor.lastrowid
-                    print(f"Departamento creado con ID: {id_generado}")
+                    print(f"Registro de tiempo creado con ID: {id_generado}")
                 except Exception as e:
-                    print(f"Error al guardar al administrador: {e}")
+                    print(f"Error al guardar el registro de tiempo: {e}")
                 finally:
-                    cursor.close()
-                    conexion.close()
+                    if cursor:
+                        cursor.close()
+                    if conexion:
+                        conexion.close()
 
             else:
                 print("El proyecto no está registrado.")
@@ -301,8 +302,6 @@ class Empleado(Persona, RegistroTiempoInterfaz, GestionInformeInterfaz):
         # 2. Obtener datos automáticos
         fecha_creacion = datetime.now().date()
         
-        # Asumimos que el RUT está guardado en self.rut gracias al __init__
-        # (Si usaste una variable privada, podría ser self._rut)
         try:
             rut_admin = self.rut[0]
         except AttributeError:
@@ -493,4 +492,3 @@ class Empleado(Persona, RegistroTiempoInterfaz, GestionInformeInterfaz):
 
     def eliminarInforme(self):
         pass
-

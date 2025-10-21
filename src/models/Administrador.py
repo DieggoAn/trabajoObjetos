@@ -14,7 +14,7 @@ from datetime import datetime
 from .Proyecto import Proyecto
 
 
-class Administrador(Persona, GestionEmpInterfaz, GestionInformeInterfaz, GestionDeptoInterfaz):
+class Administrador(Persona, GestionEmpInterfaz, GestionInformeInterfaz):
     def __init__(self, nombres, apellido_paterno, apellido_materno,
                  direccion, fecha_nacimiento, fecha_inicio_contrato,
                  salario, telefono,contraseña, rut, rol, email, id_departamento):
@@ -104,18 +104,18 @@ class Administrador(Persona, GestionEmpInterfaz, GestionInformeInterfaz, Gestion
 
         while True:
             try:
-                fecha_nacimiento = input("Ingrese la fecha de nacimiento del empleado (formato DD/MM/AAAA): ")
-                fecha = datetime.strptime(fecha_nacimiento, '%d/%m/%Y').date()
-                print(f"Fecha ingresada correctamente: {fecha}")
+                fecha_nac = input("Ingrese la fecha de nacimiento del empleado (formato DD/MM/AAAA): ")
+                fecha_nacimiento = datetime.strptime(fecha_nac, '%d/%m/%Y').date()
+                print(f"Fecha ingresada correctamente: {fecha_nac}")
                 break
             except ValueError:
                 print("Formato inválido. Use el formato DD/MM/AAAA.")
 
         while True:
             try:
-                fecha_inicio_contrato = input("Ingrese la fecha de inicio del contrato del empleado (formato DD/MM/AAAA): ")
-                fecha = datetime.strptime(fecha_inicio_contrato, '%d/%m/%Y').date()
-                print(f"Fecha ingresada correctamente: {fecha}")
+                fecha_con = input("Ingrese la fecha de inicio del contrato del empleado (formato DD/MM/AAAA): ")
+                fecha_inicio_contrato = datetime.strptime(fecha_con, '%d/%m/%Y').date()
+                print(f"Fecha ingresada correctamente: {fecha_con}")
                 break
             except ValueError:
                 print("Formato inválido. Use el formato DD/MM/AAAA.")
@@ -279,9 +279,9 @@ class Administrador(Persona, GestionEmpInterfaz, GestionInformeInterfaz, Gestion
 
         while True:
             try:
-                fecha_inicio_contrato = input("Ingrese la fecha de inicio del contrato del empleado (formato DD/MM/AAAA): ")
-                fecha = datetime.strptime(fecha_inicio_contrato, '%d/%m/%Y').date()
-                print(f"Fecha ingresada correctamente: {fecha}")
+                fecha_con = input("Ingrese la fecha de inicio del contrato del empleado (formato DD/MM/AAAA): ")
+                fecha_inicio_contrato = datetime.strptime(fecha_con, '%d/%m/%Y').date()
+                print(f"Fecha ingresada correctamente: {fecha_con}")
                 break
             except ValueError:
                 print("Formato inválido. Use el formato DD/MM/AAAA.")
@@ -526,7 +526,6 @@ class Administrador(Persona, GestionEmpInterfaz, GestionInformeInterfaz, Gestion
             if conexion:
                 conexion.close()
 
-
     def eliminarEmpleado(self):
         while True:
             try:
@@ -591,23 +590,6 @@ class Administrador(Persona, GestionEmpInterfaz, GestionInformeInterfaz, Gestion
                 cursor.close()
             if conexion:
                 conexion.close()
-
-    def eliminarEmpleadoDeDep(self):
-        pass
-
-
-    def crearDepartamento(self):
-        pass
-
-    def buscarDepartamento(self):
-        pass
-
-    def modificarDepartamento(self):
-        pass
-
-    def eliminarDepartamento(self):
-        pass
-
 
     def crearInforme(self):
             """
@@ -950,7 +932,6 @@ class Administrador(Persona, GestionEmpInterfaz, GestionInformeInterfaz, Gestion
         try:
             conexion = conectar_db()
             cursor = conexion.cursor()
-
             query = """
                 SELECT 
                     p.id_proyecto, 
