@@ -1,6 +1,6 @@
 from config import conectar_db
 from models import Proyecto
-import datetime
+from datetime import datetime
 
 
 def crear_proyecto():
