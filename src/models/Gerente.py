@@ -187,8 +187,8 @@ class Gerente(Persona, GestionEmpInterfaz, GestionProyectoInterfaz, GestionInfor
             nuevo_usuario.apellido_materno,
             nuevo_usuario.fecha_nacimiento,
             nuevo_usuario.telefono,
-            nuevo_usuario.contraseña, # La clase padre guarda el hash en 'contraseña'
             nuevo_usuario.direccion,
+            nuevo_usuario.contraseña, # La clase padre guarda el hash en 'contraseña'
             nuevo_usuario.email
         )
 
