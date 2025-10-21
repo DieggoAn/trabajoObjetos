@@ -67,6 +67,10 @@ class Persona(ABC):
     @property
     def id_departamento(self):
         return self._id_departamento
+    
+    @property
+    def contraseña(self):
+        return self._contraseña
 
     def __str__(self):
         return (f"DATOS DEL USUARIO:\n"
