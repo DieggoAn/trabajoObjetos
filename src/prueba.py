@@ -2,6 +2,7 @@ from models.Administrador import Administrador
 from models.Gerente import *
 from controllers.menu_admin import * 
 from controllers.functions_informe import *
+from utils.validador import *
 
 nombres_ejemplo = "Ana María"
 apellido_paterno_ejemplo = "Tapia"
@@ -64,4 +65,6 @@ nuevo_gerente = Gerente(
 """
 ##menu_gestion_emp(nuevo_administrador)
 ##menu_gestion_depto()
-menu_gestion_informe(nuevo_administrador)
+#menu_gestion_informe(nuevo_administrador)
+
+generarExcel()

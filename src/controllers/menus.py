@@ -9,6 +9,9 @@ from .functions_departamento import (
 )
 from .functions_informe import generarInforme
 from typing import Union, Optional
+from utils.validador import generarPDF
+from utils.validador import generarExcel
+
 def menu_gestion_proyecto(usuario: Union [Administrador,Gerente]):
     print("MENÚ DE GESTION DE PROYECTOS\n")
     while True:
@@ -111,9 +114,9 @@ def menu_gestion_informe(usuario: Optional[Union [Administrador, Gerente]] = Non
                                 continue
                             match opcion_informe:
                                 case 1:
-                                    generarInforme()
+                                    generarPDF()
                                 case 2:
-                                    pass
+                                    generarExcel()
                                 case 3:
                                     print("Será devuelto al menú principal...")
                                     input("PRESIONE ENTER PARA CONTINUAR ")
