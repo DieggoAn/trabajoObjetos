@@ -216,6 +216,16 @@ class Administrador(Persona, GestionEmpInterfaz, GestionInformeInterfaz, Gestion
                 break
             except ValueError as Error:
                 print(Error)
+        while True:
+            try:
+                email = input("Ingrese el email del empleado (ej: usuario@dominio.cl): ").strip()
+                patron = r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"               
+                if not re.match(patron, email):
+                    raise ValueError("Formato de email inválido. Intente nuevamente.")               
+                break  
+                
+            except ValueError as Error:
+                print(Error)
 
         while True:
             try:
@@ -280,7 +290,8 @@ class Administrador(Persona, GestionEmpInterfaz, GestionInformeInterfaz, Gestion
                 telefono=nro_telefono,          # La clase espera 'telefono'
                 contraseña=contraseña_hash,     # La clase espera 'contraseña'
                 rol=rol_usuario,                # <-- ¡Este era el que faltaba!
-                id_departamento=id_departamento
+                id_departamento=id_departamento,
+                email=email
             )
         except Exception as e:
             print(f"Error al crear el objeto: {e}")
@@ -513,7 +524,8 @@ class Administrador(Persona, GestionEmpInterfaz, GestionInformeInterfaz, Gestion
             print("7. Salario")
             print("8. Teléfono")
             print("9. Rol")
-            print("10. ID Departamento")
+            print("10. Email")
+            print("11. ID Departamento")
         except Exception as e:
             print(f"Error al guardar el empleado: {e}")
 
@@ -556,6 +568,10 @@ class Administrador(Persona, GestionEmpInterfaz, GestionInformeInterfaz, Gestion
             elif campo == "numero_telefonico":
                 if not(nuevo_valor.isdigit() and len(nuevo_valor) == 9 and nuevo_valor[0] == "9"):
                     raise ValueError("Número telefónico inválido.")
+            elif campo == "email":
+                patron_email = r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
+                if not re.match(patron_email, nuevo_valor):
+                    raise ValueError("Formato de email inválido (ej: usuario@dominio.cl).")
             elif campo == "rol":
                 roles_validos = {"empleado", "gerente", "administrador"}
                 if nuevo_valor.lower() not in roles_validos:

@@ -223,7 +223,8 @@ def iniciar_sesion():
                         telefono=datos['numero_telefonico'],
                         contraseña=datos['contraseña'],
                         rol=datos['rol'],
-                        id_departamento=datos['id_departamento']
+                        id_departamento=datos['id_departamento'],
+                        email=['email']
                     )
                 case "Administrador":
                     usuario = Administrador.Administrador(
@@ -238,7 +239,8 @@ def iniciar_sesion():
                         telefono=datos['numero_telefonico'],
                         contraseña=datos['contraseña'],
                         rol=datos['rol'],
-                        id_departamento=datos['id_departamento']
+                        id_departamento=datos['id_departamento'],
+                        email=['email']
                     )
                 case "Gerente":
                     usuario = Gerente.Gerente(
@@ -253,7 +255,8 @@ def iniciar_sesion():
                         telefono=datos['numero_telefonico'],
                         contraseña=datos['contraseña'],
                         rol=datos['rol'],
-                        id_departamento=datos['id_departamento']
+                        id_departamento=datos['id_departamento'],
+                        email=['email']
                     )
 
             return usuario
