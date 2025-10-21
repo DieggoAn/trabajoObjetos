@@ -9,7 +9,7 @@ from utils.validador import (validar_rut,
                              buscar_proyecto_general)
 
 class Empleado(Persona, RegistroTiempoInterfaz, GestionInformeInterfaz):
-    def __init__ (self, rut,direccion, fecha_inicio_contrato,salario,rol,id_departamento, nombres=None, apellido_paterno=None, apellido_materno=None, 
+    def __init__ (self, rut,direccion, fecha_inicio_contrato,salario,rol,id_departamento,email=None, nombres=None, apellido_paterno=None, apellido_materno=None, 
                  fecha_nacimiento=None,  telefono=None, contraseña=None):
         
         super().__init__(
@@ -24,7 +24,8 @@ class Empleado(Persona, RegistroTiempoInterfaz, GestionInformeInterfaz):
         telefono=telefono,
         contraseña=contraseña,
         rol=rol,
-        id_departamento=id_departamento)
+        id_departamento=id_departamento,
+        email=email)
         
         ##self.registro = RegistroTiempo(self.rut,self.fecha_inicio_contrato,self)
 
