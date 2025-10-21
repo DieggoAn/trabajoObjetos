@@ -7,26 +7,6 @@ from fpdf import FPDF
 
 
 def crear_informe(admin: Administrador=None, gerente: Gerente=None):
-    formatos_disp = {
-        1: "pdf",
-        2: "excel"
-    }
-
-    while True:
-        print("Formatos disponibles:\n")
-        print("1. PDF")
-        print("2. Excel\n")
-
-        try:
-            formato_opcion = int(input("Ingrese el formato (1-2): "))
-            if formato_opcion not in formatos_disp:
-                print("Ingrese un formato válido.")
-                continue
-            formato = formatos_disp[formato_opcion]
-            break
-        except ValueError:
-            print(f"Debe ingresar una de las opciones disponibles para continuar.")
-    
     while True:
         try:
             rut = input("Ingrese el RUT del empleado (ej: 12345678-K o 9876543-1): ").strip().lower()
@@ -72,13 +52,13 @@ def crear_informe(admin: Administrador=None, gerente: Gerente=None):
         print(f"ID generado: {id_generado} | Fecha: {fecha} | RUT: {rut}\nDescripción: {descripcion}\n")
 
         if admin:
-            informe_nuevo = InformeAdmin(id_generado, descripcion, formato, fecha, rut)
+            informe_nuevo = InformeAdmin(id_generado, descripcion, fecha, rut)
             return informe_nuevo
         elif gerente:
-            informe_nuevo = InformeGerente(id_generado, descripcion, formato, fecha, rut)
+            informe_nuevo = InformeGerente(id_generado, descripcion, fecha, rut)
             return informe_nuevo
         elif emp:
-            informe_nuevo = InformeEmpleado(id_generado, descripcion, formato, fecha, rut)
+            informe_nuevo = InformeEmpleado(id_generado, descripcion, fecha, rut)
             return informe_nuevo
         else:
             print("No tienes un rol disponible para seguir con la acción.")
@@ -103,9 +83,9 @@ def buscar_informe(admin: Administrador, gerente: Gerente):
         cursor = conexion.cursor(dictionary=True)
 
         query = """
-            SELECT i.id_informe, i.descripcion, i.formato, i.fecha, i.rut_usuario, u.rol
+            SELECT i.id_informe, i.descripcion, i.fecha, i.rut_usuario, u.rol
             FROM informe i
-            JOIN usuario_basico u ON i.rut_usuario = u.rut_usuario
+            JOIN usuario_detalle u ON i.rut_usuario = u.rut_usuario
             WHERE i.id_informe = %s
         """
         cursor.execute(query, (id_informe,))
@@ -117,7 +97,6 @@ def buscar_informe(admin: Administrador, gerente: Gerente):
         
         print("Informe encontrado con éxito: ")
         print(f"ID: {resultado['id_informe']}")
-        print(f"Formato: {resultado['formato'].upper()}")
         print(f"Fecha: {resultado['fecha']}")
         print(f"RUT Usuario: {resultado['rut_usuario']}")
         print(f"Descripción: {resultado['descripcion']}")
@@ -128,7 +107,6 @@ def buscar_informe(admin: Administrador, gerente: Gerente):
             informe_nuevo = InformeAdmin(
                 resultado['id_informe'],
                 resultado['descripcion'],
-                resultado['formato'],
                 resultado['fecha'],
                 resultado['rut_usuario']
             )
@@ -136,7 +114,6 @@ def buscar_informe(admin: Administrador, gerente: Gerente):
             informe_nuevo = InformeGerente(
                 resultado['id_informe'],
                 resultado['descripcion'],
-                resultado['formato'],
                 resultado['fecha'],
                 resultado['rut_usuario']
             )
@@ -144,7 +121,6 @@ def buscar_informe(admin: Administrador, gerente: Gerente):
             informe_nuevo = InformeEmpleado(
                 resultado['id_informe'],
                 resultado['descripcion'],
-                resultado['formato'],
                 resultado['fecha'],
                 resultado['rut_usuario']
             )
@@ -174,9 +150,9 @@ def modificar_informe(admin: Administrador, gerente: Gerente):
         cursor = conexion.cursor(dictionary=True)
 
         query = """
-            SELECT i.id_informe, i.descripcion, i.formato, i.fecha, i.rut_usuario, u.rol
+            SELECT i.id_informe, i.descripcion, i.fecha, i.rut_usuario, u.rol
             FROM informe i
-            JOIN usuario_basico u ON i.rut_usuario = u.rut_usuario
+            JOIN usuario_detalle u ON i.rut_usuario = u.rut_usuario
             WHERE i.id_informe = %s
         """
         cursor.execute(query, (id_informe,))
@@ -188,25 +164,22 @@ def modificar_informe(admin: Administrador, gerente: Gerente):
 
         print("Informe encontrado:\n")
         print(f"Descripción actual: {informe['descripcion']}")
-        print(f"Formato actual: {informe['formato'].upper()}")
         print(f"Fecha actual: {informe['fecha']}")
         print(f"RUT Usuario: {informe['rut_usuario']}")
         print(f"Rol: {informe['rol'].capitalize()}\n")
 
         print("¿Qué campo desea modificar?")
         print("1. Descripción")
-        print("2. Formato")
         print("3. Fecha")
 
         try:
-            opcion = int(input("Seleccione una opción (1-3): "))
+            opcion = int(input("Seleccione una opción (1-2): "))
         except ValueError:
             print("Entrada inválida.")
             return
 
         campos = {
             1: "descripcion",
-            2: "formato",
             3: "fecha"
         }
 
@@ -221,18 +194,6 @@ def modificar_informe(admin: Administrador, gerente: Gerente):
             nuevo_valor = input("Ingrese la nueva descripción: ").strip()
             if not nuevo_valor:
                 print("La descripción no puede estar vacía.")
-                return
-        elif campo == "formato":
-            formatos_disp = {1: "pdf", 2: "excel"}
-            print("Formatos disponibles:\n1. PDF\n2. Excel")
-            try:
-                formato_opcion = int(input("Seleccione el nuevo formato (1-2): "))
-                if formato_opcion not in formatos_disp:
-                    print("Formato inválido.")
-                    return
-                nuevo_valor = formatos_disp[formato_opcion]
-            except ValueError:
-                print("Entrada inválida.")
                 return
         elif campo == "fecha":
             try:
@@ -256,19 +217,16 @@ def modificar_informe(admin: Administrador, gerente: Gerente):
         if admin:
             informe_modificado = InformeAdmin(informe['id_informe'],
                                               informe['descripcion'],
-                                              informe['formato'],
                                               informe['fecha'],
                                               informe['rut_usuario'])
         elif gerente:
             informe_modificado = InformeGerente(informe['id_informe'],
                                                 informe['descripcion'],
-                                                informe['formato'],
                                                 informe['fecha'],
                                                 informe['rut_usuario'])
         elif emp:
             informe_modificado = InformeEmpleado(informe['id_informe'],
                                                  informe['descripcion'],
-                                                 informe['formato'],
                                                  informe['fecha'],
                                                  informe['rut_usuario'])
 
@@ -294,7 +252,7 @@ def eliminar_informe(admin: Administrador, gerente: Gerente):
         cursor = conexion.cursor(dictionary=True)
 
         query = """
-            SELECT id_informe, descripcion, formato, fecha, rut_usuario
+            SELECT id_informe, descripcion, fecha, rut_usuario
             FROM informe
             WHERE id_informe = %s
         """
@@ -324,7 +282,6 @@ def eliminar_informe(admin: Administrador, gerente: Gerente):
         
         print("Informe encontrado:\n")
         print(f"Descripción: {informe['descripcion']}")
-        print(f"Formato: {informe['formato'].upper()}")
         print(f"Fecha: {informe['fecha']}")
 
         confirmacion = input("¿Está seguro de eliminar el informe seleccionado? (S/N): ").strip().lower()
@@ -360,9 +317,9 @@ class pdf(FPDF):
                     cursor = conexion.cursor(dictionary=True)
 
                     query = """
-                        SELECT i.id_informe, i.descripcion, i.formato, i.fecha, i.rut_usuario, u.rol
+                        SELECT i.id_informe, i.descripcion, i.fecha, i.rut_usuario, u.rol
                         FROM informe i
-                        JOIN usuario_basico u ON i.rut_usuario = u.rut_usuario
+                        JOIN usuario_detalle u ON i.rut_usuario = u.rut_usuario
                         WHERE i.id_informe = %s
                     """
                     cursor.execute(query, (id_informe,))

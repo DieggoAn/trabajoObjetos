@@ -55,7 +55,7 @@ class Departamento:
             cursor = conexion.cursor(dictionary=True)
             
             # 1. Verificación (Existencia y Rol)
-            cursor.execute("SELECT rol FROM usuario_basico WHERE rut_usuario = %s", (rut_gerente_asociado,))
+            cursor.execute("SELECT rol FROM usuario_detalle WHERE rut_usuario = %s", (rut_gerente_asociado,))
             resultado = cursor.fetchone()
 
             if not resultado:

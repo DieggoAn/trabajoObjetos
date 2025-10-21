@@ -51,8 +51,8 @@ def super_buscar_empleado():
 
     query = """
     SELECT ub.rut_usuario, ub.nombres, ub.apellido_paterno, ub.apellido_materno,
-           ud.direccion, ub.fecha_nacimiento, ud.fecha_inicio_contrato,
-           ud.salario, ub.numero_telefonico, ub.rol, ud.id_departamento
+           ub.direccion, ub.fecha_nacimiento, ud.fecha_inicio_contrato,
+           ud.salario, ub.numero_telefonico, ud.rol, ud.id_departamento, ub.email
     FROM usuario_basico ub
     JOIN usuario_detalle ud ON ub.rut_usuario = ud.rut_usuario
     WHERE ub.rut_usuario = %s
@@ -204,7 +204,7 @@ def eliminar_empleado():
 
     conexion = conectar_db()
     cursor = conexion.cursor(dictionary=True)
-    cursor.execute("SELECT nombres, apellido_paterno, rol FROM Usuario WHERE rut_usuario = %s", (rut,))
+    cursor.execute("SELECT nombres, apellido_paterno FROM usuario_basico WHERE rut_usuario = %s", (rut,))
     empleado = cursor.fetchone()
 
     if not empleado:
@@ -215,7 +215,6 @@ def eliminar_empleado():
     
     print("\nEmpleado encontrado:")
     print(f"Nombre: {empleado['nombres']} {empleado['apellido_paterno']}")
-    print(f"Rol: {empleado['rol']}")
 
     confirmacion = input("¿Estás seguro que deseas eliminar este empleado? Esta acción no se podrá deshacer. (S/N): ").strip().lower()
     if confirmacion != "s":

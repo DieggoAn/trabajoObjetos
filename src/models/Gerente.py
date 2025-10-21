@@ -265,8 +265,8 @@ class Gerente(Persona, GestionEmpInterfaz, GestionProyectoInterfaz):
 
         query = """
         SELECT ub.rut_usuario, ub.nombres, ub.apellido_paterno, ub.apellido_materno,
-            ud.direccion, ub.fecha_nacimiento, ud.fecha_inicio_contrato,
-            ud.salario, ub.numero_telefonico, ub.rol, ud.id_departamento
+            ub.direccion, ub.fecha_nacimiento, ud.fecha_inicio_contrato,
+            ud.salario, ub.numero_telefonico, ud.rol, ud.id_departamento, ub.email
         FROM usuario_basico ub
         JOIN usuario_detalle ud ON ub.rut_usuario = ud.rut_usuario
         WHERE ub.rut_usuario = %s
