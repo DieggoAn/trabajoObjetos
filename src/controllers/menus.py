@@ -7,8 +7,8 @@ from .functions_departamento import (
     modificar_departamento,
     eliminar_departamento
 )
-from typing import Union
-
+from .functions_informe import generarInforme
+from typing import Union, Optional
 def menu_gestion_proyecto(usuario: Union [Administrador,Gerente]):
     print("MENÚ DE GESTION DE PROYECTOS\n")
     while True:
@@ -53,49 +53,117 @@ def menu_gestion_proyecto(usuario: Union [Administrador,Gerente]):
                 break
 
 
-def menu_gestion_informe(usuario: Union [Empleado, Administrador, Gerente]):
+def menu_gestion_informe(usuario: Optional[Union [Administrador, Gerente]] = None, empleado: Empleado=None):
     print("MENÚ DE GESTION DE INFORMES\n")
     while True:
         print("OPCIÓN 1. CREAR INFORME")
         print("OPCIÓN 2. BUSCAR INFORME")
         print("OPCIÓN 3. MODIFICAR INFORME")
         print("OPCIÓN 4. ELIMINAR INFORME")
-        print("OPCIÓN 5. VOLVER AL MENÚ PRINCIPAL\n")
-        try: 
-            opcion_user = int(input("Ingresar opción (1 - 5): "))
-        except ValueError:
-            print("Debe ingresar una opción válida para continuar.")
-            continue
+        if usuario:
+            print("OPCION 5. GENERAR ARCHIVO DE INFORME")
+            print("OPCION 6. VOLVER AL MENU PRINCIPAL")
+            try: 
+                opcion_user = int(input("Ingresar opción (1 - 6): "))
+            except ValueError:
+                print("Debe ingresar una opción válida para continuar.")
+                continue
 
-        if opcion_user not in (1,2,3,4,5):
-            print("Debe ingresar una de las opciones disponibles (1 - 5) para continuar.")
-            continue
+            if opcion_user not in (1,2,3,4,5,6):
+                print("Debe ingresar una de las opciones disponibles (1 - 5) para continuar.")
+                continue
 
-        match opcion_user:
-            case 1:
-                if usuario:
-                    usuario.crearInforme()
-                else:
-                    print("No tienes los privilegios de acceso necesarios.")
-            case 2:
-                if usuario:
-                    usuario.buscarInforme()
-                else:
-                    print("No tienes los privilegios de acceso necesarios.")
-            case 3:
-                if usuario:
-                    usuario.modificarInforme()
-                else:
-                    print("No tienes los privilegios de acceso necesarios.")
-            case 4:
-                if usuario:
-                    usuario.eliminarInforme()
-                else:
-                    print("No tienes los privilegios de acceso necesarios para continuar")
-            case 5:
-                print("Será devuelto al menú principal...")
-                input("PRESIONE ENTER PARA CONTINUAR ")
-                break
+            match opcion_user:
+                case 1:
+                    if usuario:
+                        usuario.crearInforme()
+                    else:
+                        print("No tienes los privilegios de acceso necesarios.")
+                case 2:
+                    if usuario:
+                        usuario.buscarInforme()
+                    else:
+                        print("No tienes los privilegios de acceso necesarios.")
+                case 3:
+                    if usuario:
+                        usuario.modificarInforme()
+                    else:
+                        print("No tienes los privilegios de acceso necesarios.")
+                case 4:
+                    if usuario:
+                        usuario.eliminarProyecto()
+                    else:
+                        print("No tienes los privilegios necesarios para continuar.")
+                case 5:
+                    if usuario:
+                        while True:
+                            print("OPCION 1. GENERAR ARCHIVO PDF")
+                            print("OPCION 2. GENERAR ARCHIVO EXCEL")
+                            print("OPCION 3. VOLVER AL MENU ANTERIOR")
+                            try: 
+                                opcion_informe = int(input("Ingresar opción (1 - 3): "))
+                            except ValueError:
+                                print("Debe ingresar una opción válida para continuar.")
+                                continue
+
+                            if opcion_informe not in (1,2,3):
+                                print("Debe ingresar una de las opciones disponibles (1 - 3) para continuar.")
+                                continue
+                            match opcion_informe:
+                                case 1:
+                                    generarInforme()
+                                case 2:
+                                    pass
+                                case 3:
+                                    print("Será devuelto al menú principal...")
+                                    input("PRESIONE ENTER PARA CONTINUAR ")
+                                    break
+
+                    else:
+                        print("No tienes los privilegios de acceso necesarios para continuar")
+                case 6:
+                    print("Será devuelto al menú principal...")
+                    input("PRESIONE ENTER PARA CONTINUAR ")
+                    break
+
+
+        elif empleado:
+            print("OPCIÓN 5. VOLVER AL MENÚ PRINCIPAL\n")
+            try: 
+                opcion_user = int(input("Ingresar opción (1 - 5): "))
+            except ValueError:
+                print("Debe ingresar una opción válida para continuar.")
+                continue
+
+            if opcion_user not in (1,2,3,4,5):
+                print("Debe ingresar una de las opciones disponibles (1 - 5) para continuar.")
+                continue
+
+            match opcion_user:
+                case 1:
+                    if empleado:
+                        empleado.crearInforme()
+                    else:
+                        print("No tienes los privilegios de acceso necesarios.")
+                case 2:
+                    if empleado:
+                        empleado.buscarInforme()
+                    else:
+                        print("No tienes los privilegios de acceso necesarios.")
+                case 3:
+                    if empleado:
+                        empleado.modificarInforme()
+                    else:
+                        print("No tienes los privilegios de acceso necesarios.")
+                case 4:
+                    if empleado:
+                        empleado.eliminarInforme()
+                    else:
+                        print("No tienes los privilegios de acceso necesarios para continuar")
+                case 5:
+                    print("Será devuelto al menú principal...")
+                    input("PRESIONE ENTER PARA CONTINUAR ")
+                    break
 
 
 def menu_gestion_emp(usuario: Union [Administrador, Gerente]):

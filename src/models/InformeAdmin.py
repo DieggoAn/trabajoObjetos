@@ -1,6 +1,6 @@
 from .Informe import Informe
 from models.interfaces.ExportarInformeInterfaz import ExportarInformeInterfaz
-from openpyxl import Workbook
+##from openpyxl import Workbook
 from fpdf import FPDF
 
 class InformeAdmin(Informe, ExportarInformeInterfaz):
