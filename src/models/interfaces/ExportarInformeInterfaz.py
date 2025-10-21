@@ -9,8 +9,5 @@ class ExportarInformeInterfaz(ABC):
     def generarExcel(self):
         pass
 
-    @abstractmethod
-    def exportarInforme(self):
-        pass
 
     
