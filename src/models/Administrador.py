@@ -160,7 +160,6 @@ class Administrador(Persona, GestionEmpInterfaz, GestionInformeInterfaz, Gestion
                     print("El departamento ingresado no existe en el sistema.")
                     cursor.close()
                     conexion.close()
-                    # Aquí deberías usar 'continue' para volver a pedir el ID, en lugar de 'return'
                     continue 
                 
                 if len(str(id_departamento)) > 15:
@@ -307,7 +306,6 @@ class Administrador(Persona, GestionEmpInterfaz, GestionInformeInterfaz, Gestion
                     print("El departamento ingresado no existe en el sistema.")
                     cursor.close()
                     conexion.close()
-                    # Aquí deberías usar 'continue' para volver a pedir el ID, en lugar de 'return'
                     continue 
                 
                 if len(str(id_departamento)) > 15:

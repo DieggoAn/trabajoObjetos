@@ -1,0 +1,6 @@
+# Se deben de instalar las siguientes librerias para que el script pueda funcionar:
+ - pip install mysql.connector
+ - pip install bcrypt
+ - pip install pwinput
+ - pip install fpfd
+ - pip install openpyxl 
