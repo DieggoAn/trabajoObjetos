@@ -89,7 +89,7 @@ def menu_gestion_informe(usuario: Union [Empleado, Administrador, Gerente]):
                     print("No tienes los privilegios de acceso necesarios.")
             case 4:
                 if usuario:
-                    usuario.eliminar_informe()
+                    usuario.eliminarInforme()
                 else:
                     print("No tienes los privilegios de acceso necesarios para continuar")
             case 5:

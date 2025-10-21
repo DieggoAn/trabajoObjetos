@@ -719,7 +719,7 @@ class Administrador(Persona, GestionEmpInterfaz, GestionInformeInterfaz, Gestion
             # Asumimos que el RUT está guardado en self.rut gracias al __init__
             # (Si usaste una variable privada, podría ser self._rut)
             try:
-                rut_admin = self.rut[0]
+                rut_admin = self.rut
             except AttributeError:
                 print("Error: No se pudo obtener el RUT del administrador.")
                 return
@@ -885,7 +885,63 @@ class Administrador(Persona, GestionEmpInterfaz, GestionInformeInterfaz, Gestion
                 conexion.close()
 
     def eliminarInforme(self):
-        pass
+        print("\n--- Eliminación de Informe (Admin) ---")
+
+        # 1. Obtener y validar el ID del informe
+        id_a_borrar = None
+        while True:
+            try:
+                id_a_borrar = int(input("Ingrese el ID del informe a eliminar: "))
+                if id_a_borrar > 0:
+                    break
+                print("Error: El ID debe ser un número positivo.")
+            except ValueError:
+                print("Error: Debe ingresar un valor numérico.")
+
+        # 2. Operación de Base de Datos
+        conexion = None
+        cursor = None
+        
+        try:
+            conexion = conectar_db()
+            cursor = conexion.cursor()
+
+            # 3. VERIFICAR SI EL INFORME EXISTE (Opcional pero recomendado)
+            # Antes de pedir confirmación
+            query_verificar = "SELECT id_informe FROM informe WHERE id_informe = %s"
+            cursor.execute(query_verificar, (id_a_borrar,))
+            if not cursor.fetchone():
+                print(f"\nNo se encontró ningún informe con el ID: {id_a_borrar}")
+                return
+
+            # 4. Pedir confirmación
+            confirmacion = input(f"¿Confirmas eliminar el informe ID: {id_a_borrar}? (S/N): ").strip().lower()
+            if confirmacion != "s":
+                print("Eliminación cancelada.")
+                return
+
+            # 5. EJECUTAR LA ELIMINACIÓN
+            query_eliminar = "DELETE FROM informe WHERE id_informe = %s"
+            cursor.execute(query_eliminar, (id_a_borrar,))
+            conexion.commit()
+            
+            # cursor.rowcount nos dice cuántas filas se borraron
+            if cursor.rowcount > 0:
+                print("\n¡Éxito! El informe ha sido eliminado.")
+            else:
+                # Esto no debería pasar si la verificación de arriba funcionó
+                print(f"\nNo se pudo eliminar el informe (ID: {id_a_borrar}).")
+
+        except Exception as e:
+            print(f"\nError al eliminar el informe: {e}")
+            if conexion:
+                conexion.rollback() 
+        
+        finally:
+            if cursor:
+                cursor.close()
+            if conexion:
+                conexion.close()
 
     
     def crearProyecto(self):
