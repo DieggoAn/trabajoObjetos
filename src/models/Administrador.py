@@ -951,12 +951,12 @@ class Administrador(Persona, GestionEmpInterfaz, GestionInformeInterfaz, Gestion
                 if not nombre or not all(c.isalpha() or c.isspace() for c in nombre):
                     print("Ingrese un nombre valido")
                     continue
-            # Para normalizar el nombre y evitar duplicaciones en la base de datos.
                 nombre = ' '.join(nombre.split()).title()
                 break
             except Exception as Error:
                 print(f"Error inesperado: {Error}")
         
+        # ... (Tu segundo 'while True' para 'descripcion' - sin cambios) ...
         while True:
             try:
                 descripcion = input("Ingrese una descripcion al proyecto: ")
@@ -967,6 +967,7 @@ class Administrador(Persona, GestionEmpInterfaz, GestionInformeInterfaz, Gestion
             except Exception as Error:
                 print(f"Error inesperado: {Error}")
 
+        # ... (Tu tercer 'while True' para 'fecha_inicio' - sin cambios) ...
         while True:
             try:
                 fecha_inicio = input("Ingrese la fecha de inicio del proyecto (formato DD/MM/AAAA): ")
@@ -975,26 +976,53 @@ class Administrador(Persona, GestionEmpInterfaz, GestionInformeInterfaz, Gestion
                 break
             except ValueError:
                 print("Formato inválido. Use el formato DD/MM/AAAA.")
-             
+            
+        # --- INICIO DE LA MODIFICACIÓN ---
+        
+        conexion = None
+        cursor = None
         try:
             conexion = conectar_db()
             cursor = conexion.cursor()
+            
+            # 1. Verificación de nombre (sin cambios)
             cursor.execute("SELECT id_proyecto FROM proyecto WHERE LOWER(nombre) = %s", (nombre.lower(),))
             if cursor.fetchone():
                 print("Ya existe un proyecto con ese nombre.")
                 return
     
-            query = "INSERT INTO proyecto (nombre, descripcion, fecha_inicio) VALUES (%s, %s, %s)"
-            valores = (nombre, descripcion, fecha)
-            cursor.execute(query, valores)
-            conexion.commit()
+            # 2. PASO 1: Insertar en la tabla 'proyecto'
+            query_proyecto = "INSERT INTO proyecto (nombre, descripcion, fecha_inicio) VALUES (%s, %s, %s)"
+            valores_proyecto = (nombre, descripcion, fecha)
+            cursor.execute(query_proyecto, valores_proyecto)
+            
+            # 3. Obtenemos el ID del proyecto que acabamos de crear
             id_generado = cursor.lastrowid
-            print(f"Detalles del proyecto creado:\n")
-            print(f"Nombre: {nombre} | Descripción: {descripcion} | Fecha: {fecha} | ID: {id_generado}")
+            
+            # 4. PASO 2: Obtener el RUT del usuario 'self' (manejando la tupla)
+            mi_rut = self.rut
+            if isinstance(mi_rut, tuple):
+                 mi_rut = mi_rut[0] # Arreglo del problema de la tupla
+
+            # 5. PASO 3: Insertar en la tabla de enlace 'proyecto_has_usuario_detalle'
+            print(f"Vinculando proyecto ID: {id_generado} al usuario RUT: {mi_rut}...")
+            query_link = "INSERT INTO proyecto_has_usuario_detalle (id_proyecto, rut_usuario) VALUES (%s, %s)"
+            valores_link = (id_generado, mi_rut)
+            cursor.execute(query_link, valores_link)
+
+            # 6. PASO 4: Confirmar AMBAS inserciones (Transacción)
+            # (El commit se movió aquí, al final)
+            conexion.commit() 
+            
+            print(f"\nDetalles del proyecto creado:")
+            print(f"Nombre: {nombre} | ID: {id_generado} | Vinculado a: {mi_rut}")
 
 
         except Exception as Error:
             print(f"Error al crear el proyecto: {Error}")
+            # Añadimos rollback para deshacer AMBOS inserts si algo falla
+            if conexion:
+                conexion.rollback()
         finally:
             if cursor:
                 cursor.close()

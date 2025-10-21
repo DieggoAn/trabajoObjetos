@@ -575,7 +575,6 @@ class Gerente(Persona, GestionEmpInterfaz, GestionProyectoInterfaz, GestionInfor
 
         print("\n--- Modificación de Informe (Gerente) ---")
 
-        # 1. Obtener ID a modificar
         id_a_modificar = None
         while True:
             try:
@@ -733,14 +732,407 @@ class Gerente(Persona, GestionEmpInterfaz, GestionProyectoInterfaz, GestionInfor
 
     """Metodos de la interfaz de gestión de proyectos"""
     def crearProyecto(self):
-        print("Proyecto creado")
+        while True:
+            try: 
+                nombre = input("Ingrese el nombre del proyecto: ")
+                if not nombre or not all(c.isalpha() or c.isspace() for c in nombre):
+                    print("Ingrese un nombre valido")
+                    continue
+                nombre = ' '.join(nombre.split()).title()
+                break
+            except Exception as Error:
+                print(f"Error inesperado: {Error}")
+        
+        # ... (Tu segundo 'while True' para 'descripcion' - sin cambios) ...
+        while True:
+            try:
+                descripcion = input("Ingrese una descripcion al proyecto: ")
+                if not descripcion:
+                    print("Ingrese una descripcion valida")
+                    continue
+                break
+            except Exception as Error:
+                print(f"Error inesperado: {Error}")
+
+        # ... (Tu tercer 'while True' para 'fecha_inicio' - sin cambios) ...
+        while True:
+            try:
+                fecha_inicio = input("Ingrese la fecha de inicio del proyecto (formato DD/MM/AAAA): ")
+                fecha = datetime.strptime(fecha_inicio, '%d/%m/%Y').date()
+                print(f"Fecha ingresada correctamente: {fecha}")
+                break
+            except ValueError:
+                print("Formato inválido. Use el formato DD/MM/AAAA.")
+            
+        # --- INICIO DE LA MODIFICACIÓN ---
+        
+        conexion = None
+        cursor = None
+        try:
+            conexion = conectar_db()
+            cursor = conexion.cursor()
+            
+            # 1. Verificación de nombre (sin cambios)
+            cursor.execute("SELECT id_proyecto FROM proyecto WHERE LOWER(nombre) = %s", (nombre.lower(),))
+            if cursor.fetchone():
+                print("Ya existe un proyecto con ese nombre.")
+                return
+    
+            # 2. PASO 1: Insertar en la tabla 'proyecto'
+            query_proyecto = "INSERT INTO proyecto (nombre, descripcion, fecha_inicio) VALUES (%s, %s, %s)"
+            valores_proyecto = (nombre, descripcion, fecha)
+            cursor.execute(query_proyecto, valores_proyecto)
+            
+            # 3. Obtenemos el ID del proyecto que acabamos de crear
+            id_generado = cursor.lastrowid
+            
+            # 4. PASO 2: Obtener el RUT del usuario 'self' (manejando la tupla)
+            mi_rut = self.rut
+            if isinstance(mi_rut, tuple):
+                 mi_rut = mi_rut[0] # Arreglo del problema de la tupla
+
+            # 5. PASO 3: Insertar en la tabla de enlace 'proyecto_has_usuario_detalle'
+            print(f"Vinculando proyecto ID: {id_generado} al usuario RUT: {mi_rut}...")
+            query_link = "INSERT INTO proyecto_has_usuario_detalle (id_proyecto, rut_usuario) VALUES (%s, %s)"
+            valores_link = (id_generado, mi_rut)
+            cursor.execute(query_link, valores_link)
+
+            # 6. PASO 4: Confirmar AMBAS inserciones (Transacción)
+            # (El commit se movió aquí, al final)
+            conexion.commit() 
+            
+            print(f"\nDetalles del proyecto creado:")
+            print(f"Nombre: {nombre} | ID: {id_generado} | Vinculado a: {mi_rut}")
+
+
+        except Exception as Error:
+            print(f"Error al crear el proyecto: {Error}")
+            # Añadimos rollback para deshacer AMBOS inserts si algo falla
+            if conexion:
+                conexion.rollback()
+        finally:
+            if cursor:
+                cursor.close()
+            if conexion:
+                conexion.close()
+
 
     def buscarProyecto(self):
-        print("Proyecto buscado")
+        while True:
+            try:
+                id_proyecto = int(input("Ingrese la ID del proyecto que desea buscar: "))
+                break
+            except ValueError as Error:
+                print(f"Error inesperado: {Error}")
+
+        conexion = None
+        cursor = None
+        
+        try:
+            # --- INICIO DE LA MODIFICACIÓN ---
+
+            # 1. Obtenemos el ID de departamento del Gerente (self)
+            try:
+                id_depto_gerente = self.id_departamento
+                if id_depto_gerente is None:
+                    raise AttributeError("Usted no está asignado a un departamento.")
+            except AttributeError as e:
+                print(f"Error de permisos: {e}")
+                return # Salimos de la función
+
+            # --- FIN DE LA MODIFICACIÓN ---
+
+            conexion = conectar_db()
+            cursor = conexion.cursor() # Mantenido como cursor estándar para que 'zip' funcione
+
+            # --- INICIO DE LA MODIFICACIÓN (QUERY) ---
+            
+            # 2. Query arreglado:
+            # - Usa INNER JOIN (más eficiente para esta restricción).
+            # - Selecciona 'd.nombre' para que coincida con tu bucle print.
+            # - Añade la restricción 'ud.id_departamento = %s' al WHERE.
+            query = """
+                SELECT 
+                    p.id_proyecto, 
+                    p.nombre, 
+                    p.descripcion, 
+                    p.fecha_inicio, 
+                    ud.id_departamento, 
+                    d.nombre AS nombre_departamento 
+                FROM 
+                    proyecto AS p
+                JOIN 
+                    proyecto_has_usuario_detalle AS phu ON p.id_proyecto = phu.id_proyecto
+                JOIN 
+                    usuario_detalle AS ud ON phu.rut_usuario = ud.rut_usuario
+                JOIN 
+                    departamento AS d ON ud.id_departamento = d.id_departamento
+                WHERE 
+                    p.id_proyecto = %s AND ud.id_departamento = %s;
+                """
+            
+            # 3. Se pasan AMBOS valores al 'execute'
+            valores = (id_proyecto, id_depto_gerente)
+            cursor.execute(query, valores)
+            resultado = cursor.fetchone()
+
+            # --- FIN DE LA MODIFICACIÓN (QUERY) ---
+
+            if resultado:
+                print("\nDatos del proyecto encontrado:")
+                campos = [
+                    "ID Proyecto",
+                    "Nombre",
+                    "Descripcion",
+                    "Fecha de inicio",
+                    "ID Departamento",
+                    "Nombre del departamento"
+                ]      
+                # Tu bucle 'zip' ahora funcionará correctamente
+                for campo, valor in zip(campos, resultado):
+                    print(f"{campo}: {valor}")
+            else:
+                # 4. Mensaje de error actualizado
+                print("No se encontró ningún proyecto con esta ID o no pertenece a su departamento.\n")
+                
+        except Exception as Error:
+            print(f"Error inesperado al buscar el proyecto: {Error}")
+        finally:
+            if cursor:
+                cursor.close()
+            if conexion:
+                conexion.close()
 
     def modificarProyecto(self):
-        print("Proyecto modificado")
+        while True:
+            try:
+                id_proyecto = int(input("Ingrese el ID del proyecto a modificar: "))
+                break
+            except ValueError as Error:
+                print(f"Entrada inválida: {Error}")
+
+        conexion = None
+        cursor = None
+        
+        try:
+            # --- INICIO DE LA MODIFICACIÓN ---
+
+            # 1. Obtenemos el ID de departamento del Gerente (self)
+            try:
+                id_depto_gerente = self.id_departamento
+                if id_depto_gerente is None:
+                    raise AttributeError("Usted no está asignado a un departamento.")
+            except AttributeError as e:
+                print(f"Error de permisos: {e}")
+                return # Salimos de la función
+
+            # --- FIN DE LA MODIFICACIÓN ---
+
+            conexion = conectar_db()
+            cursor = conexion.cursor(dictionary=True)
+
+            # --- INICIO DE LA MODIFICACIÓN (QUERY) ---
+            
+            # 2. Modificamos el SELECT para que SOLO encuentre el proyecto
+            #    si pertenece al departamento del Gerente.
+            #    Usamos DISTINCT por si el proyecto tiene varios usuarios del mismo depto.
+            query_verificar = """
+                SELECT DISTINCT p.*
+                FROM proyecto AS p
+                JOIN proyecto_has_usuario_detalle AS phu ON p.id_proyecto = phu.id_proyecto
+                JOIN usuario_detalle AS ud ON phu.rut_usuario = ud.rut_usuario
+                WHERE p.id_proyecto = %s AND ud.id_departamento = %s
+            """
+            valores_verificar = (id_proyecto, id_depto_gerente)
+            
+            cursor.execute(query_verificar, valores_verificar)
+            proyecto = cursor.fetchone()
+
+            # 3. Mensaje de error actualizado
+            if not proyecto:
+                print("No se encontró ningún proyecto con esa ID o no pertenece a su departamento.")
+                return
+
+            # --- FIN DE LA MODIFICACIÓN (QUERY) ---
+            
+            # 4. SI EXISTE Y TIENE PERMISOS, el resto del código continúa igual
+            print("\nProyecto encontrado. ¿Qué campo desea modificar?")
+            print("1. Nombre")
+            print("2. Descripción")
+            print("3. Fecha de inicio\n")
+
+            try:
+                opcion = int(input("Seleccione una opción (1-3): "))
+            except ValueError:
+                print("Debe ingresar un carácter numérico para continuar.")
+                return
+            
+            campos = { 1: "nombre", 2: "descripcion", 3: "fecha_inicio" }
+
+            if opcion not in campos:
+                print("Opción inválida.")
+                return
+
+            campo = campos[opcion]
+            print(f"Valor actual de '{campo}': {proyecto[campo]}")
+            nuevo_valor = input(f"Ingrese el nuevo valor para '{campo}': ").strip()
+
+            # ... (Validaciones de nombre, descripcion, fecha_inicio - sin cambios) ...
+            if campo == "nombre":
+                if not nuevo_valor or not all(c.isalnum() or c.isspace() for c in nuevo_valor):
+                    raise ValueError("Solo se permiten letras, números y espacios.")
+                nuevo_valor = ' '.join(nuevo_valor.split()).title()
+            elif campo == "descripcion":
+                if not nuevo_valor:
+                    raise ValueError("La descripción no puede estar vacía.")
+            elif campo == "fecha_inicio":
+                try:
+                    nuevo_valor = datetime.strptime(nuevo_valor, "%d/%m/%Y").date()
+                except ValueError:
+                    print("Formato de fecha inválido. Use DD/MM/AAAA para continuar.")
+                    return
+
+            # ... (Confirmación 'S/N' - sin cambios) ...
+            while True:
+                confirmacion = input(f"¿Confirmas modificar '{campo}' a '{nuevo_valor}'? (S/N): ").strip().lower()
+                if confirmacion == "s":
+                    break
+                elif confirmacion == "n":
+                    print("Modificación cancelada.")
+                    return
+                else:
+                    print("Entrada inválida. Debes ingresar 'S' o 'N'.")
+
+            # 5. El UPDATE no necesita cambiarse, porque ya validamos el permiso
+            #    en el SELECT inicial.
+            #    (ADVERTENCIA: este f-string es vulnerable a Inyección SQL)
+            query = f"UPDATE proyecto SET {campo} = %s WHERE id_proyecto = %s"
+            cursor.execute(query, (nuevo_valor, id_proyecto))
+            conexion.commit()
+            print("Modificación realizada con éxito.")
+
+        except ValueError as Error:
+            print(f"Error: {Error}")
+        except Exception as e:
+            print(f"Error inesperado al modificar el proyecto: {e}")
+            if conexion:
+                conexion.rollback() # Añadido rollback por seguridad
+        finally:
+            if cursor:
+                cursor.close()
+            if conexion:
+                conexion.close()
 
     def eliminarProyecto(self):
-        print("Proyecto eliminado")
+        while True:
+            try:
+                id_proyecto = int(input("Ingrese la ID del proyecto que desea eliminar: "))
+                break
+            except ValueError as Error:
+                print(f"Error inesperado: {Error}")
+    
+        conexion = None
+        cursor = None
+        
+        try:
+            # --- INICIO DE LA MODIFICACIÓN (PERMISOS) ---
+            
+            # 1. Obtenemos el ID de departamento del Gerente (self)
+            try:
+                id_depto_gerente = self.id_departamento
+                if id_depto_gerente is None:
+                    raise AttributeError("Usted no está asignado a un departamento.")
+            except AttributeError as e:
+                print(f"Error de permisos: {e}")
+                return # Salimos de la función
+
+            # --- FIN DE LA MODIFICACIÓN (PERMISOS) ---
+
+            conexion = conectar_db()
+            cursor = conexion.cursor(dictionary=True)
+
+            # --- INICIO DE LA MODIFICACIÓN (QUERY) ---
+
+            # 2. Modificamos el SELECT para que SOLO encuentre el proyecto
+            #    si pertenece al departamento del Gerente.
+            query_verificar = """
+                SELECT DISTINCT p.id_proyecto, p.nombre, p.descripcion
+                FROM proyecto AS p
+                JOIN proyecto_has_usuario_detalle AS phu ON p.id_proyecto = phu.id_proyecto
+                JOIN usuario_detalle AS ud ON phu.rut_usuario = ud.rut_usuario
+                WHERE p.id_proyecto = %s AND ud.id_departamento = %s
+            """
+            valores_verificar = (id_proyecto, id_depto_gerente)
+
+            cursor.execute(query_verificar, valores_verificar)
+            proyecto = cursor.fetchone()
+
+            # 3. Mensaje de error actualizado
+            if not proyecto:
+                print(f"No se encontró ningún proyecto con la ID: {id_proyecto} (o no pertenece a su departamento).")
+                return
+            
+            # --- FIN DE LA MODIFICACIÓN (QUERY) ---
+            
+            # 4. SI EXISTE Y TIENE PERMISOS, el resto del código continúa
+            print("\nProyecto encontrado:")
+            print(f"ID del proyecto: {proyecto['id_proyecto']}")
+            print(f"Nombre: {proyecto['nombre']}")
+            print(f"Descripción: {proyecto['descripcion']}")
+
+            while True:
+                confirmacion = input("¿Está seguro que desea eliminar este proyecto? Esta acción no se podrá deshacer. (S/N): ").strip().lower()
+                if confirmacion == 's':
+                    break
+                elif confirmacion == 'n':
+                    print("Operación cancelada.")
+                    return
+                else:
+                    print("Entrada inválida, debes ingresar 'S' o 'N' para poder continuar.")
+            
+            # --- INICIO DE LA MODIFICACIÓN (DELETE) ---
+            
+            # 5. PASO 1: Borramos los "hijos" (enlaces) para evitar error de integridad
+            cursor.execute("DELETE FROM proyecto_has_usuario_detalle WHERE id_proyecto = %s", (id_proyecto,))
+            
+            # 6. PASO 2: Borramos el "padre" (proyecto)
+            cursor.execute("DELETE FROM proyecto WHERE id_proyecto = %s", (id_proyecto,))
+            
+            # 7. PASO 3: Confirmamos AMBAS eliminaciones
+            conexion.commit()
+            
+            # --- FIN DE LA MODIFICACIÓN (DELETE) ---
+
+            print(f"\nEl proyecto ha sido eliminado exitosamente.")
+            print(f"ID: {id_proyecto}")
+            print(f"Nombre: {proyecto['nombre']}")
+            print(f"Descripción: {proyecto['descripcion']}")
+
+        except Exception as Error:
+            print(f"Error inesperado: {Error}")
+            # 8. Añadimos rollback por seguridad
+            if conexion:
+                conexion.rollback()
+        finally:
+            if cursor:
+                cursor.close()
+            if conexion:
+                conexion.close()
+
+    def asignar_emp_a_proyecto(self, id_proyecto, rut_usuario):
+        # (Esta función no se modifica)
+        try:
+            conexion = conectar_db()
+            cursor = conexion.cursor()
+            query = "INSERT INTO proyecto_has_usuario_detalle (id_proyecto, rut_usuario) VALUES (%s, %s)"
+            cursor.execute(query, (id_proyecto, rut_usuario))
+            conexion.commit()
+            print("Usuario asignado al proyecto correctamente.")
+        except Exception as Error: # (Cambiado a 'Exception' genérica)
+            print(f"Error inesperado al realizar la acción: {Error}")
+        finally:
+            if cursor: # (Faltaba 'if cursor:')
+                cursor.close()
+            if conexion: # (Faltaba 'if conexion:')
+                conexion.close()
 
