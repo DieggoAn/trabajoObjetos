@@ -20,7 +20,6 @@ def validar_rut(rut):
     if dv not in ['0','1','2','3','4','5','6','7','8','9','k']:
         raise ValueError("El dígito verificador debe ser un número o la letra 'k'.")
 
-    print(f"RUT ingresado correctamente: {rut.upper()}")
     return rut.upper()
 
 def insertar_empleado_detalle(datos_detalle):
@@ -98,7 +97,6 @@ def validar_contraseña_segura(contraseña):
 def buscar_empleado_general(rut):
     try:
         rut = validar_rut(rut)  # Si es válido, retorna el RUT limpio
-        print(f"RUT ingresado correctamente: {rut}")
     except ValueError as Error:
         print(Error)
         return  # Salir si el RUT no es válido
@@ -109,7 +107,7 @@ def buscar_empleado_general(rut):
 
         query = """
         SELECT rut_usuario
-        FROM usuario
+        FROM usuario_basico
         WHERE rut_usuario = %s
         """
         cursor.execute(query, (rut,))
@@ -135,11 +133,22 @@ def buscar_proyecto_general(id_proyecto):
         cursor = conexion.cursor()
 
         query = """
-            SELECT p.id_proyecto
-            FROM proyecto p
-            JOIN departamento d ON p.id_departamento = d.id_departamento
-            WHERE p.id_proyecto = %s
-        """
+                SELECT 
+                    p.id_proyecto, 
+                    p.nombre, 
+                    p.descripcion, 
+                    p.fecha_inicio, 
+                    ud.rut_usuario, 
+                    ud.id_departamento
+                FROM 
+                    proyecto AS p
+                LEFT JOIN 
+                    proyecto_has_usuario_detalle AS phu ON p.id_proyecto = phu.id_proyecto
+                LEFT JOIN 
+                    usuario_detalle AS ud ON phu.rut_usuario = ud.rut_usuario
+                WHERE 
+                    p.id_proyecto = %s;
+                """
         cursor.execute(query, (id_proyecto,))
         resultado = cursor.fetchone()
 
