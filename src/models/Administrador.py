@@ -104,18 +104,18 @@ class Administrador(Persona, GestionEmpInterfaz, GestionInformeInterfaz):
 
         while True:
             try:
-                fecha_nacimiento = input("Ingrese la fecha de nacimiento del empleado (formato DD/MM/AAAA): ")
-                fecha = datetime.strptime(fecha_nacimiento, '%d/%m/%Y').date()
-                print(f"Fecha ingresada correctamente: {fecha}")
+                fecha_nac = input("Ingrese la fecha de nacimiento del empleado (formato DD/MM/AAAA): ")
+                fecha_nacimiento = datetime.strptime(fecha_nac, '%d/%m/%Y').date()
+                print(f"Fecha ingresada correctamente: {fecha_nac}")
                 break
             except ValueError:
                 print("Formato inválido. Use el formato DD/MM/AAAA.")
 
         while True:
             try:
-                fecha_inicio_contrato = input("Ingrese la fecha de inicio del contrato del empleado (formato DD/MM/AAAA): ")
-                fecha = datetime.strptime(fecha_inicio_contrato, '%d/%m/%Y').date()
-                print(f"Fecha ingresada correctamente: {fecha}")
+                fecha_con = input("Ingrese la fecha de inicio del contrato del empleado (formato DD/MM/AAAA): ")
+                fecha_inicio_contrato = datetime.strptime(fecha_con, '%d/%m/%Y').date()
+                print(f"Fecha ingresada correctamente: {fecha_con}")
                 break
             except ValueError:
                 print("Formato inválido. Use el formato DD/MM/AAAA.")
@@ -279,9 +279,9 @@ class Administrador(Persona, GestionEmpInterfaz, GestionInformeInterfaz):
 
         while True:
             try:
-                fecha_inicio_contrato = input("Ingrese la fecha de inicio del contrato del empleado (formato DD/MM/AAAA): ")
-                fecha = datetime.strptime(fecha_inicio_contrato, '%d/%m/%Y').date()
-                print(f"Fecha ingresada correctamente: {fecha}")
+                fecha_con = input("Ingrese la fecha de inicio del contrato del empleado (formato DD/MM/AAAA): ")
+                fecha_inicio_contrato = datetime.strptime(fecha_con, '%d/%m/%Y').date()
+                print(f"Fecha ingresada correctamente: {fecha_con}")
                 break
             except ValueError:
                 print("Formato inválido. Use el formato DD/MM/AAAA.")
