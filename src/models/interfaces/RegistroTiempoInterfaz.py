@@ -6,6 +6,10 @@ class RegistroTiempoInterfaz(ABC):
         pass
 
     @abstractmethod
+    def buscarRegistroTiempo(self):
+        pass
+    
+    @abstractmethod
     def modificarRegistroTiempo(self):
         pass
 
