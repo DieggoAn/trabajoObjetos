@@ -14,7 +14,7 @@ from datetime import datetime
 from .Proyecto import Proyecto
 
 
-class Administrador(Persona, GestionEmpInterfaz, GestionInformeInterfaz, GestionDeptoInterfaz):
+class Administrador(Persona, GestionEmpInterfaz, GestionInformeInterfaz):
     def __init__(self, nombres, apellido_paterno, apellido_materno,
                  direccion, fecha_nacimiento, fecha_inicio_contrato,
                  salario, telefono,contraseña, rut, rol, email, id_departamento):
@@ -526,7 +526,6 @@ class Administrador(Persona, GestionEmpInterfaz, GestionInformeInterfaz, Gestion
             if conexion:
                 conexion.close()
 
-
     def eliminarEmpleado(self):
         while True:
             try:
@@ -591,23 +590,6 @@ class Administrador(Persona, GestionEmpInterfaz, GestionInformeInterfaz, Gestion
                 cursor.close()
             if conexion:
                 conexion.close()
-
-    def eliminarEmpleadoDeDep(self):
-        pass
-
-
-    def crearDepartamento(self):
-        pass
-
-    def buscarDepartamento(self):
-        pass
-
-    def modificarDepartamento(self):
-        pass
-
-    def eliminarDepartamento(self):
-        pass
-
 
     def crearInforme(self):
             """

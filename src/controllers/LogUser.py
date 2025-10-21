@@ -113,6 +113,16 @@ def registrar_usuario():
             break
         except ValueError as Error:
             print(Error)
+    while True:
+        try:
+            email = input("Ingrese el email del empleado (ej: usuario@dominio.cl): ").strip()
+            patron = r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"               
+            if not re.match(patron, email):
+                raise ValueError("Formato de email inválido. Intente nuevamente.")               
+            break  
+            
+        except ValueError as Error:
+            print(Error)
 
     while True:
         try:
@@ -148,7 +158,8 @@ def registrar_usuario():
         telefono=nro_telefono,
         contraseña=contraseña_user,
         rol="Empleado",
-        id_departamento=None         
+        id_departamento=None,         
+        email=email
     )
 
     while True:
@@ -164,7 +175,7 @@ def registrar_usuario():
             """
 
             valores = (
-                rut, nombre, apellido_paterno, apellido_materno, fecha_nacimiento, nro_telefono, contraseña_user
+                rut, nombre, apellido_paterno, apellido_materno, fecha_nacimiento,direccion, nro_telefono, contraseña_user,email
             )
     
             cursor.execute(query, valores)
