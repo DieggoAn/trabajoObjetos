@@ -4,30 +4,26 @@ class Proyecto:
                   descripcion,
                   fechaInicio):
         
-        self.idProyecto = idProyecto
-        self.nombre = nombre
-        self.descripcion = descripcion
-        self.fechaInicio = fechaInicio
+        self._idProyecto = idProyecto
+        self._nombre = nombre
+        self._descripcion = descripcion
+        self._fechaInicio = fechaInicio
 
     @property
+    def idProyecto(self):
+        return self._idProyecto
+        
+    @property
     def nombre(self):
-        return self.__nombre
-    @nombre.setter
-    def nombre(self, nombre):
-        self.__nombre = nombre
-    @nombre.deleter
-    def nombre(self):
-        del self.__nombre   
-
+        return self._nombre
+        
     @property
     def descripcion(self):
-        return self.__descripcion
-    @descripcion.setter
-    def descripcion(self, descripcion):
-        self.__descripcion = descripcion
-    @descripcion.deleter
-    def descripcion(self):
-        del self.__descripcion
+        return self._descripcion
+        
+    @property
+    def fechaInicio(self):
+        return self._fechaInicio
 
     def __str__ (self):
         return f"Los datos del proyecto son los siguientes:\nID: {self.idProyecto}\nNombre: {self.nombre}\nDescripción: {self.descripcion}\nFecha de inicio: {self.fechaInicio}"
