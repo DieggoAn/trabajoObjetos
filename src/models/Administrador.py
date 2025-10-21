@@ -49,7 +49,7 @@ class Administrador(Persona, GestionEmpInterfaz, GestionInformeInterfaz, Gestion
         return self.__nombre
     @nombre.setter
     def nombre(self, nombre):
-        self.nombre = nombre
+        self.__nombre = nombre
     @nombre.deleter
     def nombre(self):
         del self.__nombre
@@ -93,6 +93,16 @@ class Administrador(Persona, GestionEmpInterfaz, GestionInformeInterfaz, Gestion
     @telefono.deleter
     def telefono(self):
         del self.__telefono
+
+    @property
+    def email(self):
+        return self.__email
+    @email.setter
+    def email(self, email):
+        self.__email = email
+    @email.deleter
+    def email(self):
+        del self.__email
 
     def guardar_en_db(self):
         from config import conectar_db
