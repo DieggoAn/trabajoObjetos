@@ -932,7 +932,6 @@ class Administrador(Persona, GestionEmpInterfaz, GestionInformeInterfaz):
         try:
             conexion = conectar_db()
             cursor = conexion.cursor()
-
             query = """
                 SELECT 
                     p.id_proyecto, 
