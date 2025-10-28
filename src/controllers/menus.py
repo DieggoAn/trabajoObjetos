@@ -11,6 +11,7 @@ from .functions_informe import generarInforme
 from typing import Union, Optional
 from utils.validador import generarPDF
 from utils.validador import generarExcel
+from .functions_api import *
 
 def menu_gestion_proyecto(usuario: Union [Administrador,Gerente]):
     print("MENÚ DE GESTION DE PROYECTOS\n")
@@ -267,3 +268,44 @@ def menu_gestion_registrotiempo(usuario: Empleado):
                 print("Será devuelto al menú principal...")
                 input("PRESIONE ENTER PARA CONTINUAR ")
                 break
+
+def menu_gestion_economia():
+    
+    print("MENÚ DE CONSULTAS ECONOMICAS\n")
+    while True:
+        print("OPCIÓN 1. CONSULTAR UNIDAD DE FOMENTO (UF)")
+        print("OPCIÓN 2. CONSULTAR INDICE DE VALOR PROMEDIO (IVP)")
+        print("OPCIÓN 3. CONSULTAR INDICE PRECIO AL CONSUMIDOR (IPC)")
+        print("OPCIÓN 4. CONSULTAR UNIDAD TRIBUTARIA MENSUAL (UTM)")
+        print("OPCIÓN 5. CONSULTAR PRECIO DOLAR OBSERVADO")
+        print("OPCIÓN 6. CONSULTAR PRECIO EURO")
+        print("OPCIÓN 7. VOLVER AL MENÚ PRINCIPAL\n")
+        try:
+            opcion_user = int(input("Ingresar opción (1-7): "))
+        except ValueError as Error:
+            print(f"Debe ingresar un carácter válido para continuar: {Error}")
+        
+        if opcion_user not in (1,2,3,4,5,6,7):
+            print("Debe ingresar una opción válida para continuar.")
+            return
+        
+        match opcion_user:
+            case 1:
+                consulta_UF()
+            case 2:
+                consulta_IVP()
+            case 3:
+                consulta_IPC()
+            case 4:
+                consulta_UTM()
+            case 5:
+                consulta_USD()
+            case 6:
+                consulta_EUR
+            case 7:
+                print("Será devuelto al menú principal...")
+                input("PRESIONE ENTER PARA CONTINUAR ")
+                break
+
+    
+    pass

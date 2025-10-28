@@ -167,18 +167,26 @@ def registrar_usuario():
             conexion = conectar_db()
             cursor = conexion.cursor()
 
-            query = """
+            query_basico = """
             INSERT INTO usuario_basico (
                 rut_usuario, nombres, apellido_paterno, apellido_materno,
                 fecha_nacimiento, direccion, numero_telefonico, contraseña, email
             ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
             """
 
-            valores = (
+            valores_basico = (
                 rut, nombre, apellido_paterno, apellido_materno, fecha_nacimiento,direccion, nro_telefono, contraseña_user,email
             )
-    
-            cursor.execute(query, valores)
+            query_detalle = """
+            INSERT INTO usuario_detalle(
+                rut_usuario, fecha_inicio_contrato, salario, rol, id_departamento)
+            VALUES (%s, %s, %s, %s, %s)
+            """
+            valores_detalle = (
+                rut, "0000/00/00", 0, "Empleado", 1
+            )
+            cursor.execute(query_basico, valores_basico)
+            cursor.execute(query_detalle, valores_detalle)
             conexion.commit()
             print("\nRegistro exitoso. Tu cuenta ha sido creada con el rol de 'Empleado'.")
         except mysql.connector.Error as error:

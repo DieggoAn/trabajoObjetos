@@ -2,5 +2,17 @@
  - pip install mysql.connector
  - pip install bcrypt
  - pip install pwinput
- - pip install fpfd
- - pip install openpyxl 
+ - pip install fpdf
+ - pip install openpyxl
+ - pip install requests
+ - pip install json
+
+- credenciales{
+    admin{
+        rut: 10000000-0
+        contraseña: Contrasena1!
+    }
+
+
+
+}

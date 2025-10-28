@@ -48,12 +48,22 @@ class Administrador(Persona, GestionEmpInterfaz, GestionInformeInterfaz):
     def crearEmpleado(self):
         while True:
             try:
-                rut = input("Ingrese el RUT del empleado (ej: 12345678-K o 9876543-1): ").strip().lower()
-                validar_rut(rut) # Asumo que esta función levanta ValueError si es inválido
-                break
-            except ValueError as Error:
-                print(Error)
-                
+                rut = input("Ingrese su RUT: (ej: 12345678-K o 9876543-1): ").strip().lower()
+                validar_rut(rut)
+                conexion = conectar_db()
+                cursor = conexion.cursor()
+                cursor.execute("SELECT rut_usuario FROM usuario_basico WHERE rut_usuario = %s", (rut,))
+                if cursor.fetchone():
+                    print("El usuario ya se encuentra registrado en el sistema. Intentelo denuevo.")
+                    cursor.close()
+                    conexion.close()
+                else:
+                    cursor.close()
+                    conexion.close()
+                    break
+            except mysql.connector.Error as Error:
+                print(f"Error inesperado al verificar la existencia del usuario: {Error}")
+                return
         roles_validos = {"empleado", "gerente", "administrador"}
         while True:
             try:
@@ -493,6 +503,14 @@ class Administrador(Persona, GestionEmpInterfaz, GestionInformeInterfaz):
                 if not re.match(patron_email, nuevo_valor):
                     raise ValueError("Formato de email inválido (ej: usuario@dominio.cl).")
             elif campo == "rol":
+                conexion = conectar_db()
+                cursor = conexion.cursor()
+                cursor.execute("SELECT rol FROM usuario_detalle WHERE rut_usuario = %s", (rut,))
+                resultado = cursor.fetchone()
+                cursor.close()
+                conexion.close()
+                if resultado[0] == "Administrador":
+                    raise ValueError("No se puede modificar el rol de un Administrador")
                 roles_validos = {"empleado", "gerente", "administrador"}
                 if nuevo_valor.lower() not in roles_validos:
                     raise ValueError("Rol inválido. Debe ser: Empleado, Gerente o Administrador.")
