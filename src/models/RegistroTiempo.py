@@ -1,4 +1,4 @@
-from utils.validador import * 
+from functions.validador import * 
 import datetime
 
 class RegistroTiempo:

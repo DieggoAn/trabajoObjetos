@@ -4,10 +4,9 @@ from models.interfaces.GestionEmpInterfaz import GestionEmpInterfaz
 from models.interfaces.GestionProyectoInterfaz import GestionProyectoInterfaz
 from models.interfaces.GestionInformeInterfaz import GestionInformeInterfaz
 from config import conectar_db
-from utils.validador import *
+from functions.validador import *
 from datetime import datetime
 import re
-import pwinput
 import bcrypt
 
 class Gerente(Persona, GestionEmpInterfaz, GestionProyectoInterfaz, GestionInformeInterfaz):
@@ -44,11 +43,22 @@ class Gerente(Persona, GestionEmpInterfaz, GestionProyectoInterfaz, GestionInfor
     def crearEmpleado(self):
         while True:
             try:
-                rut = input("Ingrese el RUT del empleado (ej: 12345678-K o 9876543-1): ").strip().lower()
-                validar_rut(rut) # Asumo que esta función levanta ValueError si es inválido
-                break
-            except ValueError as Error:
-                print(Error)
+                rut = input("Ingrese su RUT: (ej: 12345678-K o 9876543-1): ").strip().lower()
+                validar_rut(rut)
+                conexion = conectar_db()
+                cursor = conexion.cursor()
+                cursor.execute("SELECT rut_usuario FROM usuario_basico WHERE rut_usuario = %s", (rut,))
+                if cursor.fetchone():
+                    print("El usuario ya se encuentra registrado en el sistema. Intentelo denuevo.")
+                    cursor.close()
+                    conexion.close()
+                else:
+                    cursor.close()
+                    conexion.close()
+                    break
+            except mysql.connector.Error as Error:
+                print(f"Error inesperado al verificar la existencia del usuario: {Error}")
+                return
                 
         rol_usuario = "Empleado"        
         while True:
@@ -134,7 +144,7 @@ class Gerente(Persona, GestionEmpInterfaz, GestionProyectoInterfaz, GestionInfor
                 print(Error)
         while True:
             try:
-                contraseña_texto_plano = pwinput.pwinput("Ingrese la contraseña para el nuevo empleado: ", mask = "*")
+                contraseña_texto_plano = input("Ingrese la contraseña para el nuevo empleado: ")
                 if validar_contraseña_segura(contraseña_texto_plano):
                     contraseña_hash = bcrypt.hashpw(contraseña_texto_plano.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
                     break

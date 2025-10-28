@@ -1,7 +1,8 @@
 from .menus import (menu_gestion_emp,
                        menu_gestion_depto,
                        menu_gestion_informe,
-                       menu_gestion_proyecto)
+                       menu_gestion_proyecto,
+                       menu_gestion_economia)
 from models.Administrador import Administrador
 
 def menu_admin(admin: Administrador):
@@ -16,15 +17,16 @@ def menu_admin(admin: Administrador):
         print("OPCIÓN 2. GESTIONAR DEPARTAMENTOS")
         print("OPCIÓN 3. GESTIONAR INFORMES")
         print("OPCIÓN 4. GESTIONAR PROYECTOS")
-        print("OPCIÓN 5. CERRAR SESIÓN\n")
+        print("OPCIÓN 5. CONSULTAS ECONOMICAS")
+        print("OPCIÓN 6. CERRAR SESIÓN\n")
 
         try: 
-            opcion_user = int(input("Ingresar opción (1 - 5): "))
+            opcion_user = int(input("Ingresar opción (1 - 6): "))
         except ValueError:
             print("Debe ingresar una opción válida para continuar.")
 
-        if opcion_user not in (1,2,3,4,5):
-            print("Debe ingresar una de las opciones disponibles (1 - 5) para continuar.")
+        if opcion_user not in (1,2,3,4,5,6):
+            print("Debe ingresar una de las opciones disponibles (1 - 6) para continuar.")
             continue
 
         match opcion_user:
@@ -41,6 +43,8 @@ def menu_admin(admin: Administrador):
                 menu_gestion_proyecto(admin)
 
             case 5:
+                menu_gestion_economia
+            case 6:
                 print("Sesión cerrada exitosamente.")
                 break
 

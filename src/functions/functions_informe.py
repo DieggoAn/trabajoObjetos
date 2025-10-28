@@ -1,5 +1,5 @@
 from models import Administrador, Gerente, InformeAdmin
-from utils.validador import validar_rut
+from functions.validador import validar_rut
 import datetime
 from config import conectar_db
 import mysql.connector

@@ -1,7 +1,7 @@
-from controllers.LogUser import presentacion_login
-from controllers.menu_admin import menu_admin
-from controllers.menu_gerente import menu_gerente
-from controllers.menu_empleado import menu_empleado
+from functions.LogUser import presentacion_login
+from functions.menu_admin import menu_admin
+from functions.menu_gerente import menu_gerente
+from functions.menu_empleado import menu_empleado
 
 
 usuario = presentacion_login()

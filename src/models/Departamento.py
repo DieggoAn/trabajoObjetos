@@ -1,4 +1,4 @@
-from utils.validador import validar_rut
+from functions.validador import validar_rut
 from config import *
 class Departamento:
     def __init__ (self, idDepartamento=None, nombre=None, rutGerenteAsociado=None):

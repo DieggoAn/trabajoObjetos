@@ -1,6 +1,6 @@
 from config import conectar_db
 from models import Departamento
-from utils.validador import validar_rut
+from functions.validador import validar_rut
 import mysql.connector
 
 def crear_departamento():

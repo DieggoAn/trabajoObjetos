@@ -4,7 +4,7 @@ from .RegistroTiempo import RegistroTiempo
 from models.interfaces.GestionInformeInterfaz import GestionInformeInterfaz 
 from config import conectar_db
 from datetime import datetime
-from utils.validador import (validar_rut,
+from functions.validador import (validar_rut,
                              buscar_empleado_general,
                              buscar_proyecto_general)
 
