@@ -2,8 +2,9 @@ from controllers.LogUser import presentacion_login
 from controllers.menu_admin import menu_admin
 from controllers.menu_gerente import menu_gerente
 from controllers.menu_empleado import menu_empleado
+from controllers.menus import menu_gestion_economia
 
-
+"""
 usuario = presentacion_login()
 
 if usuario is not None and usuario.rol == "Administrador":
@@ -14,3 +15,6 @@ elif usuario is not None and usuario.rol == "Empleado":
     menu_empleado(usuario)
 else:
     pass
+"""
+    
+menu_gestion_economia()

@@ -12,6 +12,7 @@ from typing import Union, Optional
 from utils.validador import generarPDF
 from utils.validador import generarExcel
 from .functions_api import *
+from datetime import date, datetime
 
 def menu_gestion_proyecto(usuario: Union [Administrador,Gerente]):
     print("MENÚ DE GESTION DE PROYECTOS\n")
@@ -290,8 +291,39 @@ def menu_gestion_economia():
             return
         
         match opcion_user:
+            
             case 1:
-                consulta_UF()
+                while True:
+                    print("MENÚ DE CONSULTAS UF")
+                    print("OPCIÓN 1. CONSULTAR VALOR DE LA UF HOY")
+                    print("OPCIÓN 2. CONSULTAR VALOR DE LA UF EN UN DIA ESPECIFICO")
+                    print("OPCIÓN 3. CONSULTAR VALORes DE LA UF EN UN RANGO DE TIEMPO)")
+                    print("OPCIÓN 4. VOLVER AL MENÚ DE CONSULTAS ECONOMICAS")
+                    try:
+                        opcion_consulta = int(input("Ingresar opción (1-7): "))
+                    except ValueError as Error:
+                        print(f"Debe ingresar un carácter válido para continuar: {Error}")
+                    if opcion_consulta not in (1,2,3,4,5,6,7):
+                        print("Debe ingresar una opción válida para continuar.")
+                        return
+                    match opcion_consulta:
+                        case 1:
+                            consulta_UF()
+                        case 2:
+                            fecha = input("Ingrese la fecha en la que desea buscar el valor de la UF: ")
+                            fechaDate = datetime.strptime(fecha, "%d/%m/%Y").date()
+                            consulta_UF(fechaDate)
+                        case 3:
+                            fecha_inicio = input("Ingrese la fecha de inicio de la busqueda: ")
+                            fecha_final = input("Ingrese la fecha del final de la busqueda:")
+                            fechaDateI = datetime.strptime(fecha_inicio, "%d/%m/%Y").date()
+                            fechaDateF = datetime.strptime(fecha_final, "%d/%m/%Y").date()
+                            consulta_UF(fechaDateI, fechaDateF)
+                        case 4:
+                            print("Será devuelto al menú anterior...")
+                            input("PRESIONE ENTER PARA CONTINUAR ")
+                            break
+                    
             case 2:
                 consulta_IVP()
             case 3:
@@ -301,7 +333,7 @@ def menu_gestion_economia():
             case 5:
                 consulta_USD()
             case 6:
-                consulta_EUR
+                consulta_EUR()
             case 7:
                 print("Será devuelto al menú principal...")
                 input("PRESIONE ENTER PARA CONTINUAR ")
