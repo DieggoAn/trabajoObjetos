@@ -9,9 +9,8 @@ from .functions_departamento import (
 )
 from .functions_informe import generarInforme
 from typing import Union, Optional
-from functions.validador import generarPDF
-from functions.validador import generarExcel
-from .functions_api import *
+from utils.validador import generarPDF
+from utils.validador import generarExcel
 
 def menu_gestion_proyecto(usuario: Union [Administrador,Gerente]):
     print("MENÚ DE GESTION DE PROYECTOS\n")
