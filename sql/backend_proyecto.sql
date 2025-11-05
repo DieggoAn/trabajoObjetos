@@ -122,6 +122,11 @@ CREATE TABLE `usuario_basico` (
 
 INSERT INTO `usuario_basico` (`rut_usuario`, `nombres`, `apellido_paterno`, `apellido_materno`, `fecha_nacimiento`, `numero_telefonico`, `direccion`, `contraseña`, `email`) VALUES
 ('10000000-0', 'Admin', 'Admin', 'Original', '0000-00-00', '+56 9 4141 4142', 'calle', '$2b$12$f4slJ1u3xcZKm/2YYYoGz.T70jmDYmetyJnVlwvLlzA3W1wyljvie', 'correoAdmin@inacapcorreo.cl');
+INSERT INTO `usuario_basico` (`rut_usuario`, `nombres`, `apellido_paterno`, `apellido_materno`, `fecha_nacimiento`, `numero_telefonico`, `direccion`, `contraseña`, `email`) VALUES
+('20000000-0', 'Gerente', 'Gerente', 'Original', '0000-00-00', '+56 9 4141 4143', 'calle', '$2b$12$JRXMG3yzZvXEcGFTMEZOYOMtCmrx.lq5ZlP/29ccUNvA/7gMlMKy2', 'correoGerente@inacapcorreo.cl');
+INSERT INTO `usuario_basico` (`rut_usuario`, `nombres`, `apellido_paterno`, `apellido_materno`, `fecha_nacimiento`, `numero_telefonico`, `direccion`, `contraseña`, `email`) VALUES
+('30000000-0', 'Empleado', 'Empleado', 'Original', '0000-00-00', '+56 9 4141 4144', 'calle', '$2b$12$KT.N5ksz8ZRMQxzqjsPqsOeTmWmepD3DM3o2VbEb6bvDLPVSWgpa6', 'correoAdmin@inacapcorreo.cl');
+
 
 -- --------------------------------------------------------
 
@@ -143,6 +148,10 @@ CREATE TABLE `usuario_detalle` (
 
 INSERT INTO `usuario_detalle` (`rut_usuario`, `fecha_inicio_contrato`, `salario`, `rol`, `id_departamento`) VALUES
 ('10000000-0', '0000-00-00', 1000000, 'Administrador', 1);
+INSERT INTO `usuario_detalle` (`rut_usuario`, `fecha_inicio_contrato`, `salario`, `rol`, `id_departamento`) VALUES
+('20000000-0', '0000-00-00', 1000000, 'Gerente', 1);
+INSERT INTO `usuario_detalle` (`rut_usuario`, `fecha_inicio_contrato`, `salario`, `rol`, `id_departamento`) VALUES
+('30000000-0', '0000-00-00', 1000000, 'Empleado', 1);
 
 --
 -- Indexes for dumped tables
