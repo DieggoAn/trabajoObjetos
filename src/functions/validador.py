@@ -284,7 +284,7 @@ def generarPDF():
 
         if id_pdf:
             nombre_archivo = f"Informe_Empleado_{id_pdf}_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}.pdf"
-            nombre_ruta = f"trabajoObjetos/docs/{nombre_archivo}"
+            nombre_ruta = f"./trabajoObjetos/docs/{nombre_archivo}"
             archivo.output(nombre_ruta)
             print(f"\nPDF generado exitosamente: {nombre_archivo}")
         else:
