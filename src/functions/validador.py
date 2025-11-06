@@ -1,7 +1,7 @@
 from config import conectar_db
 import mysql.connector
 import re 
-import datetime 
+from datetime import date, datetime, timedelta
 from fpdf import FPDF
 from openpyxl import Workbook
 
@@ -345,3 +345,24 @@ def generarExcel():
                 cursor.close()
             if conexion:
                 conexion.close()
+
+def es_mayor_de_18(fecha_nacimiento: date):
+    hoy = date.today()
+
+    fecha_cumple_18 = fecha_nacimiento.replace(year=fecha_nacimiento.year + 18)
+
+    if hoy >= fecha_cumple_18:
+        return True
+    else:
+        return False
+    
+def mayor_de_18_al_contrato(fecha_nacimiento: date, fecha_contrato: date):
+    
+    if fecha_contrato < fecha_nacimiento:
+        raise ValueError("La fecha de contrato no puede ser anterior a la fecha de nacimiento.")
+
+    fecha_cumple_18 = fecha_nacimiento.replace(year=fecha_nacimiento.year + 18)
+    if fecha_contrato >= fecha_cumple_18:
+        return True
+    else:
+        return False
