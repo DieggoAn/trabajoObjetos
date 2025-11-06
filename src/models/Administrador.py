@@ -61,6 +61,8 @@ class Administrador(Persona, GestionEmpInterfaz, GestionInformeInterfaz):
                     cursor.close()
                     conexion.close()
                     break
+            except ValueError as e:
+                print(f"Error en el formato del RUT: {e}. Intente nuevamente")
             except mysql.connector.Error as Error:
                 print(f"Error inesperado al verificar la existencia del usuario: {Error}")
                 return
