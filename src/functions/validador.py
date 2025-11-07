@@ -4,6 +4,7 @@ import re
 import datetime 
 from fpdf import FPDF
 from openpyxl import Workbook
+import os
 
 def validar_rut(rut):
     rut = rut.strip().lower()
@@ -283,10 +284,14 @@ def generarPDF():
         id_pdf = archivo.cuerpo()
 
         if id_pdf:
-            nombre_archivo = f"Informe_Empleado_{id_pdf}_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}.pdf"
-            nombre_ruta = f"./trabajoObjetos/docs/{nombre_archivo}"
-            archivo.output(nombre_ruta)
-            print(f"\nPDF generado exitosamente: {nombre_archivo}")
+              nombre_archivo = f"Informe_Empleado_{id_pdf}_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}.pdf"
+              base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__))) 
+              proyecto_dir = os.path.dirname(base_dir)  
+              docs_dir = os.path.join(proyecto_dir, "docs")
+              os.makedirs(docs_dir, exist_ok=True)
+              nombre_ruta = os.path.join(docs_dir, nombre_archivo)
+              archivo.output(nombre_ruta)
+              print(f"\nPDF generado exitosamente: {nombre_archivo}")
         else:
             print("\nNo se generó el PDF porque no se encontró el informe.")
 
@@ -332,10 +337,13 @@ def generarExcel():
                 resultado['rut_usuario'],
             ])
 
+            base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))  # /src
+            proyecto_dir = os.path.dirname(base_dir)  # /trabajoObjetos
+            docs_dir = os.path.join(proyecto_dir, "docs")
+            os.makedirs(docs_dir, exist_ok=True)
             nombre_archivo = f"Informe_Gerente_{id_informe}_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}.xlsx"
-            ruta_archivo = f"trabajoObjetos/docs/{nombre_archivo}"
+            ruta_archivo = os.path.join(docs_dir, nombre_archivo)
             wb.save(ruta_archivo)
-            print(f"Archivo Excel generado correctamente: {nombre_archivo}")
 
         except mysql.connector.Error as Error:
             print(f"Error inesperado: {Error}")
