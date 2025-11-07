@@ -8,7 +8,7 @@ from datetime import datetime
 from models.Empleado import Empleado
 from models import (Gerente,
                     Administrador)
-from functions.validador import validar_contraseña_segura
+from functions.validador import validar_contraseña_segura, es_mayor_de_18
 
 def presentacion_login():
     while True:
@@ -99,11 +99,18 @@ def registrar_usuario():
         try:
             fecha_nacimiento = input("Ingrese la fecha de nacimiento del empleado (formato DD/MM/AAAA): ")
             fecha = datetime.strptime(fecha_nacimiento, '%d/%m/%Y').date()
+            if not es_mayor_de_18(fecha):
+                print("Registro denegado! El empleado debe ser mayor de 18 años")
+                terminar_programa = True
+                break
             print(f"Fecha ingresada correctamente: {fecha}")
+            terminar_programa = False
             break
         except ValueError:
                 print("Formato inválido. Use el formato DD/MM/AAAA.")
-    
+    if terminar_programa:
+        print("Se ha cancelado el registro del usuario ya que es menor de 18 años")
+        return None
     while True:
         try:
             nro_telefono = input("Ingrese el número de teléfono del empleado (formato: +56 9 XXXX XXXX): ").strip()

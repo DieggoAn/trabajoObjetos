@@ -99,21 +99,36 @@ class Gerente(Persona, GestionEmpInterfaz, GestionProyectoInterfaz, GestionInfor
 
         while True:
             try:
-                fecha_nac = input("Ingrese la fecha de nacimiento del empleado (formato DD/MM/AAAA): ")
-                fecha_nacimiento = datetime.strptime(fecha_nac, '%d/%m/%Y').date()
-                print(f"Fecha ingresada correctamente: {fecha_nac}")
+                fecha_nacimiento = input("Ingrese la fecha de nacimiento del empleado (formato DD/MM/AAAA): ")
+                fecha = datetime.strptime(fecha_nacimiento, '%d/%m/%Y').date()
+                if not es_mayor_de_18(fecha):
+                    print("Registro denegado! El empleado debe ser mayor de 18 años")
+                    terminar_programa = True
+                    break
+                print(f"Fecha ingresada correctamente: {fecha}")
+                terminar_programa = False
                 break
             except ValueError:
-                print("Formato inválido. Use el formato DD/MM/AAAA.")
+                    print("Formato inválido. Use el formato DD/MM/AAAA.")
+        if terminar_programa:
+            print("Se ha cancelado el registro del usuario ya que es menor de 18 años")
+            return None
 
         while True:
             try:
                 fecha_con = input("Ingrese la fecha de inicio del contrato del empleado (formato DD/MM/AAAA): ")
                 fecha_inicio_contrato = datetime.strptime(fecha_con, '%d/%m/%Y').date()
+                if not mayor_de_18_al_contrato(fecha, fecha_inicio_contrato):
+                    terminar_programa = True
+                    break
                 print(f"Fecha ingresada correctamente: {fecha_con}")
+                terminar_programa = False
                 break
             except ValueError:
                 print("Formato inválido. Use el formato DD/MM/AAAA.")
+        if terminar_programa:
+            print("Se ha cancelado el contrato del usuario ya que es menor de 18 años")
+            return None
 
         while True:
             try:
