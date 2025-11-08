@@ -277,7 +277,7 @@ def generarPDF():
             def footer(self):
                 self.set_y(-15)
                 self.set_font("Arial", "I", 12)
-                self.cell(0, 10, f"Generado el {datetime.datetime.now().strftime('%d/%m/%y')}", 0, 0, "C")
+                self.cell(0, 10, f"Generado el {datetime.now().strftime('%d/%m/%y')}", 0, 0, "C")
 
         # Crear el PDF
         archivo = PDF()
@@ -285,7 +285,7 @@ def generarPDF():
         id_pdf = archivo.cuerpo()
 
         if id_pdf:
-              nombre_archivo = f"Informe_Empleado_{id_pdf}_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}.pdf"
+              nombre_archivo = f"Informe_Empleado_{id_pdf}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.pdf"
               base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__))) 
               proyecto_dir = os.path.dirname(base_dir)  
               docs_dir = os.path.join(proyecto_dir, "docs")
