@@ -8,7 +8,7 @@ from datetime import datetime
 from models.Empleado import Empleado
 from models import (Gerente,
                     Administrador)
-from functions.validador import validar_contraseña_segura, es_mayor_de_18
+from functions.validador import validar_contraseña_segura, es_mayor_de_18, esta_bloqueado, registrar_intento
 
 def presentacion_login():
     while True:
@@ -210,6 +210,9 @@ def registrar_usuario():
 def iniciar_sesion():
     while True:    
         try:
+            if esta_bloqueado():
+                print("El sistema de inicio de sesión está temporalmente bloqueado. Intente más tarde.")
+                return None
             while True:
                 try:
                     rut = input("Ingrese su RUT: ").strip().lower()
@@ -241,6 +244,7 @@ def iniciar_sesion():
 
             if not datos:
                 print("Usuario no encontrado. Verifique el RUT.")
+                registrar_intento(False)
                 continue
             
             if bcrypt.checkpw(contraseña_ingresada.encode('utf-8'), datos['contraseña'].encode('utf-8')):
@@ -295,11 +299,12 @@ def iniciar_sesion():
                             id_departamento=datos['id_departamento'],
                             email=['email']
                         )
-
+                registrar_intento(True)
                 return usuario
             else:
                 print("Contraseña incorrecta.")
-                return None
+                registrar_intento(False)
+                continue
         except mysql.connector.Error as Error:
             print(f"Error inesperado al intentar iniciar sesión: {Error}")
             return None
