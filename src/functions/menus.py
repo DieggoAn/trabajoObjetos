@@ -242,15 +242,13 @@ def menu_gestion_registrotiempo(usuario: Empleado):
     while True:
         print("OPCIÓN 1. CREAR REGISTRO DE TIEMPO")
         print("OPCIÓN 2. BUSCAR REGISTRO DE TIEMPO")
-        print("OPCIÓN 3. MODIFICAR REGISTRO DE TIEMPO")
-        print("OPCIÓN 4. ELIMINAR REGISTRO DE TIEMPO")
-        print("OPCIÓN 5. VOLVER AL MENÚ PRINCIPAL\n")
+        print("OPCIÓN 3. VOLVER AL MENÚ PRINCIPAL\n")
         try:
-            opcion_user = int(input("Ingresar opción (1-5): "))
+            opcion_user = int(input("Ingresar opción (1-3): "))
         except ValueError as Error:
             print(f"Debe ingresar un carácter válido para continuar: {Error}")
         
-        if opcion_user not in (1,2,3,4,5):
+        if opcion_user not in (1,2,3):
             print("Debe ingresar una opción válida para continuar.")
             return
         
@@ -260,14 +258,32 @@ def menu_gestion_registrotiempo(usuario: Empleado):
             case 2:
                 usuario.buscarRegistroTiempo()
             case 3:
-                usuario.modificarRegistroTiempo()
-            case 4:
-                usuario.eliminarRegistroTiempo()
-            case 5:
                 print("Será devuelto al menú principal...")
                 input("PRESIONE ENTER PARA CONTINUAR ")
                 break
 
+def menu_gestion_proyecto_emp(usuario: Empleado):
+    print("MENÚ DE GESTIÓN DE PROYECTOS PARA EMPLEADO\n")
+    while True:
+        print("OPCIÓN 1. BUSCAR PROYECTO.")
+        print("OPCIÓN 2. VOLVER AL MENÚ PRINCIPAL.")
+        try:
+            opcion_user = int(input("Ingresar opción (1-2): "))
+        except ValueError as Error:
+            print(f"Debe ingresar un carácter válido para continuar: {Error}")
+        
+        if opcion_user not in (1,2):
+            print("Debe ingresar una opción válida para continuar.")
+
+        match opcion_user:
+            case 1:
+                usuario.buscarProyecto()
+
+            case 2:
+                print("Será devuelto al menú principal...")
+                input("PRESIONE ENTER PARA CONTINUAR ")
+                break
+            
 def menu_gestion_economia():
     
     print("MENÚ DE CONSULTAS ECONOMICAS\n")

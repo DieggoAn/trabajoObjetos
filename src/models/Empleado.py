@@ -43,10 +43,9 @@ class Empleado(Persona, RegistroTiempoInterfaz, GestionInformeInterfaz):
         resultado_rut = buscar_empleado_general(rut)
 
         if resultado_rut:
-            print("El usuario se encuentra registrado en el sistema.")
             while True:
                 try:
-                    id_proyecto = int(input("Ingrese la ID del proyecto que desea buscar: "))
+                    id_proyecto = int(input("Ingrese la ID del proyecto para el registro de tiempo: "))
                     break
                 except ValueError as Error:
                     print(f"Error inesperado: {Error}")
@@ -116,7 +115,7 @@ class Empleado(Persona, RegistroTiempoInterfaz, GestionInformeInterfaz):
     def buscarRegistroTiempo(self):
         while True:
             try:
-                id_registro_tiempo = int(input("Ingrese el ID del registro de tiempo a eliminar: "))
+                id_registro_tiempo = int(input("Ingrese el ID del registro de tiempo a buscar: "))
                 if not id_registro_tiempo:
                     raise ValueError("No puede dejar el campo vacio")
                 break
@@ -148,12 +147,11 @@ class Empleado(Persona, RegistroTiempoInterfaz, GestionInformeInterfaz):
                 cursor.close()
             if conexion:
                 conexion.close()
- 
-
-    def modificarRegistroTiempo(self):
-        pass
 
     def eliminarRegistroTiempo(self):
+        pass
+
+    def modificarRegistroTiempo(self):
         pass
 
     """Métodos de Gestion de Informe Interfaz"""
@@ -354,3 +352,53 @@ class Empleado(Persona, RegistroTiempoInterfaz, GestionInformeInterfaz):
 
     def eliminarInforme(self):
         pass
+
+    def buscarProyecto(self):
+        print("\n--- Búsqueda de Proyecto ---")
+
+        id_a_buscar = None
+        while True:
+            try:
+                id_a_buscar = int(input("Ingrese la ID del proyecto a buscar: "))
+                if id_a_buscar > 0:
+                    break
+                print("Error: El ID debe ser un número positivo.")
+            except ValueError as Error:
+                print(f"Debe ingresar un carácter numérico para continuar: {Error}")
+
+        conexion = None
+        cursor = None
+
+        try:
+            conexion = conectar_db()
+            cursor = conexion.cursor(dictionary=True)
+
+            query = """
+                SELECT p.id_proyecto, p.nombre, p.descripcion, p.fecha_inicio
+                FROM proyecto p
+                JOIN proyecto_has_usuario_detalle pud ON p.id_proyecto = pud.id_proyecto
+                WHERE p.id_proyecto = %s AND pud.rut_usuario = %s;
+            """
+            valores = (id_a_buscar, self.rut)
+
+            cursor.execute(query, valores)
+            resultado = cursor.fetchone()
+
+            if resultado:
+                print("\n--- Proyecto Encontrado ---")
+                print(f"ID Proyecto:     {resultado['id_proyecto']}")
+                print(f"Nombre:          {resultado['nombre']}")
+                print(f"Descripción:     {resultado['descripcion']}")
+                print(f"Fecha de inicio: {resultado['fecha_inicio']}")
+                print(f"Fecha de término:{resultado['fecha_fin']}")
+            else:
+                print(f"\nNo se encontró ningún proyecto con el ID: {id_a_buscar} (o no estás asignado a él).")
+
+        except Exception as e:
+            print(f"\nError al buscar el proyecto en la base de datos: {e}")
+
+        finally:
+            if cursor:
+                cursor.close()
+            if conexion:
+                conexion.close()
