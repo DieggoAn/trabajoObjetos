@@ -155,7 +155,7 @@ def modificar_departamento():
                         conexion.close()
                 return True
         else:
-            nuevo_valor = input(f"Ingrese el nuevo valor para '{campo}'").strip()
+            nuevo_valor = input(f"Ingrese el nuevo valor para '{campo}': ").strip()
 
             # Validaciones
             if campo == "nombre":
