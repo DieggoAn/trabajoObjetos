@@ -307,7 +307,7 @@ class Administrador(Persona, GestionEmpInterfaz, GestionInformeInterfaz):
             try:
                 fecha_con = input("Ingrese la fecha de inicio del contrato del empleado (formato DD/MM/AAAA): ")
                 fecha_inicio_contrato = datetime.strptime(fecha_con, '%d/%m/%Y').date()
-                if not es_mayor_de_18(fecha_inicio_contrato):
+                if not mayor_de_18_al_contrato(fecha_inicio_contrato):
                     print("Registro denegado! El empleado debe ser mayor de 18 años")
                     terminar_programa = True
                     break
@@ -505,7 +505,16 @@ class Administrador(Persona, GestionEmpInterfaz, GestionInformeInterfaz):
                 return
             
             campo = campos[opcion]
-            nuevo_valor = input(f"Ingrese el nuevo valor para '{campo}'").strip()
+            if campo in ["fecha_nacimiento", "fecha_inicio_contrato"]:
+                while True:
+                    try:
+                        nuevo_valor = input(f"Ingrese el nuevo valor para {campo}: ").strip()
+                        nuevo_valor_fecha = datetime.strptime(nuevo_valor, "%d/%m/%Y").date()
+                        break
+                    except ValueError:
+                        ("Ingrese una fecha valida (fromato DD/MM/AAAA)") 
+            else:
+                nuevo_valor = input(f"Ingrese el nuevo valor para {campo}: ").strip()
 
             if campo in ["nombres", "apellido_paterno", "apellido_materno"]:
                 if not nuevo_valor or not all(c.isalpha() or c.isspace() for c in nuevo_valor):
@@ -514,7 +523,17 @@ class Administrador(Persona, GestionEmpInterfaz, GestionInformeInterfaz):
                 if not nuevo_valor:
                     raise ValueError("La dirección no puede estar vacía.")
             elif campo in ["fecha_nacimiento", "fecha_inicio_contrato"]:
-                nuevo_valor = datetime.strptime(nuevo_valor, "%d/%m/%Y").date()
+                if campo in ["fecha_nacimiento"] and not es_mayor_de_18(nuevo_valor_fecha):
+                    raise ValueError("No se puede ingresar un menor de edad")
+                elif campo in ["fecha_inicio_contrato"]:
+                    conexion = conectar_db()
+                    cursor = conexion.cursor()
+                    cursor.execute("SELECT fecha_nacimiento FROM usuario_basico WHERE rut_usuario = %s", (rut,))
+                    fecha_nacimiento = cursor.fetchone()
+                    cursor.close()
+                    conexion.close()
+                    if not mayor_de_18_al_contrato(fecha_nacimiento[0], nuevo_valor_fecha):
+                        raise ValueError("No se puede ingresar un menor de edad")
             elif campo == "salario":
                 nuevo_valor = int(nuevo_valor)
                 if nuevo_valor <= 0:
@@ -527,12 +546,12 @@ class Administrador(Persona, GestionEmpInterfaz, GestionInformeInterfaz):
                 if not re.match(patron_email, nuevo_valor):
                     raise ValueError("Formato de email inválido (ej: usuario@dominio.cl).")
             elif campo == "rol":
-                conexion = conectar_db()
-                cursor = conexion.cursor()
-                cursor.execute("SELECT rol FROM usuario_detalle WHERE rut_usuario = %s", (rut,))
-                resultado = cursor.fetchone()
-                cursor.close()
-                conexion.close()
+                conexion1 = conectar_db()
+                cursor1 = conexion1.cursor()
+                cursor1.execute("SELECT rol FROM usuario_detalle WHERE rut_usuario = %s", (rut,))
+                resultado = cursor1.fetchone()
+                cursor1.close()
+                conexion1.close()
                 if resultado[0] == "Administrador":
                     raise ValueError("No se puede modificar el rol de un Administrador")
                 roles_validos = {"empleado", "gerente", "administrador"}
@@ -556,9 +575,17 @@ class Administrador(Persona, GestionEmpInterfaz, GestionInformeInterfaz):
                 query = f"UPDATE usuario_basico SET {campo} = %s WHERE rut_usuario = %s"
             elif opcion in detalle:
                 query = f"UPDATE usuario_detalle SET {campo} = %s WHERE rut_usuario = %s"
-            cursor.execute(query, (nuevo_valor, rut))
-            conexion.commit()
-            print("Modificación realizada con éxito.")
+
+            conexion = conectar_db()
+            cursor = conexion.cursor()
+            if campo == "fecha_nacimiento" or campo == "fecha_inicio_contrato":
+                cursor.execute(query, (nuevo_valor_fecha, rut))
+                conexion.commit()
+                print("Modificación realizada con éxito.")
+            else:
+                cursor.execute(query, (nuevo_valor, rut))
+                conexion.commit()
+                print("Modificación realizada con éxito.")
 
         except ValueError as Error:
             print(f"Error: {Error}")

@@ -94,7 +94,7 @@ def menu_gestion_informe(usuario: Optional[Union [Administrador, Gerente]] = Non
                         print("No tienes los privilegios de acceso necesarios.")
                 case 4:
                     if usuario:
-                        usuario.eliminarProyecto()
+                        usuario.eliminarInforme()
                     else:
                         print("No tienes los privilegios necesarios para continuar.")
                 case 5:

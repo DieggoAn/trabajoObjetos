@@ -13,4 +13,4 @@ elif usuario is not None and usuario.rol == "Gerente":
 elif usuario is not None and usuario.rol == "Empleado":
     menu_empleado(usuario)
 else:
-    pass
+    pass 
