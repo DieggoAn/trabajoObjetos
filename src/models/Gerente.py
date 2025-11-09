@@ -302,7 +302,7 @@ class Gerente(Persona, GestionEmpInterfaz, GestionProyectoInterfaz, GestionInfor
             
             query_detalle = """
                 SELECT * FROM usuario_detalle 
-                WHERE rut_usuario = %s AND id_departamento = %s
+                WHERE rut_usuario = %s AND id_departamento = %s AND rol != 'Administrador'
             """
             valores_detalle = (rut, id_departamento_gerente)
             
@@ -326,7 +326,7 @@ class Gerente(Persona, GestionEmpInterfaz, GestionProyectoInterfaz, GestionInfor
             print(f"Error al guardar el empleado: {e}")
 
         try:
-            opcion = int(input("Seleccione una opción (1-10): "))
+            opcion = int(input("Seleccione una opción (1-19): "))
             basico = [1,2,3,5,8]
             detalle = [4,6,7,9]
             campos = {
@@ -428,10 +428,14 @@ class Gerente(Persona, GestionEmpInterfaz, GestionProyectoInterfaz, GestionInfor
                 print("No se encontró ningún empleado con ese RUT.")
                 return
             
-            if empleado['id_departamento'] != id_depto_gerente:
+            if empleado['id_departamento'] != id_depto_gerente or empleado['rol'] == 'Administrador':
                 print("\nOperación denegada. No tiene permisos para eliminar a este empleado.")
-                print(f"El empleado (RUT: {rut}) no pertenece a su departamento (ID: {id_depto_gerente}).")
-                return 
+                if empleado['rol'] == 'Administrador':
+                    print(f"No tiene permisos para eliminar a este empleado")
+                    return
+                else: 
+                    print(f"El empleado (RUT: {rut}) no pertenece a su departamento (ID: {id_depto_gerente}).")
+                    return 
 
             print("\nEmpleado encontrado:")
             print(f"Nombre: {empleado['nombres']} {empleado['apellido_paterno']}")

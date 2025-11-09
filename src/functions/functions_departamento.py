@@ -21,11 +21,11 @@ def crear_departamento():
         if cursor.fetchone():
             print("Ya existe un departamento con ese nombre.")
             return
-        
+        descripcion = input("Ingrese una descripcion del departamento: ")
         query = """
             INSERT INTO departamento (nombre,descripcion) VALUES (%s,%s)
         """
-        valores = (nombre,"")
+        valores = (nombre,descripcion)
         cursor.execute(query, valores)
         conexion.commit()
         id_generado = cursor.lastrowid
@@ -33,7 +33,18 @@ def crear_departamento():
 
         nuevo_departamento = Departamento.Departamento(id_generado,nombre=nombre)
 
-        nuevo_departamento.asignarGerente()
+        while True:
+            try:
+                resp = input("Desea designar un gerente ahora mismo? [S/N]")
+                while resp.lower() not in ["s","n"]:
+                    print("Error al ingresar una respuesta. Intentelo denuevo")
+                    resp = input("Desea designar un gerente ahora mismo? [S/N]")
+                if resp.lower() == "s":
+                    nuevo_departamento.asignarGerente()
+                elif resp.lower() == "n":
+                    break
+            except Exception as Error:
+                print(f"Error inesperado: {Error}")
     except Exception as Error:
         print(f"Error inesperado: {Error}")
     finally:

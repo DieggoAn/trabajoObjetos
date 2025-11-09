@@ -1132,8 +1132,16 @@ class Administrador(Persona, GestionEmpInterfaz, GestionInformeInterfaz):
                     return
                 else:
                     print("Entrada inválida, debes ingresar 'S' o 'N' para poder continuar.")
-        
-            cursor.execute("DELETE FROM proyecto WHERE id_proyecto = %s", (id_proyecto,))
+            query_int = """
+                DELETE FROM proyecto_has_usuario_detalle
+                WHERE id_proyecto = %s
+            """
+            cursor.execute(query_int, (id_proyecto,))
+            query_borrar = """
+                DELETE FROM proyecto WHERE id_proyecto = %s
+            """
+            cursor.execute(query_borrar,(id_proyecto,))
+
             conexion.commit()
             print(f"\nEl proyecto ha sido eliminado exitosamente.")
             print(f"ID: {id_proyecto}")
