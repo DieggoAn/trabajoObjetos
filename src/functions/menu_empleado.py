@@ -1,7 +1,9 @@
 from .menus import (menu_gestion_informe,
                     menu_gestion_proyecto_emp,
-                    menu_gestion_registrotiempo)
+                    menu_gestion_registrotiempo,
+                    menu_gestion_valores)
 from models.Empleado import Empleado
+
 
 def menu_empleado(empleado: Empleado):
     """
@@ -14,15 +16,16 @@ def menu_empleado(empleado: Empleado):
         print("OPCIÓN 1. GESTIONAR INFORMES")
         print("OPCIÓN 2. GESTIONAR PROYECTOS")
         print("OPCIÓN 3. GESTIONAR REGISTRO DE TIEMPO")
-        print("OPCIÓN 4. CERRAR SESIÓN\n")
+        print("OPCIÓN 4. CONSULTA INDICADORES ECONOMICOS")
+        print("OPCIÓN 5. CERRAR SESIÓN\n")
 
         try: 
-            opcion_user = int(input("Ingresar opción (1 - 4): "))
+            opcion_user = int(input("Ingresar opción (1 - 5): "))
         except ValueError:
             print("Debe ingresar una opción válida para continuar.")
 
-        if opcion_user not in (1,2,3,4):
-            print("Debe ingresar una de las opciones disponibles (1 - 4) para continuar.")
+        if opcion_user not in (1,2,3,4,5):
+            print("Debe ingresar una de las opciones disponibles (1 - 5) para continuar.")
             continue
 
         match opcion_user:
@@ -36,5 +39,8 @@ def menu_empleado(empleado: Empleado):
                 menu_gestion_registrotiempo(empleado)
 
             case 4:
+                menu_gestion_valores(empleado)
+
+            case 5:
                 print("Sesión cerrada exitosamente.")
                 break

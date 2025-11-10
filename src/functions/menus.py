@@ -11,6 +11,13 @@ from .functions_informe import generarInforme
 from typing import Union, Optional
 from functions.validador import generarPDF
 from functions.validador import generarExcel
+from functions.menu_valores import(menu_utm,
+                                   menu_uf,
+                                   menu_dolar,
+                                   menu_euro,
+                                   menu_ipc,
+                                   menu_ivp)
+from models.Persona import Persona
 
 def menu_gestion_proyecto(usuario: Union [Administrador,Gerente]):
     print("MENÚ DE GESTION DE PROYECTOS\n")
@@ -80,6 +87,7 @@ def menu_gestion_informe(usuario: Optional[Union [Administrador, Gerente]] = Non
                 case 1:
                     if usuario:
                         usuario.crearInforme()
+                        print(usuario.rut)
                     else:
                         print("No tienes los privilegios de acceso necesarios.")
                 case 2:
@@ -284,43 +292,40 @@ def menu_gestion_proyecto_emp(usuario: Empleado):
                 input("PRESIONE ENTER PARA CONTINUAR ")
                 break
             
-def menu_gestion_economia():
-    
-    print("MENÚ DE CONSULTAS ECONOMICAS\n")
+def menu_gestion_valores(usuario:Persona):
     while True:
-        print("OPCIÓN 1. CONSULTAR UNIDAD DE FOMENTO (UF)")
-        print("OPCIÓN 2. CONSULTAR INDICE DE VALOR PROMEDIO (IVP)")
-        print("OPCIÓN 3. CONSULTAR INDICE PRECIO AL CONSUMIDOR (IPC)")
-        print("OPCIÓN 4. CONSULTAR UNIDAD TRIBUTARIA MENSUAL (UTM)")
-        print("OPCIÓN 5. CONSULTAR PRECIO DOLAR OBSERVADO")
-        print("OPCIÓN 6. CONSULTAR PRECIO EURO")
-        print("OPCIÓN 7. VOLVER AL MENÚ PRINCIPAL\n")
+        print("MENÚ DE CONSULTA DE INDICADORES ECONOMICOS\n")
+        print("         1.- UF          ")
+        print("         2.- IVP          ")
+        print("         3.- ICP         ")
+        print("         4.- UTM          ")
+        print("         5.- DOLAR          ")
+        print("         6.- EURO          ")
+        print("         7.- VOLVER AL MENÚ ANTERIOR          ")
         try:
-            opcion_user = int(input("Ingresar opción (1-7): "))
-        except ValueError as Error:
-            print(f"Debe ingresar un carácter válido para continuar: {Error}")
-        
-        if opcion_user not in (1,2,3,4,5,6,7):
-            print("Debe ingresar una opción válida para continuar.")
-            return
-        
-        match opcion_user:
+            opcion = int(input("Ingrese el numero del indicador que desea usar: "))
+        except ValueError:
+            print("Debe ingresar un numero entero del 1-7")
+
+        if opcion not in (1,2,3,4,5,6,7):
+            print("Debe ingresar una de las opciones del 1-7")
+
+        match opcion:
             case 1:
-                consulta_UF()
+                menu_uf(usuario)
             case 2:
-                consulta_IVP()
+                menu_ivp(usuario)
             case 3:
-                consulta_IPC()
+                menu_ipc(usuario)
             case 4:
-                consulta_UTM()
+                menu_utm(usuario)
             case 5:
-                consulta_USD()
+                menu_dolar(usuario)
             case 6:
-                consulta_EUR
+                menu_euro(usuario)
             case 7:
                 print("Será devuelto al menú principal...")
                 input("PRESIONE ENTER PARA CONTINUAR ")
                 break
 
     
-    pass

@@ -2,7 +2,7 @@ from .menus import (menu_gestion_emp,
                        menu_gestion_depto,
                        menu_gestion_informe,
                        menu_gestion_proyecto,
-                       menu_gestion_economia)
+                       menu_gestion_valores)
 from models.Administrador import Administrador
 
 def menu_admin(admin: Administrador):
@@ -17,7 +17,7 @@ def menu_admin(admin: Administrador):
         print("OPCIÓN 2. GESTIONAR DEPARTAMENTOS")
         print("OPCIÓN 3. GESTIONAR INFORMES")
         print("OPCIÓN 4. GESTIONAR PROYECTOS")
-        print("OPCIÓN 5. CONSULTAS ECONOMICAS")
+        print("OPCIÓN 5. CONSULTA INDICADORES ECONOMICOS")
         print("OPCIÓN 6. CERRAR SESIÓN\n")
 
         try: 
@@ -43,7 +43,8 @@ def menu_admin(admin: Administrador):
                 menu_gestion_proyecto(admin)
 
             case 5:
-                menu_gestion_economia
+                menu_gestion_valores(admin)
+
             case 6:
                 print("Sesión cerrada exitosamente.")
                 break
