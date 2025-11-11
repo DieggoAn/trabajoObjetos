@@ -33,7 +33,7 @@ def menu_uf(usuario: Persona):
                         break  
                     except ValueError:
                         print("Formato de fecha incorrecto. Intente nuevamente (ejemplo: 25-12-2024).")
-                consulta_valor_dia(tipo_valor, fecha, usuario)
+                consulta_valor_dia(tipo_valor, fecha_consulta, usuario)
             case 3:
                 tipo_valor = "uf"
                 while True:
@@ -89,7 +89,7 @@ def menu_ivp(usuario: Persona):
                         break  
                     except ValueError:
                         print("Formato de fecha incorrecto. Intente nuevamente (ejemplo: 25-12-2024).")
-                consulta_valor_dia(tipo_valor, fecha, usuario)
+                consulta_valor_dia(tipo_valor, fecha_consulta, usuario)
             case 3:
                 tipo_valor = "ivp"
                 while True:
@@ -145,7 +145,7 @@ def menu_ipc(usuario: Persona):
                         break  
                     except ValueError:
                         print("Formato de fecha incorrecto. Intente nuevamente (ejemplo: 25-12-2024).")
-                consulta_valor_dia(tipo_valor, fecha, usuario)
+                consulta_valor_dia(tipo_valor, fecha_consulta, usuario)
             case 3:
                 tipo_valor = "ipc"
                 while True:
@@ -202,7 +202,7 @@ def menu_utm(usuario: Persona):
                         break  
                     except ValueError:
                         print("Formato de fecha incorrecto. Intente nuevamente (ejemplo: 25-12-2024).")
-                consulta_valor_dia(tipo_valor, fecha, usuario)
+                consulta_valor_dia(tipo_valor, fecha_consulta, usuario)
             case 3:
                 tipo_valor = "utm"
                 while True:
@@ -222,7 +222,7 @@ def menu_utm(usuario: Persona):
                         break  
                     except ValueError:
                         print("Formato de fecha incorrecto. Intente nuevamente (ejemplo: 25-12-2024).")
-                consulta_valor_rango(tipo_valor, fecha_inicial, fecha_final. usuario)
+                consulta_valor_rango(tipo_valor, fecha_inicial, fecha_final, usuario)
             case 4:
                 print("Volviendo al menú anterior...")
                 input("PRESIONE ENTER PARA CONTINUAR ")
@@ -258,7 +258,7 @@ def menu_dolar(usuario: Persona):
                         break  
                     except ValueError:
                         print("Formato de fecha incorrecto. Intente nuevamente (ejemplo: 25-12-2024).")
-                consulta_valor_dia(tipo_valor, fecha, usuario)
+                consulta_valor_dia(tipo_valor, fecha_consulta, usuario)
             case 3:
                 tipo_valor = "dolar"
                 while True:
@@ -314,7 +314,7 @@ def menu_euro(usuario: Persona):
                         break  
                     except ValueError:
                         print("Formato de fecha incorrecto. Intente nuevamente (ejemplo: 25-12-2024).")
-                consulta_valor_dia(tipo_valor, fecha, usuario)
+                consulta_valor_dia(tipo_valor, fecha_consulta, usuario)
             case 3:
                 tipo_valor = "euro"
                 while True:

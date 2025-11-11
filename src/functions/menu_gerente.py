@@ -4,6 +4,7 @@ from .menus import (menu_gestion_emp,
                        menu_gestion_proyecto,
                        menu_gestion_valores)
 from models.Gerente import Gerente
+from functions.validador import verificar_reautenticacion_gerente
 
 def menu_gerente(gerente: Gerente):
     """
@@ -39,7 +40,11 @@ def menu_gerente(gerente: Gerente):
                 menu_gestion_proyecto(gerente)
 
             case 4:
-                menu_gestion_valores(gerente)
+                if verificar_reautenticacion_gerente(gerente):
+                    menu_gestion_valores(gerente)
+                else:
+                    print("Acceso denegado. No se pudo verificar la identidad.\n")
+                    continue
 
             case 5:
                 print("Sesión cerrada exitosamente.")

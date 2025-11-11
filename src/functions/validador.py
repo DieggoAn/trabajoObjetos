@@ -6,6 +6,8 @@ from fpdf import FPDF
 from openpyxl import Workbook
 import os
 import json
+import pwinput
+import bcrypt
 
 def validar_rut(rut):
     rut = rut.strip().lower()
@@ -421,3 +423,55 @@ def registrar_intento(exito):
             print(f"Sistema bloqueado por {tiempo_bloqueo_min} minutos debido a múltiples intentos fallidos.")
     guardar_estado(estado)
 
+def verificar_reautenticacion_empleado(empleado):
+    print("\n--- Verificación de identidad requerida ---")
+
+    rut_ingresado = input("Ingrese su RUT nuevamente: ").strip().lower()
+    contraseña_ingresada = pwinput.pwinput("Ingrese su contraseña nuevamente: ", mask="*").strip()
+
+    if rut_ingresado != empleado.rut:
+        print("El RUT ingresado no coincide con la sesión activa.\n")
+        return False
+
+    if not bcrypt.checkpw(contraseña_ingresada.encode('utf-8'), empleado.contraseña.encode('utf-8')):
+        print("La contraseña ingresada no coincide con la sesión activa.\n")
+        return False
+
+    print("Identidad verificada correctamente.\n")
+    return True
+
+
+def verificar_reautenticacion_admin(admin):
+    print("\n--- Verificación de identidad requerida ---")
+
+    rut_ingresado = input("Ingrese su RUT nuevamente: ").strip().lower()
+    contraseña_ingresada = pwinput.pwinput("Ingrese su contraseña nuevamente: ", mask="*").strip()
+
+    if rut_ingresado != admin.rut:
+        print("El RUT ingresado no coincide con la sesión activa.\n")
+        return False
+
+    if not bcrypt.checkpw(contraseña_ingresada.encode('utf-8'), admin.contraseña.encode('utf-8')):
+        print("La contraseña ingresada no coincide con la sesión activa.\n")
+        return False
+
+    print("Identidad verificada correctamente.\n")
+    return True
+
+
+def verificar_reautenticacion_gerente(gerente):
+    print("\n--- Verificación de identidad requerida ---")
+
+    rut_ingresado = input("Ingrese su RUT nuevamente: ").strip().lower()
+    contraseña_ingresada = pwinput.pwinput("Ingrese su contraseña nuevamente: ", mask="*").strip()
+
+    if rut_ingresado != gerente.rut:
+        print("El RUT ingresado no coincide con la sesión activa.\n")
+        return False
+
+    if not bcrypt.checkpw(contraseña_ingresada.encode('utf-8'), gerente.contraseña.encode('utf-8')):
+        print("La contraseña ingresada no coincide con la sesión activa.\n")
+        return False
+
+    print("Identidad verificada correctamente.\n")
+    return True

@@ -12,7 +12,12 @@
         rut: 10000000-0
         contraseña: Contrasena1!
     }
-
-
-
+    gerente{
+        rut: 20000000-0
+        contraseña: Contrasena1!
+    }
+    empleado{
+        rut: 30000000-0
+        contraseña: Contrasena1!
+    }
 }

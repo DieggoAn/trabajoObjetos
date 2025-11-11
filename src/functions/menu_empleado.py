@@ -3,7 +3,7 @@ from .menus import (menu_gestion_informe,
                     menu_gestion_registrotiempo,
                     menu_gestion_valores)
 from models.Empleado import Empleado
-
+from functions.validador import verificar_reautenticacion_empleado
 
 def menu_empleado(empleado: Empleado):
     """
@@ -39,7 +39,11 @@ def menu_empleado(empleado: Empleado):
                 menu_gestion_registrotiempo(empleado)
 
             case 4:
-                menu_gestion_valores(empleado)
+                if verificar_reautenticacion_empleado(empleado):
+                    menu_gestion_valores(empleado)
+                else:
+                    print("Acceso denegado. No se pudo verificar la identidad.\n")
+                    continue
 
             case 5:
                 print("Sesión cerrada exitosamente.")

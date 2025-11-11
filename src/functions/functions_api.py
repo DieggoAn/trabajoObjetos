@@ -26,10 +26,10 @@ def consulta_valor_hoy(tipo_valor, usuario: Persona):
         conexion = conectar_db()
         cursor = conexion.cursor(dictionary=True)
         query = """
-            INSERT INTO indicadores_economicos (rut_usuario, fecha_consulta, nombre_indicador, valor, fecha_consulta, proveedor)
+            INSERT INTO indicadores_economicos (rut_usuario, fecha_actual, nombre_indicador, valor, fecha_consulta, proveedor)
             VALUES (%s, %s, %s, %s, %s, %s)
         """
-        valores = (rut_usuario, fecha_consulta, tipo_valor, valor, fecha_consulta, autor)
+        valores = (rut_usuario, fecha_actual, tipo_valor, valor, fecha_consulta, autor)
         cursor.execute(query, valores)
         conexion.commit()
         id_generado = cursor.lastrowid
@@ -53,6 +53,7 @@ def consulta_valor_dia(tipo_valor, fecha_consulta, usuario:Persona):
     datos = json.loads(string)
     fecha_actual = datetime.now()
     rut_usuario = usuario.rut
+    valor = None
 
     serie = datos.get('serie', [])
     if serie:
@@ -90,7 +91,6 @@ def consulta_valor_rango(tipo_valor, fecha_inicial, fecha_final, usuario: Person
     for i in range((fecha_final - fecha_inicial).days + 1):
         fecha_iterada = fecha_inicial + timedelta(days = i)
         fecha_iterada_str = fecha_iterada.strftime("%d-%m-%Y")
-        print(type(fecha_iterada))
 
         url = requests.get(f'https://mindicador.cl/api/{tipo_valor}/{fecha_iterada_str}')
         string = url.text
